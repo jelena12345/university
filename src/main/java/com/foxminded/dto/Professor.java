@@ -4,7 +4,7 @@ public class Professor extends User {
 
     String qualification;
 
-    public Professor(String id, String name, String surname, String qualification) {
+    public Professor(Integer id, String name, String surname, String qualification) {
         super(id, name, surname);
         this.qualification = qualification;
     }

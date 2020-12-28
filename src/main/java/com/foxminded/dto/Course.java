@@ -5,6 +5,10 @@ public class Course {
     String name;
     String description;
 
+    public Course(String name, String description) {
+        this(null, name, description);
+    }
+
     public Course(Integer id, String name, String description) {
         this.id = id;
         this.name = name;

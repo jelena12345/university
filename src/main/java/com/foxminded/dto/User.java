@@ -1,21 +1,21 @@
 package com.foxminded.dto;
 
 public abstract class User {
-    protected String id;
+    protected Integer id;
     protected String name;
     protected String surname;
 
-    protected User(String id, String name, String surname) {
+    protected User(Integer id, String name, String surname) {
         this.id = id;
         this.name = name;
         this.surname = surname;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
