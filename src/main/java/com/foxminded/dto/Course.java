@@ -1,5 +1,7 @@
 package com.foxminded.dto;
 
+import java.util.Objects;
+
 public class Course {
     Integer id;
     String name;
@@ -7,6 +9,10 @@ public class Course {
 
     public Course(String name, String description) {
         this(null, name, description);
+    }
+
+    public Course() {
+        this(null, null, null);
     }
 
     public Course(Integer id, String name, String description) {
@@ -39,4 +45,22 @@ public class Course {
         this.description = description;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        return (o instanceof Course)
+                && (((Course) o).getId().equals(this.id))
+                && (((Course) o).getName().equals(this.name))
+                && (((Course) o).getDescription().equals(this.description));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description);
+    }
 }

@@ -1,3 +1,7 @@
+CREATE TABLE courses (
+    id SERIAL PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS students (
     id SERIAL PRIMARY KEY NOT NULL,
     name TEXT NOT NULL,
