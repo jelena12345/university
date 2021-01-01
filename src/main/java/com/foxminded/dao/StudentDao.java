@@ -3,55 +3,63 @@ package com.foxminded.dao;
 import com.foxminded.dto.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
 
 @Component
 public class StudentDao {
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate template;
 
     @Autowired
-    public StudentDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public StudentDao(NamedParameterJdbcTemplate template) {
+        this.template = template;
     }
 
     public List<Student> findAll() {
-        return jdbcTemplate.query("SELECT id, name, surname FROM students",
+        return template.query("SELECT id, name, surname FROM students",
                 new BeanPropertyRowMapper<>(Student.class));
     }
 
     public Student findById(int id) {
-        return jdbcTemplate.query("SELECT id, name, surname FROM students WHERE id=?",
-                new BeanPropertyRowMapper<>(Student.class), id).stream().findAny().orElse(null);
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
+        return template.query("SELECT id, name, surname FROM students WHERE id=:id",
+                params,
+                new BeanPropertyRowMapper<>(Student.class))
+                .stream()
+                .findAny()
+                .orElse(null);
     }
 
     public int add(Student student) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("name", student.getName())
+                .addValue("surname", student.getSurname());
 
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection
-                    .prepareStatement("INSERT INTO students(name, surname) VALUES(?, ?)", Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, student.getName());
-            ps.setString(2, student.getSurname());
-            return ps;
-        }, keyHolder);
+        template.update("INSERT INTO students(name, surname) VALUES(:name, :surname)",
+                params,
+                keyHolder,
+                new String[]{"id"});
 
         return Objects.requireNonNull(keyHolder.getKey()).intValue();
     }
 
     public void update(Student student) {
-        jdbcTemplate.update("UPDATE students SET name=?, surname=? WHERE id=?",
-                student.getName(), student.getSurname(), student.getId());
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", student.getId())
+                .addValue("name", student.getName())
+                .addValue("surname", student.getSurname());
+        template.update("UPDATE students SET name=:name, surname=:surname WHERE id=:id", params);
     }
 
     public void deleteById(int id) {
-        jdbcTemplate.update("DELETE FROM students WHERE id=?", id);
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
+        template.update("DELETE FROM students WHERE id=:id", params);
     }
 }

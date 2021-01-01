@@ -4,7 +4,7 @@ import com.foxminded.dto.Course;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -22,7 +22,7 @@ class CourseDaoTest {
     @BeforeEach
     public void setUp() {
         db = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript("classpath:schema.sql").build();
-        JdbcTemplate template = new JdbcTemplate(db);
+        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(db);
         dao = new CourseDao(template);
     }
 
@@ -48,7 +48,6 @@ class CourseDaoTest {
         Course actual = dao.findById(1);
         assertEquals(expected, actual);
     }
-
 
     @Test
     void testAdd_ShouldInsertCourse() {
@@ -77,6 +76,5 @@ class CourseDaoTest {
         Course actual = dao.findById(1);
         assertNull(actual);
     }
-
 
 }
