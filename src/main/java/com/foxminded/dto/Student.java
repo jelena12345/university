@@ -12,9 +12,7 @@ public class Student extends User {
         this(null, name, surname);
     }
 
-    public Student() {
-        this(null, null, null);
-    }
+    public Student() {}
 
     @Override
     public boolean equals(Object o) {

@@ -7,3 +7,9 @@ CREATE TABLE IF NOT EXISTS students (
     name TEXT NOT NULL,
     surname TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS professors (
+    id SERIAL PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    surname TEXT NOT NULL,
+    qualification TEXT NOT NULL
+);
