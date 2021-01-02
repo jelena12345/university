@@ -21,3 +21,12 @@ CREATE TABLE IF NOT EXISTS student_course (
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
     UNIQUE (student_id, course_id)
 );
+CREATE TABLE IF NOT EXISTS activities (
+    id SERIAL PRIMARY KEY NOT NULL,
+    professor_id INT NOT NULL,
+    course_id INT NOT NULL,
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP NOT NULL,
+    FOREIGN KEY (professor_id) REFERENCES professors(id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+);

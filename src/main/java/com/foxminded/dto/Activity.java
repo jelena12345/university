@@ -1,28 +1,26 @@
 package com.foxminded.dto;
 
 import java.sql.Timestamp;
-import java.util.List;
+import java.util.Objects;
 
 public class Activity {
 
     Integer id;
-    Professor professor;
-    Course course;
+    Integer professorId;
+    Integer courseId;
     Timestamp startTime;
     Timestamp endTime;
-    List<Student> students;
 
-
-    public Activity(Integer id, Professor professor, Course course, Timestamp startTime, Timestamp endTime) {
+    public Activity(Integer id, Integer professorId, Integer courseId, Timestamp startTime, Timestamp endTime) {
         this.id = id;
-        this.professor = professor;
-        this.course = course;
+        this.professorId = professorId;
+        this.courseId = courseId;
         this.startTime = startTime;
         this.endTime = endTime;
     }
 
-    public Activity(Professor professor, Course course, Timestamp startTime, Timestamp endTime) {
-        this(null, professor, course, startTime, endTime);
+    public Activity(Integer professorId, Integer courseId, Timestamp startTime, Timestamp endTime) {
+        this(null, professorId, courseId, startTime, endTime);
     }
 
     public Activity() {}
@@ -35,20 +33,20 @@ public class Activity {
         this.id = id;
     }
 
-    public Professor getProfessor() {
-        return professor;
+    public Integer getProfessorId() {
+        return professorId;
     }
 
-    public void setProfessor(Professor professor) {
-        this.professor = professor;
+    public void setProfessorId(Integer professorId) {
+        this.professorId = professorId;
     }
 
-    public Course getCourse() {
-        return course;
+    public Integer getCourseId() {
+        return courseId;
     }
 
-    public void setCourse(Course course) {
-        this.course = course;
+    public void setCourseId(Integer courseId) {
+        this.courseId = courseId;
     }
 
     public Timestamp getStartTime() {
@@ -67,12 +65,25 @@ public class Activity {
         this.endTime = duration;
     }
 
-    public List<Student> getStudents() {
-        return students;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        return (o instanceof Activity)
+                && (((Activity) o).getId().equals(this.id))
+                && (((Activity) o).getProfessorId().equals(this.professorId))
+                && (((Activity) o).getCourseId().equals(this.courseId))
+                && (((Activity) o).getStartTime().equals(this.startTime))
+                && (((Activity) o).getEndTime().equals(this.endTime));
     }
 
-    public void setStudents(List<Student> students) {
-        this.students = students;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, professorId, courseId, startTime, endTime);
     }
 
 }
