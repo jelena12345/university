@@ -32,7 +32,7 @@ class CourseDaoTest {
     }
 
     @Test
-    void testFindAll_ShouldReturnAllCourses() {
+    void testFindAll_ShouldFindAllCourses() {
         List<Course> expected = Arrays.asList(new Course(1, "name", "description"),
                 new Course(2,"name2", "description2"));
         dao.add(expected.get(0));
@@ -50,7 +50,7 @@ class CourseDaoTest {
     }
 
     @Test
-    void testAdd_ShouldInsertCourse() {
+    void testAdd_ShouldAddCorrectCourse() {
         Course expected = new Course(1, "name", "description");
         int id = dao.add(expected);
         Course actual = dao.findById(id);

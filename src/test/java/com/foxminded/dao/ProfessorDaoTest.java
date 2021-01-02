@@ -33,7 +33,7 @@ class ProfessorDaoTest {
     }
 
     @Test
-    void testFindAll_ShouldReturnAllProfessors() {
+    void testFindAll_ShouldFindAllProfessors() {
         List<Professor> expected = Arrays.asList(new Professor(1, "name", "surname", "q"),
                 new Professor(2,"name2", "surname2", "q2"));
         dao.add(expected.get(0));
@@ -52,7 +52,7 @@ class ProfessorDaoTest {
 
 
     @Test
-    void testAdd_ShouldInsertProfessor() {
+    void testAdd_ShouldAddCorrectProfessor() {
         Professor expected = new Professor(1, "name", "surname", "q");
         int id = dao.add(expected);
         Professor actual = dao.findById(id);
