@@ -1,21 +1,31 @@
 package com.foxminded.dto;
 
+import java.util.Objects;
+
 public class Course {
-    String id;
+    Integer id;
     String name;
     String description;
 
-    public Course(String id, String name, String description) {
+    public Course(String name, String description) {
+        this(null, name, description);
+    }
+
+    public Course() {
+        this(null, null, null);
+    }
+
+    public Course(Integer id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -35,4 +45,22 @@ public class Course {
         this.description = description;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+        return (o instanceof Course)
+                && (((Course) o).getId().equals(this.id))
+                && (((Course) o).getName().equals(this.name))
+                && (((Course) o).getDescription().equals(this.description));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description);
+    }
 }
