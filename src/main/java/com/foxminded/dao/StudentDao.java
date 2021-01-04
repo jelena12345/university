@@ -7,12 +7,12 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;
 
-@Component
+@Repository
 public class StudentDao {
     private final NamedParameterJdbcTemplate template;
 
@@ -28,12 +28,9 @@ public class StudentDao {
 
     public Student findById(int id) {
         MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
-        return template.query("SELECT id, name, surname FROM students WHERE id=:id",
+        return template.queryForObject("SELECT id, name, surname FROM students WHERE id=:id",
                 params,
-                new BeanPropertyRowMapper<>(Student.class))
-                .stream()
-                .findAny()
-                .orElse(null);
+                new BeanPropertyRowMapper<>(Student.class));
     }
 
     public int add(Student student) {
