@@ -1,4 +1,4 @@
-package com.foxminded.dto;
+package com.foxminded.entities;
 
 import java.sql.Timestamp;
 import java.util.Objects;

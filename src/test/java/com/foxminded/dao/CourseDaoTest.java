@@ -1,6 +1,6 @@
 package com.foxminded.dao;
 
-import com.foxminded.dto.Course;
+import com.foxminded.entities.Course;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,7 +63,7 @@ class CourseDaoTest {
         dao.add(expected);
         expected.setName("name_new");
         expected.setDescription("description_new");
-        dao.update(expected);
+        dao.update(1, expected);
         Course actual = dao.findById(1);
         assertEquals(expected, actual);
     }

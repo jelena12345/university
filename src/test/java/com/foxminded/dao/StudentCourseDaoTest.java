@@ -1,7 +1,7 @@
 package com.foxminded.dao;
 
-import com.foxminded.dto.Course;
-import com.foxminded.dto.Student;
+import com.foxminded.entities.Course;
+import com.foxminded.entities.Student;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

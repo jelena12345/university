@@ -1,4 +1,4 @@
-package com.foxminded.dto;
+package com.foxminded.entities;
 
 import java.util.Objects;
 
@@ -11,9 +11,7 @@ public class Course {
         this(null, name, description);
     }
 
-    public Course() {
-        this(null, null, null);
-    }
+    public Course() {}
 
     public Course(Integer id, String name, String description) {
         this.id = id;
@@ -47,16 +45,12 @@ public class Course {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null) {
-            return false;
-        }
-        return (o instanceof Course)
-                && (((Course) o).getId().equals(this.id))
-                && (((Course) o).getName().equals(this.name))
-                && (((Course) o).getDescription().equals(this.description));
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Course course = (Course) o;
+        return Objects.equals(id, course.id) &&
+                name.equals(course.name) &&
+                description.equals(course.description);
     }
 
     @Override

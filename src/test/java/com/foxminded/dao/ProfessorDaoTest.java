@@ -1,6 +1,6 @@
 package com.foxminded.dao;
 
-import com.foxminded.dto.Professor;
+import com.foxminded.entities.Professor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

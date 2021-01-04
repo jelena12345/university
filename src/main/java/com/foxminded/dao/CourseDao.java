@@ -1,6 +1,6 @@
 package com.foxminded.dao;
 
-import com.foxminded.dto.Course;
+import com.foxminded.entities.Course;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -48,9 +48,9 @@ public class CourseDao {
         return Objects.requireNonNull(keyHolder.getKey()).intValue();
     }
 
-    public void update(Course course) {
+    public void update(int id, Course course) {
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("id", course.getId())
+        params.addValue("id", id)
                 .addValue("name", course.getName())
                 .addValue("description", course.getDescription());
         template.update("UPDATE courses SET name=:name, description=:description WHERE id=:id", params);

@@ -1,4 +1,4 @@
-package com.foxminded.dto;
+package com.foxminded.entities;
 
 public abstract class User {
     protected Integer id;

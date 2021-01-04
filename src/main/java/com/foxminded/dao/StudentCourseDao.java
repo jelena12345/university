@@ -1,7 +1,7 @@
 package com.foxminded.dao;
 
-import com.foxminded.dto.Course;
-import com.foxminded.dto.Student;
+import com.foxminded.entities.Course;
+import com.foxminded.entities.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
