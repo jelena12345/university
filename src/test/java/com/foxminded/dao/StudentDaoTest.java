@@ -63,7 +63,7 @@ class StudentDaoTest {
         dao.add(expected);
         expected.setName("name_new");
         expected.setSurname("surname_new");
-        dao.update(expected);
+        dao.update(1, expected);
         Student actual = dao.findById(1);
         assertEquals(expected, actual);
     }

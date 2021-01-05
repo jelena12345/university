@@ -16,16 +16,12 @@ public class Student extends User {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
-        if (this == o) {
-            return true;
-        }
-        return (o instanceof Student)
-                && (((Student) o).getId().equals(this.id))
-                && (((Student) o).getName().equals(this.name))
-                && (((Student) o).getSurname().equals(this.surname));
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Student student = (Student) o;
+        return Objects.equals(id, student.id) &&
+                name.equals(student.name) &&
+                surname.equals(student.surname);
     }
 
     @Override
