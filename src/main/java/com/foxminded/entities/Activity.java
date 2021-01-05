@@ -5,11 +5,11 @@ import java.util.Objects;
 
 public class Activity {
 
-    Integer id;
-    Integer professorId;
-    Integer courseId;
-    Timestamp startTime;
-    Timestamp endTime;
+    private Integer id;
+    private Integer professorId;
+    private Integer courseId;
+    private Timestamp startTime;
+    private Timestamp endTime;
 
     public Activity(Integer id, Integer professorId, Integer courseId, Timestamp startTime, Timestamp endTime) {
         this.id = id;

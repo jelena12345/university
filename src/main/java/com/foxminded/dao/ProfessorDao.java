@@ -2,6 +2,7 @@ package com.foxminded.dao;
 
 import com.foxminded.entities.Professor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -28,9 +29,14 @@ public class ProfessorDao {
 
     public Professor findById(int id) {
         MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
-        return template.queryForObject("SELECT id, name, surname, qualification FROM professors WHERE id=:id",
-                params,
-                new BeanPropertyRowMapper<>(Professor.class));
+        try {
+            return template.queryForObject("SELECT id, name, surname, qualification FROM professors WHERE id=:id",
+                    params,
+                    new BeanPropertyRowMapper<>(Professor.class));
+        } catch (EmptyResultDataAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public int add(Professor professor) {
@@ -47,9 +53,9 @@ public class ProfessorDao {
         return Objects.requireNonNull(keyHolder.getKey()).intValue();
     }
 
-    public void update(Professor professor) {
+    public void update(int id, Professor professor) {
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("id", professor.getId())
+        params.addValue("id", id)
                 .addValue("name", professor.getName())
                 .addValue("surname", professor.getSurname())
                 .addValue("qualification", professor.getQualification());

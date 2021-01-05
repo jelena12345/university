@@ -3,9 +3,9 @@ package com.foxminded.entities;
 import java.util.Objects;
 
 public class Course {
-    Integer id;
-    String name;
-    String description;
+    private Integer id;
+    private String name;
+    private String description;
 
     public Course(String name, String description) {
         this(null, name, description);

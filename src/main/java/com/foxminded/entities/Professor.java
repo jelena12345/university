@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Professor extends User {
 
-    String qualification;
+    private String qualification;
 
     public Professor(Integer id, String name, String surname, String qualification) {
         super(id, name, surname);
@@ -27,17 +27,13 @@ public class Professor extends User {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
-        if (this == o) {
-            return true;
-        }
-        return (o instanceof Professor)
-                && (((Professor) o).getId().equals(this.id))
-                && (((Professor) o).getName().equals(this.name))
-                && (((Professor) o).getSurname().equals(this.surname))
-                && (((Professor) o).getQualification().equals(this.qualification));
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Professor professor = (Professor) o;
+        return Objects.equals(id, professor.id) &&
+                name.equals(professor.name) &&
+                surname.equals(professor.surname) &&
+                qualification.equals(professor.qualification);
     }
 
     @Override

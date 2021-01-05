@@ -66,7 +66,7 @@ class ProfessorDaoTest {
         expected.setName("name_new");
         expected.setSurname("surname_new");
         expected.setQualification("q_new");
-        dao.update(expected);
+        dao.update(1, expected);
         Professor actual = dao.findById(1);
         assertEquals(expected, actual);
     }

@@ -4,8 +4,8 @@ import java.util.Objects;
 
 public class CourseDto {
 
-    String name;
-    String description;
+    private String name;
+    private String description;
 
     public CourseDto(String name, String description) {
         this.name = name;

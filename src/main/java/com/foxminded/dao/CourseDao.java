@@ -2,6 +2,7 @@ package com.foxminded.dao;
 
 import com.foxminded.entities.Course;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -29,9 +30,14 @@ public class CourseDao {
 
     public Course findById(int id) {
         MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
-        return template.queryForObject("SELECT id, name, description FROM courses WHERE id=:id",
-                params,
-                new BeanPropertyRowMapper<>(Course.class));
+        try {
+            return template.queryForObject("SELECT id, name, description FROM courses WHERE id=:id",
+                    params,
+                    new BeanPropertyRowMapper<>(Course.class));
+        } catch (EmptyResultDataAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public Integer add(Course course) {
