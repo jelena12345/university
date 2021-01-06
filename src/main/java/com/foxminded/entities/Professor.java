@@ -15,7 +15,7 @@ public class Professor extends User {
         this(null, personalId, name, surname, qualification);
     }
 
-    public Professor() {}
+    private Professor() { }
 
     public String getQualification() {
         return qualification;
@@ -27,8 +27,12 @@ public class Professor extends User {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Professor professor = (Professor) o;
         return Objects.equals(id, professor.id) &&
                 name.equals(professor.name) &&

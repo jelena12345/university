@@ -23,7 +23,7 @@ public class Activity {
         this(null, professorId, courseId, startTime, endTime);
     }
 
-    public Activity() {}
+    private Activity() { }
 
     public Integer getId() {
         return id;

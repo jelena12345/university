@@ -7,12 +7,16 @@ public class StudentDto  extends UserDto {
         super(personalId, name, surname);
     }
 
-    public StudentDto() {}
+    private StudentDto() { }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         StudentDto student = (StudentDto) o;
         return name.equals(student.name) &&
                 surname.equals(student.surname);

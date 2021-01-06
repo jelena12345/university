@@ -11,12 +11,16 @@ public class ProfessorDto extends UserDto {
         this.qualification = qualification;
     }
 
-    public ProfessorDto() {}
+    private ProfessorDto() { }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ProfessorDto professor = (ProfessorDto) o;
         return name.equals(professor.name) &&
                 surname.equals(professor.surname) &&

@@ -12,7 +12,7 @@ public class Course {
         this(null, name, description);
     }
 
-    public Course() {}
+    private Course() { }
 
     public Course(Integer id, String name, String description) {
         this.id = id;
@@ -46,8 +46,12 @@ public class Course {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Course course = (Course) o;
         return Objects.equals(id, course.id) &&
                 name.equals(course.name) &&

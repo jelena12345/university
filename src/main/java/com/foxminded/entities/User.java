@@ -13,7 +13,7 @@ public abstract class User {
         this.surname = surname;
     }
 
-    protected User() {}
+    protected User() { }
 
     public Integer getId() {
         return id;

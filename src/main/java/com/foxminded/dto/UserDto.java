@@ -12,7 +12,7 @@ public class UserDto {
         this.surname = surname;
     }
 
-    protected UserDto() {}
+    protected UserDto() { }
 
     public String getName() {
         return name;
