@@ -28,7 +28,7 @@ class CourseServiceTest {
     }
 
     @Test
-    void testGetAll_ShouldReturnAllCourses() {
+    void testFindAll_ShouldReturnAllCourses() {
         List<Course> courses = Arrays.asList(new Course(1, "name", "description"),
                 new Course(2, "name2", "description2"));
         List<CourseDto> expected = Arrays.asList(new CourseDto("name", "description"),
@@ -39,11 +39,20 @@ class CourseServiceTest {
     }
 
     @Test
-    void testGetById_ShouldReturnCorrectCourse() {
+    void testFindById_ShouldReturnCorrectCourse() {
         Course course = new Course(1, "name", "description");
         CourseDto expected = new CourseDto("name", "description");
         when(dao.findById(anyInt())).thenReturn(course);
         CourseDto actual = service.findById(anyInt());
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testFindByName_ShouldReturnCorrectCourse() {
+        Course course = new Course(1, "name", "description");
+        CourseDto expected = new CourseDto("name", "description");
+        when(dao.findByName(anyString())).thenReturn(course);
+        CourseDto actual = service.findByName(anyString());
         assertEquals(expected, actual);
     }
 
@@ -63,7 +72,13 @@ class CourseServiceTest {
 
     @Test
     void testDeleteById_ShouldCallDeleteByIdMethodForDao() {
-        service.deleteById(1);
-        verify(dao, times(1)).deleteById(1);
+        service.deleteById(anyInt());
+        verify(dao, times(1)).deleteById(anyInt());
+    }
+
+    @Test
+    void testDeleteByName_ShouldCallDeleteByIdMethodForDao() {
+        service.deleteByName(anyString());
+        verify(dao, times(1)).deleteByName(anyString());
     }
 }

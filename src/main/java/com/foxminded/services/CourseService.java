@@ -39,6 +39,10 @@ public class CourseService {
         return mapper.map(dao.findById(id), CourseDto.class);
     }
 
+    public CourseDto findByName(String name) {
+        return mapper.map(dao.findByName(name), CourseDto.class);
+    }
+
     public void add(CourseDto course) {
         dao.add(mapper.map(course, Course.class));
     }
@@ -49,6 +53,10 @@ public class CourseService {
 
     public void deleteById(int id) {
         dao.deleteById(id);
+    }
+
+    public void deleteByName(String name) {
+        dao.deleteByName(name);
     }
 
 }

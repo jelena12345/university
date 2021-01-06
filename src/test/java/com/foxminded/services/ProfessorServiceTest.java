@@ -30,7 +30,7 @@ class ProfessorServiceTest {
     }
 
     @Test
-    void testGetAll_ShouldReturnAllProfessors() {
+    void testFindAll_ShouldReturnAllProfessors() {
         List<Professor> professors = Arrays.asList(new Professor(1,  "1", "name", "surname", "q"),
                 new Professor(2, "2", "name2", "surname2", "q2"));
         List<ProfessorDto> expected = Arrays.asList(new ProfessorDto("1", "name", "surname", "q"),
@@ -41,11 +41,20 @@ class ProfessorServiceTest {
     }
 
     @Test
-    void testGetById_ShouldReturnCorrectProfessor() {
+    void testFindById_ShouldReturnCorrectProfessor() {
         Professor professor = new Professor(1,  "1", "name", "surname", "q");
         ProfessorDto expected = new ProfessorDto("1", "name", "surname", "q");
         when(dao.findById(anyInt())).thenReturn(professor);
         ProfessorDto actual = service.findById(anyInt());
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testFindByPersonalId_ShouldReturnCorrectProfessor() {
+        Professor professor = new Professor(1,  "1", "name", "surname", "q");
+        ProfessorDto expected = new ProfessorDto("1", "name", "surname", "q");
+        when(dao.findByPersonalId(anyString())).thenReturn(professor);
+        ProfessorDto actual = service.findByPersonalId(anyString());
         assertEquals(expected, actual);
     }
 
@@ -65,7 +74,13 @@ class ProfessorServiceTest {
 
     @Test
     void testDeleteById_ShouldCallDeleteByIdMethodForDao() {
-        service.deleteById(1);
-        verify(dao, times(1)).deleteById(1);
+        service.deleteById(anyInt());
+        verify(dao, times(1)).deleteById(anyInt());
+    }
+
+    @Test
+    void testDeleteByPersonalId_ShouldCallDeleteByIdMethodForDao() {
+        service.deleteByPersonalId(anyString());
+        verify(dao, times(1)).deleteByPersonalId(anyString());
     }
 }

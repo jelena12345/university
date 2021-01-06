@@ -82,4 +82,9 @@ public class CourseDao {
         MapSqlParameterSource params = new MapSqlParameterSource().addValue(ID, id);
         template.update("DELETE FROM courses WHERE id=:id", params);
     }
+
+    public void deleteByName(String name) {
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue(NAME, name);
+        template.update("DELETE FROM courses WHERE name=:name", params);
+    }
 }

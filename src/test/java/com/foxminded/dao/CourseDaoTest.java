@@ -85,4 +85,13 @@ class CourseDaoTest {
         assertNull(actual);
     }
 
+    @Test
+    void testDeleteByName_ShouldFindNull() {
+        Course course = new Course(1,"name", "description");
+        dao.add(course);
+        dao.deleteByName("name");
+        Course actual = dao.findById(1);
+        assertNull(actual);
+    }
+
 }

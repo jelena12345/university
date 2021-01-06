@@ -38,6 +38,10 @@ public class ProfessorService {
         return mapper.map(dao.findById(id), ProfessorDto.class);
     }
 
+    public ProfessorDto findByPersonalId(String personalId) {
+        return mapper.map(dao.findByPersonalId(personalId), ProfessorDto.class);
+    }
+
     public void add(ProfessorDto professor) {
         dao.add(mapper.map(professor, Professor.class));
     }
@@ -48,5 +52,9 @@ public class ProfessorService {
 
     public void deleteById(int id) {
         dao.deleteById(id);
+    }
+
+    public void deleteByPersonalId(String personalId) {
+        dao.deleteByPersonalId(personalId);
     }
 }
