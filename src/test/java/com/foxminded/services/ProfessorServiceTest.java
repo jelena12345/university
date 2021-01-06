@@ -31,7 +31,7 @@ class ProfessorServiceTest {
 
     @Test
     void testFindAll_ShouldReturnAllProfessors() {
-        List<Professor> professors = Arrays.asList(new Professor(1,  "1", "name", "surname", "q"),
+        List<Professor> professors = Arrays.asList(new Professor(1, "1", "name", "surname", "q"),
                 new Professor(2, "2", "name2", "surname2", "q2"));
         List<ProfessorDto> expected = Arrays.asList(new ProfessorDto("1", "name", "surname", "q"),
                 new ProfessorDto("2", "name2", "surname2", "q2"));
@@ -42,7 +42,7 @@ class ProfessorServiceTest {
 
     @Test
     void testFindById_ShouldReturnCorrectProfessor() {
-        Professor professor = new Professor(1,  "1", "name", "surname", "q");
+        Professor professor = new Professor(1, "1", "name", "surname", "q");
         ProfessorDto expected = new ProfessorDto("1", "name", "surname", "q");
         when(dao.findById(anyInt())).thenReturn(professor);
         ProfessorDto actual = service.findById(anyInt());
@@ -51,7 +51,7 @@ class ProfessorServiceTest {
 
     @Test
     void testFindByPersonalId_ShouldReturnCorrectProfessor() {
-        Professor professor = new Professor(1,  "1", "name", "surname", "q");
+        Professor professor = new Professor(1, "1", "name", "surname", "q");
         ProfessorDto expected = new ProfessorDto("1", "name", "surname", "q");
         when(dao.findByPersonalId(anyString())).thenReturn(professor);
         ProfessorDto actual = service.findByPersonalId(anyString());

@@ -72,7 +72,7 @@ public class DaoConfiguration {
 
     @Bean
     @Scope("prototype")
-    public GroupDao studentCourseDao() {
+    public GroupDao groupDao() {
         return new GroupDao(jdbcTemplate());
     }
 

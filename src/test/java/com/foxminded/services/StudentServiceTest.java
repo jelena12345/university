@@ -31,8 +31,8 @@ class StudentServiceTest {
 
     @Test
     void testFindAll_ShouldReturnAllStudents() {
-        List<Student> students = Arrays.asList(new Student(1,  "1", "name", "surname"),
-                new Student(2,  "2", "name2", "surname2"));
+        List<Student> students = Arrays.asList(new Student(1, "1", "name", "surname"),
+                new Student(2, "2", "name2", "surname2"));
         List<StudentDto> expected = Arrays.asList(new StudentDto("1", "name", "surname"),
                 new StudentDto("2", "name2", "surname2"));
         when(dao.findAll()).thenReturn(students);
@@ -42,7 +42,7 @@ class StudentServiceTest {
 
     @Test
     void testFindById_ShouldReturnCorrectStudent() {
-        Student student = new Student(1,  "1", "name", "surname");
+        Student student = new Student(1, "1", "name", "surname");
         StudentDto expected = new StudentDto("1", "name", "surname");
         when(dao.findById(anyInt())).thenReturn(student);
         StudentDto actual = service.findById(anyInt());
@@ -51,7 +51,7 @@ class StudentServiceTest {
 
     @Test
     void testFindByPersonalId_ShouldReturnCorrectStudent() {
-        Student student = new Student(1,  "1", "name", "surname");
+        Student student = new Student(1, "1", "name", "surname");
         StudentDto expected = new StudentDto("1", "name", "surname");
         when(dao.findByPersonalId(anyString())).thenReturn(student);
         StudentDto actual = service.findByPersonalId(anyString());
