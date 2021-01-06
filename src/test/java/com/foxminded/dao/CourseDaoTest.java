@@ -50,6 +50,14 @@ class CourseDaoTest {
     }
 
     @Test
+    void testFindByName_ShouldFindCorrectCourse() {
+        Course expected = new Course(1, "name", "description");
+        dao.add(expected);
+        Course actual = dao.findByName("name");
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void testAdd_ShouldAddCorrectCourse() {
         Course expected = new Course(1, "name", "description");
         int id = dao.add(expected);

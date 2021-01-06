@@ -1,15 +1,17 @@
 CREATE TABLE IF NOT EXISTS courses (
     id SERIAL PRIMARY KEY NOT NULL,
-    name TEXT NOT NULL,
+    name VARCHAR(15) NOT NULL UNIQUE,
     description TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS students (
     id SERIAL PRIMARY KEY NOT NULL,
+    personal_id VARCHAR(15) NOT NULL UNIQUE,
     name TEXT NOT NULL,
     surname TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS professors (
     id SERIAL PRIMARY KEY NOT NULL,
+    personal_id VARCHAR(15) NOT NULL UNIQUE,
     name TEXT NOT NULL,
     surname TEXT NOT NULL,
     qualification TEXT NOT NULL

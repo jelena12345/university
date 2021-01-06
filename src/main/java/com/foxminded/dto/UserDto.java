@@ -1,10 +1,13 @@
 package com.foxminded.dto;
 
 public class UserDto {
+
+    protected String personalId;
     protected String name;
     protected String surname;
 
-    protected UserDto(String name, String surname) {
+    protected UserDto(String personalId, String name, String surname) {
+        this.personalId = personalId;
         this.name = name;
         this.surname = surname;
     }
@@ -27,4 +30,11 @@ public class UserDto {
         this.surname = surname;
     }
 
+    public String getPersonalId() {
+        return personalId;
+    }
+
+    public void setPersonalId(String personalId) {
+        this.personalId = personalId;
+    }
 }

@@ -6,8 +6,8 @@ public class ProfessorDto extends UserDto {
 
     private String qualification;
 
-    public ProfessorDto(String name, String surname, String qualification) {
-        super(name, surname);
+    public ProfessorDto(String personalId, String name, String surname, String qualification) {
+        super(personalId, name, surname);
         this.qualification = qualification;
     }
 

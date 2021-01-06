@@ -15,6 +15,13 @@ import java.util.Objects;
 
 @Repository
 public class ProfessorDao {
+
+    private static final String ID = "id";
+    private static final String PERSONAL_ID = "personal_id";
+    private static final String NAME = "name";
+    private static final String SURNAME = "surname";
+    private static final String QUALIFICATION = "qualification";
+
     private final NamedParameterJdbcTemplate template;
 
     @Autowired
@@ -23,14 +30,28 @@ public class ProfessorDao {
     }
 
     public List<Professor> findAll() {
-        return template.query("SELECT id, name, surname, qualification FROM professors",
+        return template.query("SELECT id, personal_id, name, surname, qualification FROM professors",
                 new BeanPropertyRowMapper<>(Professor.class));
     }
 
     public Professor findById(int id) {
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue(ID, id);
         try {
-            return template.queryForObject("SELECT id, name, surname, qualification FROM professors WHERE id=:id",
+            return template.queryForObject("SELECT id, personal_id, name, surname, qualification " +
+                            "FROM professors WHERE id=:id",
+                    params,
+                    new BeanPropertyRowMapper<>(Professor.class));
+        } catch (EmptyResultDataAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Professor findByPersonalId(String personalId) {
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue(PERSONAL_ID, personalId);
+        try {
+            return template.queryForObject("SELECT id, personal_id, name, surname, qualification " +
+                            "FROM professors WHERE personal_id=:personal_id",
                     params,
                     new BeanPropertyRowMapper<>(Professor.class));
         } catch (EmptyResultDataAccessException e) {
@@ -42,30 +63,39 @@ public class ProfessorDao {
     public int add(Professor professor) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("name", professor.getName())
-                .addValue("surname", professor.getSurname())
-                .addValue("qualification", professor.getQualification());
-        template.update("INSERT INTO professors(name, surname, qualification) VALUES(:name, :surname, :qualification)",
+        params.addValue(PERSONAL_ID, professor.getPersonalId())
+                .addValue(NAME, professor.getName())
+                .addValue(SURNAME, professor.getSurname())
+                .addValue(QUALIFICATION, professor.getQualification());
+        template.update("INSERT INTO professors(personal_id, name, surname, qualification) " +
+                        "VALUES(:personal_id, :name, :surname, :qualification)",
                 params,
                 keyHolder,
-                new String[]{"id"});
+                new String[]{ID});
 
         return Objects.requireNonNull(keyHolder.getKey()).intValue();
     }
 
     public void update(int id, Professor professor) {
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("id", id)
-                .addValue("name", professor.getName())
-                .addValue("surname", professor.getSurname())
-                .addValue("qualification", professor.getQualification());
-        template.update("UPDATE professors SET name=:name, surname=:surname, qualification=:qualification " +
+        params.addValue(ID, id)
+                .addValue(PERSONAL_ID, professor.getPersonalId())
+                .addValue(NAME, professor.getName())
+                .addValue(SURNAME, professor.getSurname())
+                .addValue(QUALIFICATION, professor.getQualification());
+        template.update("UPDATE professors " +
+                "SET personal_id=:personal_id, name=:name, surname=:surname, qualification=:qualification " +
                 "WHERE id=:id", params);
     }
 
     public void deleteById(int id) {
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue(ID, id);
         template.update("DELETE FROM professors WHERE id=:id", params);
+    }
+
+    public void deleteByPersonalId(String personalId) {
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue(PERSONAL_ID, personalId);
+        template.update("DELETE FROM professors WHERE personal_id=:personal_id", params);
     }
 
 }

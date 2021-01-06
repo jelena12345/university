@@ -3,8 +3,8 @@ package com.foxminded.dto;
 import java.util.Objects;
 
 public class StudentDto  extends UserDto {
-    public StudentDto(String name, String surname) {
-        super(name, surname);
+    public StudentDto(String personalId, String name, String surname) {
+        super(personalId, name, surname);
     }
 
     public StudentDto() {}

@@ -4,12 +4,12 @@ import java.util.Objects;
 
 public class Student extends User {
 
-    public Student(Integer id, String name, String surname) {
-        super(id, name, surname);
+    public Student(Integer id, String personalId, String name, String surname) {
+        super(id, personalId, name, surname);
     }
 
-    public Student(String name, String surname) {
-        this(null, name, surname);
+    public Student(String personalId, String name, String surname) {
+        this(null, personalId, name, surname);
     }
 
     public Student() {}

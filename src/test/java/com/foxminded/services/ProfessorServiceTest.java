@@ -31,10 +31,10 @@ class ProfessorServiceTest {
 
     @Test
     void testGetAll_ShouldReturnAllProfessors() {
-        List<Professor> professors = Arrays.asList(new Professor(1, "name", "surname", "q"),
-                new Professor(2, "name2", "surname2", "q2"));
-        List<ProfessorDto> expected = Arrays.asList(new ProfessorDto("name", "surname", "q"),
-                new ProfessorDto("name2", "surname2", "q2"));
+        List<Professor> professors = Arrays.asList(new Professor(1,  "1", "name", "surname", "q"),
+                new Professor(2, "2", "name2", "surname2", "q2"));
+        List<ProfessorDto> expected = Arrays.asList(new ProfessorDto("1", "name", "surname", "q"),
+                new ProfessorDto("2", "name2", "surname2", "q2"));
         when(dao.findAll()).thenReturn(professors);
         List<ProfessorDto> actual = service.findAll();
         assertEquals(expected, actual);
@@ -42,8 +42,8 @@ class ProfessorServiceTest {
 
     @Test
     void testGetById_ShouldReturnCorrectProfessor() {
-        Professor professor = new Professor(1, "name", "surname", "q");
-        ProfessorDto expected = new ProfessorDto("name", "surname", "q");
+        Professor professor = new Professor(1,  "1", "name", "surname", "q");
+        ProfessorDto expected = new ProfessorDto("1", "name", "surname", "q");
         when(dao.findById(anyInt())).thenReturn(professor);
         ProfessorDto actual = service.findById(anyInt());
         assertEquals(expected, actual);
@@ -51,15 +51,15 @@ class ProfessorServiceTest {
 
     @Test
     void testAdd_ShouldCallAddMethodForDao() {
-        service.add(new ProfessorDto("name", "surname", "q"));
-        Professor expected = new Professor("name", "surname", "q");
+        service.add(new ProfessorDto("1", "name", "surname", "q"));
+        Professor expected = new Professor("1", "name", "surname", "q");
         verify(dao, times(1)).add(expected);
     }
 
     @Test
     void testUpdate_ShouldCallUpdateMethodForDao() {
-        service.update(1, new ProfessorDto("name", "surname", "q"));
-        Professor expected = new Professor("name", "surname", "q");
+        service.update(1, new ProfessorDto("1", "name", "surname", "q"));
+        Professor expected = new Professor("1", "name", "surname", "q");
         verify(dao, times(1)).update(1, expected);
     }
 

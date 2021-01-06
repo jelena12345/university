@@ -1,6 +1,9 @@
 package com.foxminded.config;
 
 import com.foxminded.dao.CourseDao;
+import com.foxminded.dao.ProfessorDao;
+import com.foxminded.dao.GroupDao;
+import com.foxminded.dao.StudentDao;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
@@ -53,6 +56,24 @@ public class DaoConfiguration {
     @Scope("prototype")
     public CourseDao courseDao() {
         return new CourseDao(jdbcTemplate());
+    }
+
+    @Bean
+    @Scope("prototype")
+    public ProfessorDao professorDao() {
+        return new ProfessorDao(jdbcTemplate());
+    }
+
+    @Bean
+    @Scope("prototype")
+    public StudentDao studentDao() {
+        return new StudentDao(jdbcTemplate());
+    }
+
+    @Bean
+    @Scope("prototype")
+    public GroupDao studentCourseDao() {
+        return new GroupDao(jdbcTemplate());
     }
 
     @Bean

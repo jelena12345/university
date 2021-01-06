@@ -31,10 +31,10 @@ class StudentServiceTest {
 
     @Test
     void testGetAll_ShouldReturnAllStudents() {
-        List<Student> students = Arrays.asList(new Student(1, "name", "surname"),
-                new Student(2, "name2", "surname2"));
-        List<StudentDto> expected = Arrays.asList(new StudentDto("name", "surname"),
-                new StudentDto("name2", "surname2"));
+        List<Student> students = Arrays.asList(new Student(1,  "1", "name", "surname"),
+                new Student(2,  "2", "name2", "surname2"));
+        List<StudentDto> expected = Arrays.asList(new StudentDto("1", "name", "surname"),
+                new StudentDto("2", "name2", "surname2"));
         when(dao.findAll()).thenReturn(students);
         List<StudentDto> actual = service.findAll();
         assertEquals(expected, actual);
@@ -42,8 +42,8 @@ class StudentServiceTest {
 
     @Test
     void testGetById_ShouldReturnCorrectStudent() {
-        Student student = new Student(1, "name", "surname");
-        StudentDto expected = new StudentDto("name", "surname");
+        Student student = new Student(1,  "1", "name", "surname");
+        StudentDto expected = new StudentDto("1", "name", "surname");
         when(dao.findById(anyInt())).thenReturn(student);
         StudentDto actual = service.findById(anyInt());
         assertEquals(expected, actual);
@@ -51,15 +51,15 @@ class StudentServiceTest {
 
     @Test
     void testAdd_ShouldCallAddMethodForDao() {
-        service.add(new StudentDto("name", "surname"));
-        Student expected = new Student("name", "surname");
+        service.add(new StudentDto("1", "name", "surname"));
+        Student expected = new Student("1", "name", "surname");
         verify(dao, times(1)).add(expected);
     }
 
     @Test
     void testUpdate_ShouldCallUpdateMethodForDao() {
-        service.update(1, new StudentDto("name", "surname"));
-        Student expected = new Student("name", "surname");
+        service.update(1, new StudentDto("1", "name", "surname"));
+        Student expected = new Student("1", "name", "surname");
         verify(dao, times(1)).update(1, expected);
     }
 

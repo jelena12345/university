@@ -6,13 +6,13 @@ public class Professor extends User {
 
     private String qualification;
 
-    public Professor(Integer id, String name, String surname, String qualification) {
-        super(id, name, surname);
+    public Professor(Integer id, String personalId, String name, String surname, String qualification) {
+        super(id, personalId, name, surname);
         this.qualification = qualification;
     }
 
-    public Professor(String name, String surname, String qualification) {
-        this(null, name, surname, qualification);
+    public Professor(String personalId, String name, String surname, String qualification) {
+        this(null, personalId, name, surname, qualification);
     }
 
     public Professor() {}

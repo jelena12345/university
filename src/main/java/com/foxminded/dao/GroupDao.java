@@ -1,6 +1,7 @@
 package com.foxminded.dao;
 
 import com.foxminded.entities.Course;
+import com.foxminded.entities.Group;
 import com.foxminded.entities.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -11,24 +12,25 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class StudentCourseDao {
+public class GroupDao {
 
     private final NamedParameterJdbcTemplate template;
 
     @Autowired
-    public StudentCourseDao(NamedParameterJdbcTemplate template) {
+    public GroupDao(NamedParameterJdbcTemplate template) {
         this.template = template;
     }
 
-    public List<Student> findAllStudentsForCourse(Course course) {
+    public Group findGroupForCourse(Course course) {
         MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", course.getId());
-        return template.query("SELECT students.id, students.name, students.surname " +
-                "FROM student_course " +
-                "INNER JOIN students ON student_course.student_id=students.id " +
-                "WHERE student_course.course_id=:id " +
-                "ORDER BY student_course.student_id;",
+        List<Student> students = template.query("SELECT students.id, students.name, students.surname " +
+                        "FROM student_course " +
+                        "INNER JOIN students ON student_course.student_id=students.id " +
+                        "WHERE student_course.course_id=:id " +
+                        "ORDER BY student_course.student_id;",
                 params,
                 new BeanPropertyRowMapper<>(Student.class));
+        return new Group(course, students);
     }
 
     public void add(Student student, Course course) {

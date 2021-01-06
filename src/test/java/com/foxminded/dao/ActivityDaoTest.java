@@ -41,7 +41,7 @@ class ActivityDaoTest {
 
     @Test
     void testFindAll_ShouldFindAllActivities() {
-        Professor professor = new Professor(1,"name", "surname", "q");
+        Professor professor = new Professor(1, "1", "name", "surname", "q");
         professorDao.add(professor);
         Course course = new Course(1, "name", "description");
         courseDao.add(course);
@@ -56,7 +56,7 @@ class ActivityDaoTest {
 
     @Test
     void testFindById_ShouldFindCorrectActivity() {
-        Professor professor = new Professor(1,"name", "surname", "q");
+        Professor professor = new Professor(1, "1", "name", "surname", "q");
         professorDao.add(professor);
         Course course = new Course(1, "name", "description");
         courseDao.add(course);
@@ -68,7 +68,7 @@ class ActivityDaoTest {
 
     @Test
     void testAdd_ShouldAddCorrectActivity() {
-        Professor professor = new Professor(1,"name", "surname", "q");
+        Professor professor = new Professor(1, "1", "name", "surname", "q");
         professorDao.add(professor);
         Course course = new Course(1, "name", "description");
         courseDao.add(course);
@@ -80,7 +80,7 @@ class ActivityDaoTest {
 
     @Test
     void testUpdate_ShouldUpdateValues() {
-        Professor professor = new Professor(1,"name", "surname", "q");
+        Professor professor = new Professor(1, "1", "name", "surname", "q");
         professorDao.add(professor);
         Course course = new Course(1, "name", "description");
         courseDao.add(course);
@@ -94,7 +94,7 @@ class ActivityDaoTest {
 
     @Test
     void testDeleteById_ShouldFindNull() {
-        Professor professor = new Professor(1,"name", "surname", "q");
+        Professor professor = new Professor(1, "1", "name", "surname", "q");
         professorDao.add(professor);
         Course course = new Course(1, "name", "description");
         courseDao.add(course);
