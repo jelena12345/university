@@ -19,7 +19,7 @@ public class ProfessorService {
     @Autowired
     public ProfessorService(ModelMapper mapper, ProfessorDao dao) {
         this.mapper = mapper;
-        mapper.addMappings(skipIdFieldMap);
+        this.mapper.addMappings(skipIdFieldMap);
         this.dao = dao;
     }
 

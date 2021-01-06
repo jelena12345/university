@@ -19,7 +19,7 @@ public class StudentService {
     @Autowired
     public StudentService(ModelMapper mapper, StudentDao dao) {
         this.mapper = mapper;
-        mapper.addMappings(skipIdFieldMap);
+        this.mapper.addMappings(skipIdFieldMap);
         this.dao = dao;
     }
 

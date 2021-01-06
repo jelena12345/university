@@ -21,7 +21,7 @@ public class GroupService {
     @Autowired
     GroupService(ModelMapper mapper, GroupDao dao) {
         this.mapper = mapper;
-        mapper.addMappings(skipIdFieldMap);
+        this.mapper.addMappings(skipIdFieldMap);
         this.dao = dao;
     }
 
