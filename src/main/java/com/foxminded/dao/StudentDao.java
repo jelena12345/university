@@ -1,7 +1,8 @@
 package com.foxminded.dao;
 
-import com.foxminded.dto.Student;
+import com.foxminded.entities.Student;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -14,6 +15,12 @@ import java.util.Objects;
 
 @Repository
 public class StudentDao {
+
+    private static final String ID = "id";
+    private static final String PERSONAL_ID = "personal_id";
+    private static final String NAME = "name";
+    private static final String SURNAME = "surname";
+
     private final NamedParameterJdbcTemplate template;
 
     @Autowired
@@ -22,41 +29,64 @@ public class StudentDao {
     }
 
     public List<Student> findAll() {
-        return template.query("SELECT id, name, surname FROM students",
+        return template.query("SELECT id, personal_id, name, surname FROM students",
                 new BeanPropertyRowMapper<>(Student.class));
     }
 
     public Student findById(int id) {
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
-        return template.queryForObject("SELECT id, name, surname FROM students WHERE id=:id",
-                params,
-                new BeanPropertyRowMapper<>(Student.class));
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue(ID, id);
+        try {
+            return template.queryForObject("SELECT id, personal_id, name, surname FROM students WHERE id=:id",
+                    params,
+                    new BeanPropertyRowMapper<>(Student.class));
+        } catch (EmptyResultDataAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Student findByPersonalId(String personalId) {
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue(PERSONAL_ID, personalId);
+        try {
+            return template.queryForObject("SELECT id, personal_id, name, surname FROM students WHERE personal_id=:personal_id",
+                    params,
+                    new BeanPropertyRowMapper<>(Student.class));
+        } catch (EmptyResultDataAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public int add(Student student) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("name", student.getName())
-                .addValue("surname", student.getSurname());
-
-        template.update("INSERT INTO students(name, surname) VALUES(:name, :surname)",
+        params.addValue(PERSONAL_ID, student.getPersonalId())
+                .addValue(NAME, student.getName())
+                .addValue(SURNAME, student.getSurname());
+        template.update("INSERT INTO students(personal_id, name, surname) VALUES(:personal_id, :name, :surname)",
                 params,
                 keyHolder,
-                new String[]{"id"});
+                new String[]{ID});
 
         return Objects.requireNonNull(keyHolder.getKey()).intValue();
     }
 
-    public void update(Student student) {
+    public void update(int id, Student student) {
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("id", student.getId())
-                .addValue("name", student.getName())
-                .addValue("surname", student.getSurname());
-        template.update("UPDATE students SET name=:name, surname=:surname WHERE id=:id", params);
+        params.addValue(ID, id)
+                .addValue(PERSONAL_ID, student.getPersonalId())
+                .addValue(NAME, student.getName())
+                .addValue(SURNAME, student.getSurname());
+        template.update("UPDATE students SET personal_id=:personal_id, name=:name, surname=:surname WHERE id=:id", params);
     }
 
     public void deleteById(int id) {
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue(ID, id);
         template.update("DELETE FROM students WHERE id=:id", params);
+    }
+
+    public void deleteByPersonalId(String personalId) {
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue(PERSONAL_ID, personalId);
+        template.update("DELETE FROM students WHERE personal_id=:personal_id", params);
     }
 }

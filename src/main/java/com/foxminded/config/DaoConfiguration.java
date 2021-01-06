@@ -1,5 +1,7 @@
 package com.foxminded.config;
 
+import com.foxminded.dao.*;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.core.io.ClassPathResource;
@@ -46,4 +48,45 @@ public class DaoConfiguration {
     public NamedParameterJdbcTemplate jdbcTemplate() {
         return new NamedParameterJdbcTemplate(dataSource());
     }
+
+    @Bean
+    @Scope("prototype")
+    public CourseDao courseDao() {
+        return new CourseDao(jdbcTemplate());
+    }
+
+    @Bean
+    @Scope("prototype")
+    public ProfessorDao professorDao() {
+        return new ProfessorDao(jdbcTemplate());
+    }
+
+    @Bean
+    @Scope("prototype")
+    public StudentDao studentDao() {
+        return new StudentDao(jdbcTemplate());
+    }
+
+    @Bean
+    @Scope("prototype")
+    public GroupDao groupDao() {
+        return new GroupDao(jdbcTemplate());
+    }
+
+    @Bean
+    @Scope("prototype")
+    public ActivityDao activityDao() {
+        return new ActivityDao(jdbcTemplate());
+    }
+
+    @Bean
+    @Scope("prototype")
+    public ModelMapper modelMapper() {
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration()
+                .setFieldMatchingEnabled(true)
+                .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);
+        return mapper;
+    }
+
 }

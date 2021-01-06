@@ -1,19 +1,18 @@
-package com.foxminded.dto;
+package com.foxminded.entities;
 
 import java.util.Objects;
 
 public class Course {
-    Integer id;
-    String name;
-    String description;
+
+    private Integer id;
+    private String name;
+    private String description;
 
     public Course(String name, String description) {
         this(null, name, description);
     }
 
-    public Course() {
-        this(null, null, null);
-    }
+    private Course() { }
 
     public Course(Integer id, String name, String description) {
         this.id = id;
@@ -50,13 +49,13 @@ public class Course {
         if (this == o) {
             return true;
         }
-        if (o == null) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        return (o instanceof Course)
-                && (((Course) o).getId().equals(this.id))
-                && (((Course) o).getName().equals(this.name))
-                && (((Course) o).getDescription().equals(this.description));
+        Course course = (Course) o;
+        return Objects.equals(id, course.id) &&
+                name.equals(course.name) &&
+                description.equals(course.description);
     }
 
     @Override

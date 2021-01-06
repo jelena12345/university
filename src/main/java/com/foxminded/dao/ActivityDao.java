@@ -1,8 +1,9 @@
 package com.foxminded.dao;
 
-import com.foxminded.dto.Activity;
+import com.foxminded.entities.Activity;
+import com.foxminded.entities.ActivityMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -23,22 +24,39 @@ public class ActivityDao {
     }
 
     public List<Activity> findAll() {
-        return template.query("SELECT id, professor_id, course_id, start_time, end_time FROM activities",
-                new BeanPropertyRowMapper<>(Activity.class));
+        return template.query("SELECT activities.id, " +
+                        "professor_id, personal_id, professors.name, surname, qualification, " +
+                        "course_id, courses.name, description, " +
+                        "start_time, end_time " +
+                        "FROM activities " +
+                        "INNER JOIN professors ON professor_id=professors.id " +
+                        "INNER JOIN courses ON course_id=courses.id",
+                new ActivityMapper());
     }
 
     public Activity findById(int id) {
         MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
-        return template.queryForObject("SELECT id, professor_id, course_id, start_time, end_time FROM activities WHERE id=:id",
-                params,
-                new BeanPropertyRowMapper<>(Activity.class));
+        try {
+            return template.queryForObject("SELECT activities.id, " +
+                    "professor_id, personal_id, professors.name, surname, qualification, " +
+                    "course_id, courses.name, description, " +
+                    "start_time, end_time " +
+                    "FROM activities " +
+                    "INNER JOIN professors ON professor_id=professors.id " +
+                    "INNER JOIN courses ON course_id=courses.id WHERE activities.id=:id",
+                    params,
+                    new ActivityMapper());
+        } catch (EmptyResultDataAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public Integer add(Activity activity) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("professor_id", activity.getProfessorId())
-                .addValue("course_id", activity.getCourseId())
+        params.addValue("professor_id", activity.getProfessor().getId())
+                .addValue("course_id", activity.getCourse().getId())
                 .addValue("start_time", activity.getStartTime())
                 .addValue("end_time", activity.getEndTime());
 
@@ -54,8 +72,8 @@ public class ActivityDao {
     public void update(Activity activity) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("id", activity.getId())
-                .addValue("professor_id", activity.getProfessorId())
-                .addValue("course_id", activity.getCourseId())
+                .addValue("professor_id", activity.getProfessor().getId())
+                .addValue("course_id", activity.getCourse().getId())
                 .addValue("start_time", activity.getStartTime())
                 .addValue("end_time", activity.getEndTime());
         template.update("UPDATE activities SET professor_id=:professor_id, course_id=:course_id, " +

@@ -1,7 +1,8 @@
 package com.foxminded.dao;
 
-import com.foxminded.dto.Course;
+import com.foxminded.entities.Course;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -14,6 +15,10 @@ import java.util.Objects;
 
 @Repository
 public class CourseDao {
+
+    private static final String ID = "id";
+    private static final String NAME = "name";
+    private static final String DESCRIPTION = "description";
 
     private final NamedParameterJdbcTemplate template;
 
@@ -28,36 +33,58 @@ public class CourseDao {
     }
 
     public Course findById(int id) {
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
-        return template.queryForObject("SELECT id, name, description FROM courses WHERE id=:id",
-                params,
-                new BeanPropertyRowMapper<>(Course.class));
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue(ID, id);
+        try {
+            return template.queryForObject("SELECT id, name, description FROM courses WHERE id=:id",
+                    params,
+                    new BeanPropertyRowMapper<>(Course.class));
+        } catch (EmptyResultDataAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Course findByName(String name) {
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue(NAME, name);
+        try {
+            return template.queryForObject("SELECT id, name, description FROM courses WHERE name=:name",
+                    params,
+                    new BeanPropertyRowMapper<>(Course.class));
+        } catch (EmptyResultDataAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public Integer add(Course course) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("name", course.getName())
-                .addValue("description", course.getDescription());
+        params.addValue(NAME, course.getName())
+                .addValue(DESCRIPTION, course.getDescription());
 
         template.update("INSERT INTO courses(name, description) VALUES(:name, :description)",
                 params,
                 keyHolder,
-                new String[]{"id"});
+                new String[]{ID});
 
         return Objects.requireNonNull(keyHolder.getKey()).intValue();
     }
 
-    public void update(Course course) {
+    public void update(int id, Course course) {
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("id", course.getId())
-                .addValue("name", course.getName())
-                .addValue("description", course.getDescription());
+        params.addValue(ID, id)
+                .addValue(NAME, course.getName())
+                .addValue(DESCRIPTION, course.getDescription());
         template.update("UPDATE courses SET name=:name, description=:description WHERE id=:id", params);
     }
 
     public void deleteById(int id) {
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue(ID, id);
         template.update("DELETE FROM courses WHERE id=:id", params);
+    }
+
+    public void deleteByName(String name) {
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue(NAME, name);
+        template.update("DELETE FROM courses WHERE name=:name", params);
     }
 }

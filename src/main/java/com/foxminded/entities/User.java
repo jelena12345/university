@@ -1,17 +1,19 @@
-package com.foxminded.dto;
+package com.foxminded.entities;
 
 public abstract class User {
     protected Integer id;
+    protected String personalId;
     protected String name;
     protected String surname;
 
-    protected User(Integer id, String name, String surname) {
+    protected User(Integer id, String personalId, String name, String surname) {
         this.id = id;
+        this.personalId = personalId;
         this.name = name;
         this.surname = surname;
     }
 
-    protected User() {}
+    protected User() { }
 
     public Integer getId() {
         return id;
@@ -37,4 +39,11 @@ public abstract class User {
         this.surname = surname;
     }
 
+    public String getPersonalId() {
+        return personalId;
+    }
+
+    public void setPersonalId(String personalId) {
+        this.personalId = personalId;
+    }
 }
