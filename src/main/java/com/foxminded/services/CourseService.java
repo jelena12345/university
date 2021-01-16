@@ -37,6 +37,7 @@ public class CourseService {
     };
 
     public List<CourseDto> findAll() {
+        logger.log(Level.FINE, "Searching for all CourseDto records");
         List<Course> courses = dao.findAll();
         return courses.stream().map(item -> mapper.map(item, CourseDto.class)).collect(Collectors.toList());
     }

@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -24,7 +25,7 @@ class CourseServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new CourseService(new ModelMapper(), dao);
+        service = new CourseService(new ModelMapper(), dao, Logger.getLogger(Logger.GLOBAL_LOGGER_NAME));
     }
 
     @Test
@@ -65,6 +66,8 @@ class CourseServiceTest {
 
     @Test
     void testUpdate_ShouldCallUpdateMethodForDao() {
+        Course course = new Course(1, "name", "description");
+        when(dao.findById(anyInt())).thenReturn(course);
         service.update(1, new CourseDto("name", "description"));
         Course expected = new Course("name", "description");
         verify(dao, times(1)).update(1, expected);
@@ -72,13 +75,17 @@ class CourseServiceTest {
 
     @Test
     void testDeleteById_ShouldCallDeleteByIdMethodForDao() {
+        Course course = new Course(1, "name", "description");
+        when(dao.findById(anyInt())).thenReturn(course);
         service.deleteById(anyInt());
         verify(dao, times(1)).deleteById(anyInt());
     }
 
     @Test
-    void testDeleteByName_ShouldCallDeleteByIdMethodForDao() {
-        service.deleteByName(anyString());
+    void testDeleteByName_ShouldCallDeleteByNameMethodForDao() {
+        Course course = new Course(1, "name", "description");
+        when(dao.findByName(anyString())).thenReturn(course);
+        service.deleteByName("name");
         verify(dao, times(1)).deleteByName(anyString());
     }
 }
