@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,12 +20,14 @@ public class CourseService {
 
     private final ModelMapper mapper;
     private final CourseDao dao;
+    private final Logger logger;
 
     @Autowired
-    public CourseService(ModelMapper mapper, CourseDao dao) {
+    public CourseService(ModelMapper mapper, CourseDao dao, Logger logger) {
         this.mapper = mapper;
         this.mapper.addMappings(skipIdFieldMap);
         this.dao = dao;
+        this.logger = logger;
     }
 
     PropertyMap<CourseDto, Course> skipIdFieldMap = new PropertyMap<CourseDto, Course>() {
@@ -38,22 +42,17 @@ public class CourseService {
     }
 
     public CourseDto findById(int id) {
-        Course course = dao.findById(id);
-        if (course == null) {
-            throw new EntityNotFoundException("Not found course with id: " + id);
-        }
-        return mapper.map(course, CourseDto.class);
+        logger.log(Level.FINE, "Searching for CourseDto with id: {0}", id);
+        return mapper.map(dao.findById(id), CourseDto.class);
     }
 
     public CourseDto findByName(String name) {
-        Course course = dao.findByName(name);
-        if (course == null) {
-            throw new EntityNotFoundException("Not found course with name: " + name);
-        }
-        return mapper.map(course, CourseDto.class);
+        logger.log(Level.FINE, "Searching for CourseDto with name: {0}", name);
+        return mapper.map(dao.findByName(name), CourseDto.class);
     }
 
     public void add(CourseDto course) {
+        logger.log(Level.FINE, "Adding CourseDto: {0}", course);
         if (dao.findByName(course.getName()) != null) {
             throw new EntityAlreadyExistsException("Course with name " + course.getName() + " already exists.");
         }
@@ -61,6 +60,7 @@ public class CourseService {
     }
 
     public void update(int id, CourseDto courseDto) {
+        logger.log(Level.FINE, "Updating CourseDto: {0} with provided id: {1}", new Object[]{courseDto, id});
         if (dao.findById(id) == null) {
             throw new EntityNotFoundException("Not found course with id: " + id);
         }
@@ -68,6 +68,7 @@ public class CourseService {
     }
 
     public void deleteById(int id) {
+        logger.log(Level.FINE, "Deleting Course with id: {0}", id);
         if (dao.findById(id) == null) {
             throw new EntityNotFoundException("Not found course with id: " + id);
         }
@@ -75,6 +76,7 @@ public class CourseService {
     }
 
     public void deleteByName(String name) {
+        logger.log(Level.FINE, "Deleting Course with name: {0}", name);
         if (dao.findByName(name) == null) {
             throw new EntityNotFoundException("Not found course with name: " + name);
         }
