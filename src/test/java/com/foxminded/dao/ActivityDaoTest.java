@@ -15,8 +15,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ActivityDaoTest {
 
@@ -100,7 +99,7 @@ class ActivityDaoTest {
     }
 
     @Test
-    void testDeleteById_ShouldFindNull() {
+    void testDeleteById_ShouldDeleteSuccessfully() {
         Professor professor = new Professor(1, "1", "name", "surname", "q");
         professorDao.add(professor);
         Course course = new Course(1, "name", "description");
@@ -108,8 +107,23 @@ class ActivityDaoTest {
         Activity activity = new Activity(1, professor, course, new Timestamp(123), new Timestamp(456));
         activityDao.add(activity);
         activityDao.deleteById(1);
-        Activity actual = activityDao.findById(1);
-        assertNull(actual);
+        assertFalse(activityDao.existsById(1));
+    }
+
+    @Test
+    void testExistsById_ShouldReturnFalse() {
+        assertFalse(activityDao.existsById(1));
+    }
+
+    @Test
+    void testExistsById_ShouldReturnTrue() {
+        Professor professor = new Professor(1, "1", "name", "surname", "q");
+        professorDao.add(professor);
+        Course course = new Course(1, "name", "description");
+        courseDao.add(course);
+        Activity activity = new Activity(1, professor, course, new Timestamp(123), new Timestamp(456));
+        activityDao.add(activity);
+        assertTrue(activityDao.existsById(1));
     }
 
 }

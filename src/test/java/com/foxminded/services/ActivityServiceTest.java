@@ -88,29 +88,23 @@ class ActivityServiceTest {
         ProfessorDto professorDto = new ProfessorDto("1", "name", "surname", "q");
         CourseDto courseDto = new CourseDto("name", "description");
         ActivityDto activity = new ActivityDto(1, professorDto, courseDto, new Timestamp(789), new Timestamp(101));
-        when(dao.findById(anyInt())).thenReturn(expected);
+        when(dao.existsById(anyInt())).thenReturn(true);
         service.update(activity);
         verify(dao, times(1)).update(expected);
     }
 
     @Test
     void testDeleteById_ShouldCallDeleteByIdMethodForDao() {
-        Professor professor = new Professor("1", "name", "surname", "q");
-        Course course = new Course("name", "description");
-        Activity activity = new Activity(1, professor, course, new Timestamp(789), new Timestamp(101));
-        when(dao.findById(anyInt())).thenReturn(activity);
+        when(dao.existsById(anyInt())).thenReturn(true);
         service.deleteById(anyInt());
         verify(dao, times(1)).deleteById(anyInt());
     }
 
     @Test
     void testAdd_ShouldThrowEntityAlreadyExistsException() {
-        Professor professor = new Professor("1", "name", "surname", "q");
-        Course course = new Course("name", "description");
         ProfessorDto professorDto = new ProfessorDto("1", "name", "surname", "q");
         CourseDto courseDto = new CourseDto("name", "description");
-        Activity activity = new Activity(1, professor, course, new Timestamp(789), new Timestamp(101));
-        when(dao.findById(anyInt())).thenReturn(activity);
+        when(dao.existsById(anyInt())).thenReturn(true);
         ActivityDto activityDto = new ActivityDto(1, professorDto, courseDto, new Timestamp(789), new Timestamp(101));
         assertThrows(EntityAlreadyExistsException.class, () -> service.add(activityDto));
     }
@@ -126,6 +120,12 @@ class ActivityServiceTest {
     @Test
     void testDeleteById_ShouldThrowEntityNotFoundException() {
         assertThrows(EntityNotFoundException.class, () -> service.deleteById(1));
+    }
+
+    @Test
+    void testExistsById_ShouldCallExistsByIdMethodOnDao() {
+        service.existsById(anyInt());
+        verify(dao, times(1)).existsById(anyInt());
     }
 
 }

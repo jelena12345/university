@@ -12,8 +12,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProfessorDaoTest {
 
@@ -85,8 +85,7 @@ class ProfessorDaoTest {
         Professor professor = new Professor(1,"1", "name", "surname", "q");
         dao.add(professor);
         dao.deleteById(1);
-        Professor actual = dao.findById(1);
-        assertNull(actual);
+        assertFalse(dao.existsById(1));
     }
 
     @Test
@@ -94,7 +93,30 @@ class ProfessorDaoTest {
         Professor professor = new Professor(1,"1", "name", "surname", "q");
         dao.add(professor);
         dao.deleteByPersonalId("1");
-        Professor actual = dao.findById(1);
-        assertNull(actual);
+        assertFalse(dao.existsByPersonalId("1"));
+    }
+
+    @Test
+    void testExistsById_ShouldReturnFalse() {
+        assertFalse(dao.existsById(1));
+    }
+
+    @Test
+    void testExistsById_ShouldReturnTrue() {
+        Professor professor = new Professor(1,"1", "name", "surname", "q");
+        dao.add(professor);
+        assertTrue(dao.existsById(1));
+    }
+
+    @Test
+    void testExistsByName_ShouldReturnFalse() {
+        assertFalse(dao.existsByPersonalId("1"));
+    }
+
+    @Test
+    void testExistsByName_ShouldReturnTrue() {
+        Professor professor = new Professor(1,"1", "name", "surname", "q");
+        dao.add(professor);
+        assertTrue(dao.existsByPersonalId("1"));
     }
 }

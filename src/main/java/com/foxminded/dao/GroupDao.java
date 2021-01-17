@@ -10,11 +10,14 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class GroupDao {
 
     private final NamedParameterJdbcTemplate template;
+    private static final String COURSE_ID = "course_id";
+    private static final String STUDENT_ID = "student_id";
 
     @Autowired
     public GroupDao(NamedParameterJdbcTemplate template) {
@@ -35,16 +38,25 @@ public class GroupDao {
 
     public void add(Student student, Course course) {
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("course_id", course.getId())
-                .addValue("student_id", student.getId());
+        params.addValue(COURSE_ID, course.getId())
+                .addValue(STUDENT_ID, student.getId());
         template.update("INSERT INTO student_course(student_id, course_id) VALUES(:student_id, :course_id);",
                 params);
     }
 
     public void delete(Student student, Course course) {
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("course_id", course.getId())
-                .addValue("student_id", student.getId());
+        params.addValue(COURSE_ID, course.getId())
+                .addValue(STUDENT_ID, student.getId());
         template.update("DELETE FROM student_course WHERE student_id=:student_id AND course_id=:course_id;", params);
+    }
+
+    public boolean existsCourseForStudent(Student student, Course course) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(COURSE_ID, course.getId())
+                .addValue(STUDENT_ID, student.getId());
+        return Objects.requireNonNull(
+                template.queryForObject("SELECT EXISTS(SELECT * FROM student_course " +
+                        "WHERE student_id=:student_id AND course_id=:course_id)", params, Boolean.class));
     }
 }

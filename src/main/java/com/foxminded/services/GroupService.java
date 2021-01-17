@@ -7,6 +7,8 @@ import com.foxminded.dto.StudentDto;
 import com.foxminded.entities.Course;
 import com.foxminded.entities.Group;
 import com.foxminded.entities.Student;
+import com.foxminded.services.exceptions.EntityAlreadyExistsException;
+import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +46,22 @@ public class GroupService {
 
     public void add(StudentDto studentDto, CourseDto courseDto) {
         logger.log(Level.FINE, "Adding StudentDto: {0} for CourseDto: {1}", new Object[]{studentDto, courseDto});
+        if (dao.existsCourseForStudent(mapper.map(studentDto, Student.class), mapper.map(courseDto, Course.class))) {
+            throw new EntityAlreadyExistsException("Student " + studentDto + " with Course " + courseDto + " already exists.");
+        }
         dao.add(mapper.map(studentDto, Student.class), mapper.map(courseDto, Course.class));
     }
 
     public void delete(StudentDto studentDto, CourseDto courseDto) {
         logger.log(Level.FINE, "Deleting StudentDto: {0} for CourseDto: {1}", new Object[]{studentDto, courseDto});
+        if (!dao.existsCourseForStudent(mapper.map(studentDto, Student.class), mapper.map(courseDto, Course.class))) {
+            throw new EntityNotFoundException("Not found Student : " + studentDto + " with Course: " + courseDto);
+        }
         dao.delete(mapper.map(studentDto, Student.class), mapper.map(courseDto, Course.class));
+    }
+
+    public boolean existsCourseForStudent(StudentDto studentDto, CourseDto courseDto) {
+        logger.log(Level.FINE, "Checking if StudentDto: {0} added to CourseDto: {1}", new Object[]{studentDto, courseDto});
+        return dao.existsCourseForStudent(mapper.map(studentDto, Student.class), mapper.map(courseDto, Course.class));
     }
 }

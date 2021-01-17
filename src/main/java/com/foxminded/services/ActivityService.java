@@ -59,7 +59,7 @@ public class ActivityService {
 
     public void add(ActivityDto activity) {
         logger.log(Level.FINE, "Adding ActivityDto: {0}", activity);
-        if (dao.findById(activity.getId()) != null) {
+        if (dao.existsById(activity.getId())) {
             throw new EntityAlreadyExistsException("Activity with id " + activity.getId() + " already exists.");
         }
         dao.add(mapper.map(activity, Activity.class));
@@ -67,7 +67,7 @@ public class ActivityService {
 
     public void update(ActivityDto activity) {
         logger.log(Level.FINE, "Updating ActivityDto: {0}", activity);
-        if (dao.findById(activity.getId()) == null) {
+        if (!dao.existsById(activity.getId())) {
             throw new EntityNotFoundException("Not found Activity with id: " + activity.getId());
         }
         dao.update(mapper.map(activity, Activity.class));
@@ -75,10 +75,15 @@ public class ActivityService {
 
     public void deleteById(int id) {
         logger.log(Level.FINE, "Deleting Activity with id: {0}", id);
-        if (dao.findById(id) == null) {
+        if (!dao.existsById(id)) {
             throw new EntityNotFoundException("Not found Activity with id: " + id);
         }
         dao.deleteById(id);
+    }
+
+    public boolean existsById(int id) {
+        logger.log(Level.FINE, "Checking if exists Activity with id: {0}", id);
+        return dao.existsById(id);
     }
 
 }

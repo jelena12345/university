@@ -14,8 +14,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class GroupDaoTest {
 
@@ -66,14 +65,30 @@ class GroupDaoTest {
 
     @Test
     void testDelete_ShouldDeleteCorrectStudentForCourse() {
-        Student expected = new Student(1, "1", "name", "surname");
-        studentDao.add(expected);
+        Student student = new Student(1, "1", "name", "surname");
+        studentDao.add(student);
         Course course = new Course(1, "name", "description");
         courseDao.add(course);
-        dao.add(expected, course);
-        dao.delete(expected, course);
-        Student actual = dao.findGroupForCourse(course).getStudents().stream().findFirst().orElse(null);
-        assertNull(actual);
+        dao.add(student, course);
+        dao.delete(student, course);
+        assertFalse(dao.existsCourseForStudent(student, course));
+    }
+
+    @Test
+    void testExistsCourseForStudent_ShouldReturnTrue() {
+        Student student = new Student(1, "1", "name", "surname");
+        studentDao.add(student);
+        Course course = new Course(1, "name", "description");
+        courseDao.add(course);
+        dao.add(student, course);
+        assertTrue(dao.existsCourseForStudent(student, course));
+    }
+
+    @Test
+    void testExistsCourseForStudent_ShouldReturnFalse() {
+        Student student = new Student(1, "1", "name", "surname");
+        Course course = new Course(1, "name", "description");
+        assertFalse(dao.existsCourseForStudent(student, course));
     }
 
 }

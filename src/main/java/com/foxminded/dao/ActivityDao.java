@@ -84,4 +84,11 @@ public class ActivityDao {
         MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
         template.update("DELETE FROM activities WHERE id=:id", params);
     }
+
+    public boolean existsById(int id) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", id);
+        return Objects.requireNonNull(
+                template.queryForObject("SELECT EXISTS(SELECT * FROM activities WHERE id=:id)", params, Boolean.class));
+    }
 }

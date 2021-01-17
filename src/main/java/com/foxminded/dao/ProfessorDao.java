@@ -98,4 +98,18 @@ public class ProfessorDao {
         template.update("DELETE FROM professors WHERE personal_id=:personal_id", params);
     }
 
+    public boolean existsById(int id) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(ID, id);
+        return Objects.requireNonNull(
+                template.queryForObject("SELECT EXISTS(SELECT * FROM professors WHERE id=:id)", params, Boolean.class));
+    }
+
+    public boolean existsByPersonalId(String personalId) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(PERSONAL_ID, personalId);
+        return Objects.requireNonNull(
+                template.queryForObject("SELECT EXISTS(SELECT * FROM professors WHERE personal_id=:personal_id)", params, Boolean.class));
+    }
+
 }

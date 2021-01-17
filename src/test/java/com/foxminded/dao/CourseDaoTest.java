@@ -77,21 +77,43 @@ class CourseDaoTest {
     }
 
     @Test
-    void testDeleteById_ShouldFindNull() {
+    void testDeleteById_ShouldDeleteSuccessfully() {
         Course course = new Course(1,"name", "description");
         dao.add(course);
         dao.deleteById(1);
-        Course actual = dao.findById(1);
-        assertNull(actual);
+        assertFalse(dao.existsById(1));
     }
 
     @Test
-    void testDeleteByName_ShouldFindNull() {
+    void testDeleteByName_ShouldDeleteSuccessfully() {
         Course course = new Course(1,"name", "description");
         dao.add(course);
         dao.deleteByName("name");
-        Course actual = dao.findById(1);
-        assertNull(actual);
+        assertFalse(dao.existsByName("name"));
+    }
+
+    @Test
+    void testExistsById_ShouldReturnFalse() {
+        assertFalse(dao.existsById(1));
+    }
+
+    @Test
+    void testExistsById_ShouldReturnTrue() {
+        Course expected = new Course(1,"name", "description");
+        dao.add(expected);
+        assertTrue(dao.existsById(1));
+    }
+
+    @Test
+    void testExistsByName_ShouldReturnFalse() {
+        assertFalse(dao.existsByName("name"));
+    }
+
+    @Test
+    void testExistsByName_ShouldReturnTrue() {
+        Course expected = new Course(1,"name", "description");
+        dao.add(expected);
+        assertTrue(dao.existsByName("name"));
     }
 
 }

@@ -70,23 +70,21 @@ class CourseServiceTest {
     @Test
     void testUpdate_ShouldCallUpdateMethodForDao() {
         Course expected = new Course("name", "description");
-        when(dao.findById(anyInt())).thenReturn(expected);
+        when(dao.existsById(anyInt())).thenReturn(true);
         service.update(1, new CourseDto("name", "description"));
         verify(dao, times(1)).update(1, expected);
     }
 
     @Test
     void testDeleteById_ShouldCallDeleteByIdMethodForDao() {
-        Course course = new Course(1, "name", "description");
-        when(dao.findById(anyInt())).thenReturn(course);
+        when(dao.existsById(anyInt())).thenReturn(true);
         service.deleteById(anyInt());
         verify(dao, times(1)).deleteById(anyInt());
     }
 
     @Test
     void testDeleteByName_ShouldCallDeleteByNameMethodForDao() {
-        Course course = new Course(1, "name", "description");
-        when(dao.findByName(anyString())).thenReturn(course);
+        when(dao.existsByName(anyString())).thenReturn(true);
         service.deleteByName("name");
         verify(dao, times(1)).deleteByName(anyString());
     }
@@ -94,8 +92,7 @@ class CourseServiceTest {
     @Test
     void testAdd_ShouldThrowEntityAlreadyExistsException() {
         CourseDto courseDto = new CourseDto("name", "description");
-        Course course = new Course(1, "name", "description");
-        when(dao.findByName(anyString())).thenReturn(course);
+        when(dao.existsByName(anyString())).thenReturn(true);
         assertThrows(EntityAlreadyExistsException.class, () -> service.add(courseDto));
     }
 
@@ -113,5 +110,17 @@ class CourseServiceTest {
     @Test
     void testDeleteByName_ShouldThrowEntityNotFoundException() {
         assertThrows(EntityNotFoundException.class, () -> service.deleteByName("name"));
+    }
+
+    @Test
+    void testExistsById_ShouldCallExistsByIdMethodOnDao() {
+        service.existsById(anyInt());
+        verify(dao, times(1)).existsById(anyInt());
+    }
+
+    @Test
+    void testExistsById_ShouldCallExistsByNameMethodOnDao() {
+        service.existsByName(anyString());
+        verify(dao, times(1)).existsByName(anyString());
     }
 }

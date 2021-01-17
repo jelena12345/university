@@ -53,7 +53,7 @@ public class ProfessorService {
 
     public void add(ProfessorDto professor) {
         logger.log(Level.FINE, "Adding ProfessorDto: {0}", professor);
-        if (dao.findByPersonalId(professor.getName()) != null) {
+        if (dao.existsByPersonalId(professor.getName())) {
             throw new EntityAlreadyExistsException("Professor with name " + professor.getName() + " already exists.");
         }
         dao.add(mapper.map(professor, Professor.class));
@@ -61,7 +61,7 @@ public class ProfessorService {
 
     public void update(int id, ProfessorDto professor) {
         logger.log(Level.FINE, "Updating ProfessorDto: {0} with provided id: {1}", new Object[]{professor, id});
-        if (dao.findById(id) == null) {
+        if (!dao.existsById(id)) {
             throw new EntityNotFoundException("Not found Professor with id: " + id);
         }
         dao.update(id, mapper.map(professor, Professor.class));
@@ -69,7 +69,7 @@ public class ProfessorService {
 
     public void deleteById(int id) {
         logger.log(Level.FINE, "Deleting Professor with id: {0}", id);
-        if (dao.findById(id) == null) {
+        if (!dao.existsById(id)) {
             throw new EntityNotFoundException("Not found Professor with id: " + id);
         }
         dao.deleteById(id);
@@ -77,9 +77,19 @@ public class ProfessorService {
 
     public void deleteByPersonalId(String personalId) {
         logger.log(Level.FINE, "Deleting Professor with personalId: {0}", personalId);
-        if (dao.findByPersonalId(personalId) == null) {
+        if (!dao.existsByPersonalId(personalId)) {
             throw new EntityNotFoundException("Not found Professor with name: " + personalId);
         }
         dao.deleteByPersonalId(personalId);
+    }
+
+    public boolean existsById(int id) {
+        logger.log(Level.FINE, "Checking if Professor exists with id: {0}", id);
+        return dao.existsById(id);
+    }
+
+    public boolean existsByName(String personalId) {
+        logger.log(Level.FINE, "Checking if Professor exists with personalId: {0}", personalId);
+        return dao.existsByPersonalId(personalId);
     }
 }

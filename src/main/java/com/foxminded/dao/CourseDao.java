@@ -87,4 +87,18 @@ public class CourseDao {
         MapSqlParameterSource params = new MapSqlParameterSource().addValue(NAME, name);
         template.update("DELETE FROM courses WHERE name=:name", params);
     }
+
+    public boolean existsById(int id) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(ID, id);
+        return Objects.requireNonNull(
+                template.queryForObject("SELECT EXISTS(SELECT * FROM courses WHERE id=:id)", params, Boolean.class));
+    }
+
+    public boolean existsByName(String name) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(NAME, name);
+        return Objects.requireNonNull(
+                template.queryForObject("SELECT EXISTS(SELECT * FROM courses WHERE name=:name)", params, Boolean.class));
+    }
 }

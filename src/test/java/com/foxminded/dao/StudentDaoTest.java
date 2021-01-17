@@ -82,8 +82,7 @@ class StudentDaoTest {
         Student student = new Student(1, "1", "name", "surname");
         dao.add(student);
         dao.deleteById(1);
-        Student actual = dao.findById(1);
-        assertNull(actual);
+        assertFalse(dao.existsById(1));
     }
 
     @Test
@@ -91,7 +90,30 @@ class StudentDaoTest {
         Student student = new Student(1, "1", "name", "surname");
         dao.add(student);
         dao.deleteByPersonalId("1");
-        Student actual = dao.findById(1);
-        assertNull(actual);
+        assertFalse(dao.existsByPersonalId("1"));
+    }
+
+    @Test
+    void testExistsById_ShouldReturnFalse() {
+        assertFalse(dao.existsById(1));
+    }
+
+    @Test
+    void testExistsById_ShouldReturnTrue() {
+        Student student = new Student(1, "1", "name", "surname");
+        dao.add(student);
+        assertTrue(dao.existsById(1));
+    }
+
+    @Test
+    void testExistsByName_ShouldReturnFalse() {
+        assertFalse(dao.existsByPersonalId("1"));
+    }
+
+    @Test
+    void testExistsByName_ShouldReturnTrue() {
+        Student student = new Student(1, "1", "name", "surname");
+        dao.add(student);
+        assertTrue(dao.existsByPersonalId("1"));
     }
 }

@@ -53,7 +53,7 @@ public class StudentService {
 
     public void add(StudentDto student) {
         logger.log(Level.FINE, "Adding StudentDto: {0}", student);
-        if (dao.findByPersonalId(student.getName()) != null) {
+        if (dao.existsByPersonalId(student.getName())) {
             throw new EntityAlreadyExistsException("Student with name " + student.getName() + " already exists.");
         }
         dao.add(mapper.map(student, Student.class));
@@ -61,7 +61,7 @@ public class StudentService {
 
     public void update(int id, StudentDto student) {
         logger.log(Level.FINE, "Updating StudentDto: {0} with provided id: {1}", new Object[]{student, id});
-        if (dao.findById(id) == null) {
+        if (!dao.existsById(id)) {
             throw new EntityNotFoundException("Not found Student with id: " + id);
         }
         dao.update(id, mapper.map(student, Student.class));
@@ -69,7 +69,7 @@ public class StudentService {
 
     public void deleteById(int id) {
         logger.log(Level.FINE, "Deleting Student with id: {0}", id);
-        if (dao.findById(id) == null) {
+        if (!dao.existsById(id)) {
             throw new EntityNotFoundException("Not found Student with id: " + id);
         }
         dao.deleteById(id);
@@ -77,10 +77,20 @@ public class StudentService {
 
     public void deleteByPersonalId(String personalId) {
         logger.log(Level.FINE, "Deleting Student with personalId: {0}", personalId);
-        if (dao.findByPersonalId(personalId) == null) {
+        if (!dao.existsByPersonalId(personalId)) {
             throw new EntityNotFoundException("Not found Student with name: " + personalId);
         }
         dao.deleteByPersonalId(personalId);
+    }
+
+    public boolean existsById(int id) {
+        logger.log(Level.FINE, "Checking if Student exists with id: {0}", id);
+        return dao.existsById(id);
+    }
+
+    public boolean existsByName(String personalId) {
+        logger.log(Level.FINE, "Checking if Student exists with personalId: {0}", personalId);
+        return dao.existsByPersonalId(personalId);
     }
 
 }
