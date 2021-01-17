@@ -7,12 +7,16 @@ import com.foxminded.dto.ProfessorDto;
 import com.foxminded.entities.Activity;
 import com.foxminded.entities.Course;
 import com.foxminded.entities.Professor;
+import com.foxminded.services.exceptions.EntityAlreadyExistsException;
+import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +24,7 @@ public class ActivityService {
 
     private final ModelMapper mapper;
     private final ActivityDao dao;
+    private final Logger logger;
 
     PropertyMap<ProfessorDto, Professor> skipProfessorIdFieldMap = new PropertyMap<ProfessorDto, Professor>() {
         protected void configure() {
@@ -33,31 +38,46 @@ public class ActivityService {
     };
 
     @Autowired
-    public ActivityService(ModelMapper mapper, ActivityDao dao) {
+    public ActivityService(ModelMapper mapper, ActivityDao dao, Logger logger) {
         this.mapper = mapper;
         this.mapper.addMappings(skipCourseIdFieldMap);
         this.mapper.addMappings(skipProfessorIdFieldMap);
         this.dao = dao;
+        this.logger = logger;
     }
 
     public List<ActivityDto> findAll() {
+        logger.log(Level.FINE, "Searching for all ActivityDto records");
         List<Activity> activities = dao.findAll();
         return activities.stream().map(item -> mapper.map(item, ActivityDto.class)).collect(Collectors.toList());
     }
 
     public ActivityDto findById(int id) {
+        logger.log(Level.FINE, "Searching for ActivityDto with id: {0}", id);
         return mapper.map(dao.findById(id), ActivityDto.class);
     }
 
     public void add(ActivityDto activity) {
+        logger.log(Level.FINE, "Adding ActivityDto: {0}", activity);
+        if (dao.findById(activity.getId()) != null) {
+            throw new EntityAlreadyExistsException("Activity with id " + activity.getId() + " already exists.");
+        }
         dao.add(mapper.map(activity, Activity.class));
     }
 
     public void update(ActivityDto activity) {
+        logger.log(Level.FINE, "Updating ActivityDto: {0}", activity);
+        if (dao.findById(activity.getId()) == null) {
+            throw new EntityNotFoundException("Not found Activity with id: " + activity.getId());
+        }
         dao.update(mapper.map(activity, Activity.class));
     }
 
     public void deleteById(int id) {
+        logger.log(Level.FINE, "Deleting Activity with id: {0}", id);
+        if (dao.findById(id) == null) {
+            throw new EntityNotFoundException("Not found Activity with id: " + id);
+        }
         dao.deleteById(id);
     }
 
