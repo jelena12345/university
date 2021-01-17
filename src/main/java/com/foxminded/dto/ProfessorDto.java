@@ -39,4 +39,13 @@ public class ProfessorDto extends UserDto {
     public void setQualification(String qualification) {
         this.qualification = qualification;
     }
+
+    @Override
+    public String toString() {
+        return "ProfessorDto{" +
+                "personalId='" + personalId + '\'' +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                '}';
+    }
 }
