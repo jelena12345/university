@@ -69,10 +69,9 @@ class CourseServiceTest {
 
     @Test
     void testUpdate_ShouldCallUpdateMethodForDao() {
-        Course course = new Course(1, "name", "description");
-        when(dao.findById(anyInt())).thenReturn(course);
-        service.update(1, new CourseDto("name", "description"));
         Course expected = new Course("name", "description");
+        when(dao.findById(anyInt())).thenReturn(expected);
+        service.update(1, new CourseDto("name", "description"));
         verify(dao, times(1)).update(1, expected);
     }
 

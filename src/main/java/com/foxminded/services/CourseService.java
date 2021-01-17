@@ -63,7 +63,7 @@ public class CourseService {
     public void update(int id, CourseDto courseDto) {
         logger.log(Level.FINE, "Updating CourseDto: {0} with provided id: {1}", new Object[]{courseDto, id});
         if (dao.findById(id) == null) {
-            throw new EntityNotFoundException("Not found course with id: " + id);
+            throw new EntityNotFoundException("Not found Course with id: " + id);
         }
         dao.update(id, mapper.map(courseDto, Course.class));
     }
@@ -71,7 +71,7 @@ public class CourseService {
     public void deleteById(int id) {
         logger.log(Level.FINE, "Deleting Course with id: {0}", id);
         if (dao.findById(id) == null) {
-            throw new EntityNotFoundException("Not found course with id: " + id);
+            throw new EntityNotFoundException("Not found Course with id: " + id);
         }
         dao.deleteById(id);
     }
@@ -79,7 +79,7 @@ public class CourseService {
     public void deleteByName(String name) {
         logger.log(Level.FINE, "Deleting Course with name: {0}", name);
         if (dao.findByName(name) == null) {
-            throw new EntityNotFoundException("Not found course with name: " + name);
+            throw new EntityNotFoundException("Not found Course with name: " + name);
         }
         dao.deleteByName(name);
     }

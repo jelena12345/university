@@ -3,6 +3,8 @@ package com.foxminded.services;
 import com.foxminded.dao.StudentDao;
 import com.foxminded.dto.StudentDto;
 import com.foxminded.entities.Student;
+import com.foxminded.services.exceptions.EntityAlreadyExistsException;
+import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,8 +14,10 @@ import org.modelmapper.ModelMapper;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
@@ -26,7 +30,7 @@ class StudentServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new StudentService(new ModelMapper(), dao);
+        service = new StudentService(new ModelMapper(), dao, Logger.getLogger(Logger.GLOBAL_LOGGER_NAME));
     }
 
     @Test
@@ -67,20 +71,49 @@ class StudentServiceTest {
 
     @Test
     void testUpdate_ShouldCallUpdateMethodForDao() {
-        service.update(1, new StudentDto("1", "name", "surname"));
         Student expected = new Student("1", "name", "surname");
+        when(dao.findById(anyInt())).thenReturn(expected);
+        service.update(1, new StudentDto("1", "name", "surname"));
         verify(dao, times(1)).update(1, expected);
     }
 
     @Test
     void testDeleteById_ShouldCallDeleteByIdMethodForDao() {
+        Student student = new Student(1, "1", "name", "surname");
+        when(dao.findById(anyInt())).thenReturn(student);
         service.deleteById(anyInt());
         verify(dao, times(1)).deleteById(anyInt());
     }
 
     @Test
     void testDeleteByPersonalId_ShouldCallDeleteByIdMethodForDao() {
+        Student student = new Student(1, "1", "name", "surname");
+        when(dao.findByPersonalId(anyString())).thenReturn(student);
         service.deleteByPersonalId(anyString());
         verify(dao, times(1)).deleteByPersonalId(anyString());
+    }
+
+    @Test
+    void testAdd_ShouldThrowEntityAlreadyExistsException() {
+        StudentDto studentDto = new StudentDto("1", "name", "surname");
+        Student student = new Student(1, "1", "name", "surname");
+        when(dao.findByPersonalId(anyString())).thenReturn(student);
+        assertThrows(EntityAlreadyExistsException.class, () -> service.add(studentDto));
+    }
+
+    @Test
+    void testUpdate_ShouldThrowEntityNotFoundException() {
+        StudentDto studentDto = new StudentDto("1", "name", "surname");
+        assertThrows(EntityNotFoundException.class, () -> service.update(1, studentDto));
+    }
+
+    @Test
+    void testDeleteById_ShouldThrowEntityNotFoundException() {
+        assertThrows(EntityNotFoundException.class, () -> service.deleteById(1));
+    }
+
+    @Test
+    void testDeleteByName_ShouldThrowEntityNotFoundException() {
+        assertThrows(EntityNotFoundException.class, () -> service.deleteByPersonalId("name"));
     }
 }
