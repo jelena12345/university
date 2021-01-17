@@ -1,9 +1,12 @@
 package com.foxminded.services;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import com.foxminded.dao.CourseDao;
 import com.foxminded.dto.CourseDto;
 import com.foxminded.entities.Course;
+import com.foxminded.services.exceptions.EntityAlreadyExistsException;
+import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -87,5 +90,29 @@ class CourseServiceTest {
         when(dao.findByName(anyString())).thenReturn(course);
         service.deleteByName("name");
         verify(dao, times(1)).deleteByName(anyString());
+    }
+
+    @Test
+    void testAdd_ShouldThrowEntityAlreadyExistsException() {
+        CourseDto courseDto = new CourseDto("name", "description");
+        Course course = new Course(1, "name", "description");
+        when(dao.findByName(anyString())).thenReturn(course);
+        assertThrows(EntityAlreadyExistsException.class, () -> service.add(courseDto));
+    }
+
+    @Test
+    void testUpdate_ShouldThrowEntityNotFoundException() {
+        CourseDto courseDto = new CourseDto("name", "description");
+        assertThrows(EntityNotFoundException.class, () -> service.update(1, courseDto));
+    }
+
+    @Test
+    void testDeleteById_ShouldThrowEntityNotFoundException() {
+        assertThrows(EntityNotFoundException.class, () -> service.deleteById(1));
+    }
+
+    @Test
+    void testDeleteByName_ShouldThrowEntityNotFoundException() {
+        assertThrows(EntityNotFoundException.class, () -> service.deleteByName("name"));
     }
 }
