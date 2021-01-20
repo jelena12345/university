@@ -57,18 +57,18 @@ public class StudentService {
         logger.debug("Adding StudentDto");
         logger.trace("Adding StudentDto: {}", student);
         if (dao.existsByPersonalId(student.getName())) {
-            logger.warn("Student with name {} already exists.", student.getName());
-            throw new EntityAlreadyExistsException("Student with name " + student.getName() + " already exists.");
+            logger.warn("Student by name {} already exists.", student.getName());
+            throw new EntityAlreadyExistsException("Student by name " + student.getName() + " already exists.");
         }
         dao.add(mapper.map(student, Student.class));
     }
 
     public void update(int id, StudentDto student) {
         logger.debug("Updating StudentDto");
-        logger.trace("Updating StudentDto: {} with provided id: {}", student, id);
+        logger.trace("Updating StudentDto: {} by provided id: {}", student, id);
         if (!dao.existsById(id)) {
-            logger.warn("Not found Student with id: {}", id);
-            throw new EntityNotFoundException("Not found Student with id: " + id);
+            logger.warn("Not found Student by id: {}", id);
+            throw new EntityNotFoundException("Not found Student by id: " + id);
         }
         dao.update(id, mapper.map(student, Student.class));
     }
@@ -77,8 +77,8 @@ public class StudentService {
         logger.debug("Deleting Student by id");
         logger.trace("Deleting Student by id: {}", id);
         if (!dao.existsById(id)) {
-            logger.warn("Not found Student with id: {}", id);
-            throw new EntityNotFoundException("Not found Student with id: " + id);
+            logger.warn("Not found Student by id: {}", id);
+            throw new EntityNotFoundException("Not found Student by id: " + id);
         }
         dao.deleteById(id);
     }
@@ -87,8 +87,8 @@ public class StudentService {
         logger.debug("Deleting Student by personalId");
         logger.trace("Deleting Student by personalId: {}", personalId);
         if (!dao.existsByPersonalId(personalId)) {
-            logger.warn("Not found Student with personalId: {}", personalId);
-            throw new EntityNotFoundException("Not found Student with personalId: " + personalId);
+            logger.warn("Not found Student by personalId: {}", personalId);
+            throw new EntityNotFoundException("Not found Student by personalId: " + personalId);
         }
         dao.deleteByPersonalId(personalId);
     }
@@ -101,7 +101,7 @@ public class StudentService {
 
     public boolean existsByPersonalId(String personalId) {
         logger.debug("Checking if Student exists by personalId");
-        logger.trace("Checking if Student exists with personalId: {}", personalId);
+        logger.trace("Checking if Student exists by personalId: {}", personalId);
         return dao.existsByPersonalId(personalId);
     }
 

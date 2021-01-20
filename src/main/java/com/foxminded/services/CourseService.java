@@ -43,13 +43,13 @@ public class CourseService {
 
     public CourseDto findById(int id) {
         logger.debug("Searching for CourseDto by id");
-        logger.trace("Searching for CourseDto with id: {}", id);
+        logger.trace("Searching for CourseDto by id: {}", id);
         return mapper.map(dao.findById(id), CourseDto.class);
     }
 
     public CourseDto findByName(String name) {
         logger.debug("Searching for CourseDto by name");
-        logger.trace("Searching for CourseDto with name: {}", name);
+        logger.trace("Searching for CourseDto by name: {}", name);
         return mapper.map(dao.findByName(name), CourseDto.class);
     }
 
@@ -57,8 +57,8 @@ public class CourseService {
         logger.debug("Adding CourseDto");
         logger.trace("Adding CourseDto: {}", course);
         if (dao.existsByName(course.getName())) {
-            logger.warn("Activity with name {} already exists.", course.getName());
-            throw new EntityAlreadyExistsException("Course with name " + course.getName() + " already exists.");
+            logger.warn("Activity by name {} already exists.", course.getName());
+            throw new EntityAlreadyExistsException("Course by name " + course.getName() + " already exists.");
         }
         dao.add(mapper.map(course, Course.class));
     }
@@ -68,17 +68,17 @@ public class CourseService {
         logger.trace("Updating CourseDto: {} with provided id: {}", courseDto, id);
         if (!dao.existsById(id)) {
             logger.warn("Not found Course with id: {}", id);
-            throw new EntityNotFoundException("Not found Course with id: " + id);
+            throw new EntityNotFoundException("Not found Course by id: " + id);
         }
         dao.update(id, mapper.map(courseDto, Course.class));
     }
 
     public void deleteById(int id) {
         logger.debug("Deleting Course by id");
-        logger.trace("Deleting Course with id: {}", id);
+        logger.trace("Deleting Course by id: {}", id);
         if (!dao.existsById(id)) {
             logger.warn("Not found Course with id: {}", id);
-            throw new EntityNotFoundException("Not found Course with id: " + id);
+            throw new EntityNotFoundException("Not found Course by id: " + id);
         }
         dao.deleteById(id);
     }
@@ -87,21 +87,21 @@ public class CourseService {
         logger.debug("Deleting Course by name");
         logger.trace("Deleting Course with name: {}", name);
         if (!dao.existsByName(name)) {
-            logger.warn("Not found Course with name: {}", name);
-            throw new EntityNotFoundException("Not found Course with name: " + name);
+            logger.warn("Not found Course by name: {}", name);
+            throw new EntityNotFoundException("Not found Course by name: " + name);
         }
         dao.deleteByName(name);
     }
 
     public boolean existsById(int id) {
         logger.debug("Checking if Course exists by id");
-        logger.trace("Checking if Course exists with id: {}", id);
+        logger.trace("Checking if Course exists by id: {}", id);
         return dao.existsById(id);
     }
 
     public boolean existsByName(String name) {
         logger.debug("Checking if Course exists by name");
-        logger.trace("Checking if Course exists with name: {}", name);
+        logger.trace("Checking if Course exists by name: {}", name);
         return dao.existsByName(name);
     }
 
