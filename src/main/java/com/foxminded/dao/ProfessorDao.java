@@ -1,6 +1,8 @@
 package com.foxminded.dao;
 
 import com.foxminded.entities.Professor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -23,6 +25,7 @@ public class ProfessorDao {
     private static final String QUALIFICATION = "qualification";
 
     private final NamedParameterJdbcTemplate template;
+    private static final Logger logger = LoggerFactory.getLogger(ProfessorDao.class);
 
     @Autowired
     public ProfessorDao(NamedParameterJdbcTemplate template) {
@@ -42,9 +45,9 @@ public class ProfessorDao {
                     params,
                     new BeanPropertyRowMapper<>(Professor.class));
         } catch (EmptyResultDataAccessException e) {
-            e.printStackTrace();
+            logger.error("Error trying to find Professor with id = {}", id, e);
+            return null;
         }
-        return null;
     }
 
     public Professor findByPersonalId(String personalId) {
@@ -55,9 +58,9 @@ public class ProfessorDao {
                     params,
                     new BeanPropertyRowMapper<>(Professor.class));
         } catch (EmptyResultDataAccessException e) {
-            e.printStackTrace();
+            logger.error("Error trying to find Professor with personalId = {}", personalId, e);
+            return null;
         }
-        return null;
     }
 
     public int add(Professor professor) {

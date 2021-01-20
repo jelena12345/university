@@ -50,11 +50,21 @@ class CourseDaoTest {
     }
 
     @Test
+    void testFindById_ShouldReturnNull() {
+        assertNull(dao.findById(1));
+    }
+
+    @Test
     void testFindByName_ShouldFindCorrectCourse() {
         Course expected = new Course(1, "name", "description");
         dao.add(expected);
         Course actual = dao.findByName("name");
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void testFindByName_ShouldReturnNull() {
+        assertNull(dao.findByName("name"));
     }
 
     @Test

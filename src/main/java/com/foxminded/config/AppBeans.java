@@ -1,6 +1,7 @@
 package com.foxminded.config;
 
 import com.foxminded.dao.*;
+import com.foxminded.services.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
@@ -17,7 +18,7 @@ import javax.sql.DataSource;
 @Configuration
 @ComponentScan("com.foxminded")
 @PropertySource("classpath:application.properties")
-public class DaoConfiguration {
+public class AppBeans {
 
     @Value("${jdbc.driver}")
     private String driverName;
@@ -87,6 +88,36 @@ public class DaoConfiguration {
                 .setFieldMatchingEnabled(true)
                 .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);
         return mapper;
+    }
+
+    @Bean
+    @Scope("prototype")
+    public ActivityService activityService() {
+        return new ActivityService(modelMapper(), activityDao());
+    }
+
+    @Bean
+    @Scope("prototype")
+    public CourseService courseService() {
+        return new CourseService(modelMapper(), courseDao());
+    }
+
+    @Bean
+    @Scope("prototype")
+    public GroupService groupService() {
+        return new GroupService(modelMapper(), groupDao());
+    }
+
+    @Bean
+    @Scope("prototype")
+    public ProfessorService professorService() {
+        return new ProfessorService(modelMapper(), professorDao());
+    }
+
+    @Bean
+    @Scope("prototype")
+    public StudentService studentService() {
+        return new StudentService(modelMapper(), studentDao());
     }
 
 }

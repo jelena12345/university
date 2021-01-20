@@ -50,11 +50,21 @@ class StudentDaoTest {
     }
 
     @Test
+    void testFindById_ShouldReturnNull() {
+        assertNull(dao.findById(1));
+    }
+
+    @Test
     void testFindByPersonalId_ShouldFindCorrectStudent() {
         Student expected = new Student(1, "1", "name", "surname");
         dao.add(expected);
         Student actual = dao.findByPersonalId("1");
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void testFindByPersonalId_ShouldReturnNull() {
+        assertNull(dao.findByPersonalId("1"));
     }
 
     @Test

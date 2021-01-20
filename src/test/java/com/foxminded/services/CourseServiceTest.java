@@ -28,7 +28,7 @@ class CourseServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new CourseService(new ModelMapper(), dao, Logger.getLogger(Logger.GLOBAL_LOGGER_NAME));
+        service = new CourseService(new ModelMapper(), dao);
     }
 
     @Test

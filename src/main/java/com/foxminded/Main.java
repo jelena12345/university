@@ -1,26 +1,29 @@
 package com.foxminded;
 
-import com.foxminded.config.DaoConfiguration;
-import com.foxminded.dao.CourseDao;
+import com.foxminded.config.AppBeans;
 import com.foxminded.dao.ProfessorDao;
 import com.foxminded.entities.Professor;
 import com.foxminded.services.CourseService;
-import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
-import java.util.logging.Logger;
-
 public class Main {
+
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] args) {
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DaoConfiguration.class);
+        logger.info("University app started");
+        logger.info("Loading Application context");
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppBeans.class);
         ProfessorDao dao = new ProfessorDao(context.getBean(NamedParameterJdbcTemplate.class));
         dao.deleteByPersonalId("1");
         Professor expected = new Professor("1", "name", "surname", "q");
         dao.add(expected);
 
-        CourseService service = new CourseService(context.getBean(ModelMapper.class), context.getBean(CourseDao.class),
-                context.getBean(Logger.class));
+        CourseService service = context.getBean(CourseService.class);
         service.findByName("name");
+        logger.info("Exiting University app");
     }
 }

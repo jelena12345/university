@@ -66,6 +66,11 @@ class ActivityDaoTest {
     }
 
     @Test
+    void testFindById_ShouldReturnNull() {
+        assertNull(activityDao.findById(1));
+    }
+
+    @Test
     void testAdd_ShouldAddCorrectActivity() {
         Professor professor = new Professor(1, "1", "name", "surname", "q");
         professorDao.add(professor);

@@ -51,6 +51,11 @@ class ProfessorDaoTest {
     }
 
     @Test
+    void testFindById_ShouldReturnNull() {
+        assertNull(dao.findById(1));
+    }
+
+    @Test
     void testFindByPersonalId_ShouldFindCorrectProfessor() {
         Professor expected = new Professor(1, "1", "name", "surname", "q");
         dao.add(expected);
@@ -58,6 +63,10 @@ class ProfessorDaoTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    void testFindByPersonalId_ShouldReturnNull() {
+        assertNull(dao.findByPersonalId("1"));
+    }
 
     @Test
     void testAdd_ShouldAddCorrectProfessor() {

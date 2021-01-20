@@ -2,6 +2,8 @@ package com.foxminded.dao;
 
 import com.foxminded.entities.Activity;
 import com.foxminded.entities.ActivityMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -17,6 +19,7 @@ import java.util.Objects;
 public class ActivityDao {
 
     private final NamedParameterJdbcTemplate template;
+    private static final Logger logger = LoggerFactory.getLogger(ActivityDao.class);
 
     @Autowired
     public ActivityDao(NamedParameterJdbcTemplate template) {
@@ -47,9 +50,9 @@ public class ActivityDao {
                     params,
                     new ActivityMapper());
         } catch (EmptyResultDataAccessException e) {
-            e.printStackTrace();
+            logger.error("Error trying to find Activity with id = {}", id, e);
+            return null;
         }
-        return null;
     }
 
     public Integer add(Activity activity) {

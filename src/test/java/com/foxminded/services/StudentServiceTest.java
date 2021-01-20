@@ -14,7 +14,6 @@ import org.modelmapper.ModelMapper;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,7 +29,7 @@ class StudentServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new StudentService(new ModelMapper(), dao, Logger.getLogger(Logger.GLOBAL_LOGGER_NAME));
+        service = new StudentService(new ModelMapper(), dao);
     }
 
     @Test
@@ -122,7 +121,7 @@ class StudentServiceTest {
 
     @Test
     void testExistsByPersonalId_ShouldCallExistsByNameMethodOnDao() {
-        service.existsByName(anyString());
+        service.existsByPersonalId(anyString());
         verify(dao, times(1)).existsByPersonalId(anyString());
     }
 }

@@ -1,6 +1,8 @@
 package com.foxminded.dao;
 
 import com.foxminded.entities.Course;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -21,6 +23,7 @@ public class CourseDao {
     private static final String DESCRIPTION = "description";
 
     private final NamedParameterJdbcTemplate template;
+    private static final Logger logger = LoggerFactory.getLogger(CourseDao.class);
 
     @Autowired
     public CourseDao(NamedParameterJdbcTemplate template) {
@@ -39,9 +42,9 @@ public class CourseDao {
                     params,
                     new BeanPropertyRowMapper<>(Course.class));
         } catch (EmptyResultDataAccessException e) {
-            e.printStackTrace();
+            logger.error("Error trying to find Course with id = {}", id, e);
+            return null;
         }
-        return null;
     }
 
     public Course findByName(String name) {
@@ -51,9 +54,9 @@ public class CourseDao {
                     params,
                     new BeanPropertyRowMapper<>(Course.class));
         } catch (EmptyResultDataAccessException e) {
-            e.printStackTrace();
+            logger.error("Error trying to find Course with name = {}", name, e);
+            return null;
         }
-        return null;
     }
 
     public Integer add(Course course) {

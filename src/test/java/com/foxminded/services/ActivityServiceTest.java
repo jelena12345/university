@@ -19,7 +19,6 @@ import org.modelmapper.ModelMapper;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -35,7 +34,7 @@ class ActivityServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new ActivityService(new ModelMapper(), dao, Logger.getLogger(Logger.GLOBAL_LOGGER_NAME));
+        service = new ActivityService(new ModelMapper(), dao);
     }
 
     @Test

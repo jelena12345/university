@@ -7,26 +7,25 @@ import com.foxminded.services.exceptions.EntityAlreadyExistsException;
 import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
 public class ProfessorService {
     private final ModelMapper mapper;
     private final ProfessorDao dao;
-    private final Logger logger;
+    private static final Logger logger = LoggerFactory.getLogger(ProfessorService.class);
 
     @Autowired
-    public ProfessorService(ModelMapper mapper, ProfessorDao dao, Logger logger) {
+    public ProfessorService(ModelMapper mapper, ProfessorDao dao) {
         this.mapper = mapper;
         this.mapper.addMappings(skipIdFieldMap);
         this.dao = dao;
-        this.logger = logger;
     }
 
     PropertyMap<ProfessorDto, Professor> skipIdFieldMap = new PropertyMap<ProfessorDto, Professor>() {
@@ -36,60 +35,72 @@ public class ProfessorService {
     };
 
     public List<ProfessorDto> findAll() {
-        logger.log(Level.FINE, "Searching for all ProfessorDto records");
+        logger.debug("Searching for all ProfessorDto records");
         List<Professor> professors = dao.findAll();
         return professors.stream().map(item -> mapper.map(item, ProfessorDto.class)).collect(Collectors.toList());
     }
 
     public ProfessorDto findById(int id) {
-        logger.log(Level.FINE, "Searching for ProfessorDto with id: {0}", id);
+        logger.debug("Searching for ProfessorDto by id");
+        logger.trace("Searching for ProfessorDto by id: {}", id);
         return mapper.map(dao.findById(id), ProfessorDto.class);
     }
 
     public ProfessorDto findByPersonalId(String personalId) {
-        logger.log(Level.FINE, "Searching for ProfessorDto with personalId: {0}", personalId);
+        logger.debug("Searching for ProfessorDto by personalId");
+        logger.trace("Searching for ProfessorDto by personalId: {}", personalId);
         return mapper.map(dao.findByPersonalId(personalId), ProfessorDto.class);
     }
 
     public void add(ProfessorDto professor) {
-        logger.log(Level.FINE, "Adding ProfessorDto: {0}", professor);
-        if (dao.existsByPersonalId(professor.getName())) {
-            throw new EntityAlreadyExistsException("Professor with name " + professor.getName() + " already exists.");
+        logger.debug("Adding ProfessorDto");
+        logger.trace("Adding ProfessorDto: {}", professor);
+        if (dao.existsByPersonalId(professor.getPersonalId())) {
+            logger.warn("Professor with personalId {} already exists.", professor.getPersonalId());
+            throw new EntityAlreadyExistsException("Professor with personalId " + professor.getPersonalId() + " already exists.");
         }
         dao.add(mapper.map(professor, Professor.class));
     }
 
     public void update(int id, ProfessorDto professor) {
-        logger.log(Level.FINE, "Updating ProfessorDto: {0} with provided id: {1}", new Object[]{professor, id});
+        logger.debug("Updating ProfessorDto");
+        logger.trace("Updating ProfessorDto: {} with provided id: {}", professor, id);
         if (!dao.existsById(id)) {
+            logger.warn("Not found Professor with id: {}", id);
             throw new EntityNotFoundException("Not found Professor with id: " + id);
         }
         dao.update(id, mapper.map(professor, Professor.class));
     }
 
     public void deleteById(int id) {
-        logger.log(Level.FINE, "Deleting Professor with id: {0}", id);
+        logger.debug("Deleting Professor by id");
+        logger.trace("Deleting Professor by id: {}", id);
         if (!dao.existsById(id)) {
+            logger.warn("Not found Professor with id: {}", id);
             throw new EntityNotFoundException("Not found Professor with id: " + id);
         }
         dao.deleteById(id);
     }
 
     public void deleteByPersonalId(String personalId) {
-        logger.log(Level.FINE, "Deleting Professor with personalId: {0}", personalId);
+        logger.debug("Deleting Professor by personalId");
+        logger.trace("Deleting Professor by personalId: {}", personalId);
         if (!dao.existsByPersonalId(personalId)) {
+            logger.warn("Not found Professor with personalId: {}", personalId);
             throw new EntityNotFoundException("Not found Professor with name: " + personalId);
         }
         dao.deleteByPersonalId(personalId);
     }
 
     public boolean existsById(int id) {
-        logger.log(Level.FINE, "Checking if Professor exists with id: {0}", id);
+        logger.debug("Checking if Professor exists by id");
+        logger.trace("Checking if Professor exists by id: {}", id);
         return dao.existsById(id);
     }
 
     public boolean existsByName(String personalId) {
-        logger.log(Level.FINE, "Checking if Professor exists with personalId: {0}", personalId);
+        logger.debug("Checking if Professor exists by personalId");
+        logger.trace("Checking if Professor exists by personalId: {}", personalId);
         return dao.existsByPersonalId(personalId);
     }
 }
