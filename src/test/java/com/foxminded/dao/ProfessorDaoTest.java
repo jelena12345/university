@@ -22,7 +22,11 @@ class ProfessorDaoTest {
 
     @BeforeEach
     public void setUp() {
-        db = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript("classpath:schema.sql").build();
+        db = new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript("classpath:schema.sql")
+                .addScript("classpath:data.sql")
+                .build();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(db);
         dao = new ProfessorDao(template);
     }
@@ -34,43 +38,33 @@ class ProfessorDaoTest {
 
     @Test
     void testFindAll_ShouldFindAllProfessors() {
-        List<Professor> expected = Arrays.asList(new Professor(1, "1", "name", "surname", "q"),
-                new Professor(2, "2", "name2", "surname2", "q2"));
-        dao.add(expected.get(0));
-        dao.add(expected.get(1));
         List<Professor> actual = dao.findAll();
-        assertEquals(expected, actual);
+        assertEquals(2, actual.size());
     }
 
     @Test
-    void testFindById_ShouldFindCorrectProfessor() {
-        Professor expected = new Professor(1, "1", "name", "surname", "q");
-        dao.add(expected);
-        Professor actual = dao.findById(1);
-        assertEquals(expected, actual);
+    void testFindById_ShouldFindProfessor() {
+        assertNotNull(dao.findById(1));
     }
 
     @Test
     void testFindById_ShouldReturnNull() {
-        assertNull(dao.findById(1));
+        assertNull(dao.findById(0));
     }
 
     @Test
-    void testFindByPersonalId_ShouldFindCorrectProfessor() {
-        Professor expected = new Professor(1, "1", "name", "surname", "q");
-        dao.add(expected);
-        Professor actual = dao.findByPersonalId("1");
-        assertEquals(expected, actual);
+    void testFindByPersonalId_ShouldFindProfessor() {
+        assertNotNull(dao.findByPersonalId("1"));
     }
 
     @Test
     void testFindByPersonalId_ShouldReturnNull() {
-        assertNull(dao.findByPersonalId("1"));
+        assertNull(dao.findByPersonalId(""));
     }
 
     @Test
     void testAdd_ShouldAddCorrectProfessor() {
-        Professor expected = new Professor(1, "1", "name", "surname", "q");
+        Professor expected = new Professor(3, "3", "name", "surname", "q");
         int id = dao.add(expected);
         Professor actual = dao.findById(id);
         assertEquals(expected, actual);
@@ -78,9 +72,8 @@ class ProfessorDaoTest {
 
     @Test
     void testUpdate_ShouldUpdateValues() {
-        Professor expected = new Professor(1,"1", "name", "surname", "q");
-        dao.add(expected);
-        expected.setPersonalId("2");
+        Professor expected = dao.findById(1);
+        expected.setPersonalId("3");
         expected.setName("name_new");
         expected.setSurname("surname_new");
         expected.setQualification("q_new");
@@ -91,41 +84,33 @@ class ProfessorDaoTest {
 
     @Test
     void testDeleteById_ShouldFindNull() {
-        Professor professor = new Professor(1,"1", "name", "surname", "q");
-        dao.add(professor);
         dao.deleteById(1);
         assertFalse(dao.existsById(1));
     }
 
     @Test
     void testDeleteByPersonalId_ShouldFindNull() {
-        Professor professor = new Professor(1,"1", "name", "surname", "q");
-        dao.add(professor);
         dao.deleteByPersonalId("1");
         assertFalse(dao.existsByPersonalId("1"));
     }
 
     @Test
     void testExistsById_ShouldReturnFalse() {
-        assertFalse(dao.existsById(1));
+        assertFalse(dao.existsById(0));
     }
 
     @Test
     void testExistsById_ShouldReturnTrue() {
-        Professor professor = new Professor(1,"1", "name", "surname", "q");
-        dao.add(professor);
         assertTrue(dao.existsById(1));
     }
 
     @Test
     void testExistsByName_ShouldReturnFalse() {
-        assertFalse(dao.existsByPersonalId("1"));
+        assertFalse(dao.existsByPersonalId(""));
     }
 
     @Test
     void testExistsByName_ShouldReturnTrue() {
-        Professor professor = new Professor(1,"1", "name", "surname", "q");
-        dao.add(professor);
         assertTrue(dao.existsByPersonalId("1"));
     }
 }

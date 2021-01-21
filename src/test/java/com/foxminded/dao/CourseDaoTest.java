@@ -9,7 +9,6 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +20,11 @@ class CourseDaoTest {
 
     @BeforeEach
     public void setUp() {
-        db = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript("classpath:schema.sql").build();
+        db = new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript("classpath:schema.sql")
+                .addScript("classpath:data.sql")
+                .build();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(db);
         dao = new CourseDao(template);
     }
@@ -33,43 +36,33 @@ class CourseDaoTest {
 
     @Test
     void testFindAll_ShouldFindAllCourses() {
-        List<Course> expected = Arrays.asList(new Course(1, "name", "description"),
-                new Course(2,"name2", "description2"));
-        dao.add(expected.get(0));
-        dao.add(expected.get(1));
         List<Course> actual = dao.findAll();
-        assertEquals(expected, actual);
+        assertEquals(2, actual.size());
     }
 
     @Test
-    void testFindById_ShouldFindCorrectCourse() {
-        Course expected = new Course(1, "name", "description");
-        dao.add(expected);
-        Course actual = dao.findById(1);
-        assertEquals(expected, actual);
+    void testFindById_ShouldFindCourse() {
+        assertNotNull(dao.findById(1));
     }
 
     @Test
     void testFindById_ShouldReturnNull() {
-        assertNull(dao.findById(1));
+        assertNull(dao.findById(0));
     }
 
     @Test
-    void testFindByName_ShouldFindCorrectCourse() {
-        Course expected = new Course(1, "name", "description");
-        dao.add(expected);
-        Course actual = dao.findByName("name");
-        assertEquals(expected, actual);
+    void testFindByName_ShouldFindCourse() {
+        assertNotNull(dao.findByName("name"));
     }
 
     @Test
     void testFindByName_ShouldReturnNull() {
-        assertNull(dao.findByName("name"));
+        assertNull(dao.findByName(""));
     }
 
     @Test
     void testAdd_ShouldAddCorrectCourse() {
-        Course expected = new Course(1, "name", "description");
+        Course expected = new Course(3, "name3", "description3");
         int id = dao.add(expected);
         Course actual = dao.findById(id);
         assertEquals(expected, actual);
@@ -77,8 +70,7 @@ class CourseDaoTest {
 
     @Test
     void testUpdate_ShouldUpdateValues() {
-        Course expected = new Course(1,"name", "description");
-        dao.add(expected);
+        Course expected = dao.findById(1);
         expected.setName("name_new");
         expected.setDescription("description_new");
         dao.update(1, expected);
@@ -88,41 +80,33 @@ class CourseDaoTest {
 
     @Test
     void testDeleteById_ShouldDeleteSuccessfully() {
-        Course course = new Course(1,"name", "description");
-        dao.add(course);
         dao.deleteById(1);
         assertFalse(dao.existsById(1));
     }
 
     @Test
     void testDeleteByName_ShouldDeleteSuccessfully() {
-        Course course = new Course(1,"name", "description");
-        dao.add(course);
         dao.deleteByName("name");
         assertFalse(dao.existsByName("name"));
     }
 
     @Test
     void testExistsById_ShouldReturnFalse() {
-        assertFalse(dao.existsById(1));
+        assertFalse(dao.existsById(0));
     }
 
     @Test
     void testExistsById_ShouldReturnTrue() {
-        Course expected = new Course(1,"name", "description");
-        dao.add(expected);
         assertTrue(dao.existsById(1));
     }
 
     @Test
     void testExistsByName_ShouldReturnFalse() {
-        assertFalse(dao.existsByName("name"));
+        assertFalse(dao.existsByName(""));
     }
 
     @Test
     void testExistsByName_ShouldReturnTrue() {
-        Course expected = new Course(1,"name", "description");
-        dao.add(expected);
         assertTrue(dao.existsByName("name"));
     }
 
