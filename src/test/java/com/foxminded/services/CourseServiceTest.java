@@ -1,9 +1,12 @@
 package com.foxminded.services;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import com.foxminded.dao.CourseDao;
 import com.foxminded.dto.CourseDto;
 import com.foxminded.entities.Course;
+import com.foxminded.services.exceptions.EntityAlreadyExistsException;
+import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +16,7 @@ import org.modelmapper.ModelMapper;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -65,20 +69,58 @@ class CourseServiceTest {
 
     @Test
     void testUpdate_ShouldCallUpdateMethodForDao() {
-        service.update(1, new CourseDto("name", "description"));
         Course expected = new Course("name", "description");
+        when(dao.existsById(anyInt())).thenReturn(true);
+        service.update(1, new CourseDto("name", "description"));
         verify(dao, times(1)).update(1, expected);
     }
 
     @Test
     void testDeleteById_ShouldCallDeleteByIdMethodForDao() {
+        when(dao.existsById(anyInt())).thenReturn(true);
         service.deleteById(anyInt());
         verify(dao, times(1)).deleteById(anyInt());
     }
 
     @Test
-    void testDeleteByName_ShouldCallDeleteByIdMethodForDao() {
-        service.deleteByName(anyString());
+    void testDeleteByName_ShouldCallDeleteByNameMethodForDao() {
+        when(dao.existsByName(anyString())).thenReturn(true);
+        service.deleteByName("name");
         verify(dao, times(1)).deleteByName(anyString());
+    }
+
+    @Test
+    void testAdd_ShouldThrowEntityAlreadyExistsException() {
+        CourseDto courseDto = new CourseDto("name", "description");
+        when(dao.existsByName(anyString())).thenReturn(true);
+        assertThrows(EntityAlreadyExistsException.class, () -> service.add(courseDto));
+    }
+
+    @Test
+    void testUpdate_ShouldThrowEntityNotFoundException() {
+        CourseDto courseDto = new CourseDto("name", "description");
+        assertThrows(EntityNotFoundException.class, () -> service.update(1, courseDto));
+    }
+
+    @Test
+    void testDeleteById_ShouldThrowEntityNotFoundException() {
+        assertThrows(EntityNotFoundException.class, () -> service.deleteById(1));
+    }
+
+    @Test
+    void testDeleteByName_ShouldThrowEntityNotFoundException() {
+        assertThrows(EntityNotFoundException.class, () -> service.deleteByName("name"));
+    }
+
+    @Test
+    void testExistsById_ShouldCallExistsByIdMethodOnDao() {
+        service.existsById(anyInt());
+        verify(dao, times(1)).existsById(anyInt());
+    }
+
+    @Test
+    void testExistsById_ShouldCallExistsByNameMethodOnDao() {
+        service.existsByName(anyString());
+        verify(dao, times(1)).existsByName(anyString());
     }
 }

@@ -47,4 +47,12 @@ public class GroupDto {
     public int hashCode() {
         return Objects.hash(course, students);
     }
+
+    @Override
+    public String toString() {
+        return "GroupDto{" +
+                "course=" + course +
+                ", students count=" + students.size() +
+                '}';
+    }
 }

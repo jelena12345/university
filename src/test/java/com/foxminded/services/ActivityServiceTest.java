@@ -1,13 +1,14 @@
 package com.foxminded.services;
 
 import com.foxminded.dao.ActivityDao;
-import com.foxminded.dao.CourseDao;
 import com.foxminded.dto.ActivityDto;
 import com.foxminded.dto.CourseDto;
 import com.foxminded.dto.ProfessorDto;
 import com.foxminded.entities.Activity;
 import com.foxminded.entities.Course;
 import com.foxminded.entities.Professor;
+import com.foxminded.services.exceptions.EntityAlreadyExistsException;
+import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
@@ -81,18 +83,48 @@ class ActivityServiceTest {
     void testUpdate_ShouldCallUpdateMethodForDao() {
         Professor professor = new Professor("1", "name", "surname", "q");
         Course course = new Course("name", "description");
+        Activity expected = new Activity(1, professor, course, new Timestamp(789), new Timestamp(101));
         ProfessorDto professorDto = new ProfessorDto("1", "name", "surname", "q");
         CourseDto courseDto = new CourseDto("name", "description");
         ActivityDto activity = new ActivityDto(1, professorDto, courseDto, new Timestamp(789), new Timestamp(101));
+        when(dao.existsById(anyInt())).thenReturn(true);
         service.update(activity);
-        Activity expected = new Activity(1, professor, course, new Timestamp(789), new Timestamp(101));
         verify(dao, times(1)).update(expected);
     }
 
     @Test
     void testDeleteById_ShouldCallDeleteByIdMethodForDao() {
+        when(dao.existsById(anyInt())).thenReturn(true);
         service.deleteById(anyInt());
         verify(dao, times(1)).deleteById(anyInt());
+    }
+
+    @Test
+    void testAdd_ShouldThrowEntityAlreadyExistsException() {
+        ProfessorDto professorDto = new ProfessorDto("1", "name", "surname", "q");
+        CourseDto courseDto = new CourseDto("name", "description");
+        when(dao.existsById(anyInt())).thenReturn(true);
+        ActivityDto activityDto = new ActivityDto(1, professorDto, courseDto, new Timestamp(789), new Timestamp(101));
+        assertThrows(EntityAlreadyExistsException.class, () -> service.add(activityDto));
+    }
+
+    @Test
+    void testUpdate_ShouldThrowEntityNotFoundException() {
+        ProfessorDto professorDto = new ProfessorDto("1", "name", "surname", "q");
+        CourseDto courseDto = new CourseDto("name", "description");
+        ActivityDto activityDto = new ActivityDto(1, professorDto, courseDto, new Timestamp(789), new Timestamp(101));
+        assertThrows(EntityNotFoundException.class, () -> service.update(activityDto));
+    }
+
+    @Test
+    void testDeleteById_ShouldThrowEntityNotFoundException() {
+        assertThrows(EntityNotFoundException.class, () -> service.deleteById(1));
+    }
+
+    @Test
+    void testExistsById_ShouldCallExistsByIdMethodOnDao() {
+        service.existsById(anyInt());
+        verify(dao, times(1)).existsById(anyInt());
     }
 
 }

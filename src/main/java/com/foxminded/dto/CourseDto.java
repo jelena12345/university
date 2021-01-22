@@ -47,4 +47,12 @@ public class CourseDto {
     public int hashCode() {
         return Objects.hash(name, description);
     }
+
+    @Override
+    public String toString() {
+        return "CourseDto{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

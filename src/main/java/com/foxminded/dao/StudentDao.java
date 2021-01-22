@@ -1,6 +1,8 @@
 package com.foxminded.dao;
 
 import com.foxminded.entities.Student;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -22,6 +24,7 @@ public class StudentDao {
     private static final String SURNAME = "surname";
 
     private final NamedParameterJdbcTemplate template;
+    private static final Logger logger = LoggerFactory.getLogger(StudentDao.class);
 
     @Autowired
     public StudentDao(NamedParameterJdbcTemplate template) {
@@ -40,9 +43,9 @@ public class StudentDao {
                     params,
                     new BeanPropertyRowMapper<>(Student.class));
         } catch (EmptyResultDataAccessException e) {
-            e.printStackTrace();
+            logger.error("Error trying to find Student by id = {}", id, e);
+            return null;
         }
-        return null;
     }
 
     public Student findByPersonalId(String personalId) {
@@ -52,9 +55,9 @@ public class StudentDao {
                     params,
                     new BeanPropertyRowMapper<>(Student.class));
         } catch (EmptyResultDataAccessException e) {
-            e.printStackTrace();
+            logger.error("Error trying to find Student by personalId = {}", personalId, e);
+            return null;
         }
-        return null;
     }
 
     public int add(Student student) {
@@ -88,5 +91,19 @@ public class StudentDao {
     public void deleteByPersonalId(String personalId) {
         MapSqlParameterSource params = new MapSqlParameterSource().addValue(PERSONAL_ID, personalId);
         template.update("DELETE FROM students WHERE personal_id=:personal_id", params);
+    }
+
+    public boolean existsById(int id) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(ID, id);
+        return Objects.requireNonNull(
+                template.queryForObject("SELECT EXISTS(SELECT * FROM students WHERE id=:id)", params, Boolean.class));
+    }
+
+    public boolean existsByPersonalId(String personalId) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue(PERSONAL_ID, personalId);
+        return Objects.requireNonNull(
+                template.queryForObject("SELECT EXISTS(SELECT * FROM students WHERE personal_id=:personal_id)", params, Boolean.class));
     }
 }

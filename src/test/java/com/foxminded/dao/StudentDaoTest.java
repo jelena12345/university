@@ -9,7 +9,6 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +20,11 @@ class StudentDaoTest {
 
     @BeforeEach
     public void setUp() {
-        db = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript("classpath:schema.sql").build();
+        db = new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript("classpath:schema.sql")
+                .addScript("classpath:data.sql")
+                .build();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(db);
         dao = new StudentDao(template);
     }
@@ -33,33 +36,33 @@ class StudentDaoTest {
 
     @Test
     void testFindAll_ShouldFindAllStudents() {
-        List<Student> expected = Arrays.asList(new Student(1, "1", "name", "surname"),
-                new Student(2,"2", "name2", "surname2"));
-        dao.add(expected.get(0));
-        dao.add(expected.get(1));
         List<Student> actual = dao.findAll();
-        assertEquals(expected, actual);
+        assertEquals(2, actual.size());
     }
 
     @Test
-    void testFindById_ShouldFindCorrectStudent() {
-        Student expected = new Student(1, "1", "name", "surname");
-        dao.add(expected);
-        Student actual = dao.findById(1);
-        assertEquals(expected, actual);
+    void testFindById_ShouldFindStudent() {
+        assertNotNull(dao.findById(1));
     }
 
     @Test
-    void testFindByPersonalId_ShouldFindCorrectStudent() {
-        Student expected = new Student(1, "1", "name", "surname");
-        dao.add(expected);
-        Student actual = dao.findByPersonalId("1");
-        assertEquals(expected, actual);
+    void testFindById_ShouldReturnNull() {
+        assertNull(dao.findById(0));
+    }
+
+    @Test
+    void testFindByPersonalId_ShouldFindStudent() {
+        assertNotNull(dao.findByPersonalId("1"));
+    }
+
+    @Test
+    void testFindByPersonalId_ShouldReturnNull() {
+        assertNull(dao.findByPersonalId(""));
     }
 
     @Test
     void testAdd_ShouldAddStudent() {
-        Student expected = new Student(1, "1", "name", "surname");
+        Student expected = new Student(3, "3", "name", "surname");
         int id = dao.add(expected);
         Student actual = dao.findById(id);
         assertEquals(expected, actual);
@@ -67,9 +70,8 @@ class StudentDaoTest {
 
     @Test
     void testUpdate_ShouldUpdateValues() {
-        Student expected = new Student(1,"1", "name", "surname");
-        dao.add(expected);
-        expected.setPersonalId("2");
+        Student expected = dao.findById(1);
+        expected.setPersonalId("3");
         expected.setName("name_new");
         expected.setSurname("surname_new");
         dao.update(1, expected);
@@ -79,19 +81,33 @@ class StudentDaoTest {
 
     @Test
     void testDeleteById_ShouldFindNull() {
-        Student student = new Student(1, "1", "name", "surname");
-        dao.add(student);
         dao.deleteById(1);
-        Student actual = dao.findById(1);
-        assertNull(actual);
+        assertFalse(dao.existsById(1));
     }
 
     @Test
     void testDeleteByPersonalId_ShouldFindNull() {
-        Student student = new Student(1, "1", "name", "surname");
-        dao.add(student);
         dao.deleteByPersonalId("1");
-        Student actual = dao.findById(1);
-        assertNull(actual);
+        assertFalse(dao.existsByPersonalId("1"));
+    }
+
+    @Test
+    void testExistsById_ShouldReturnFalse() {
+        assertFalse(dao.existsById(0));
+    }
+
+    @Test
+    void testExistsById_ShouldReturnTrue() {
+        assertTrue(dao.existsById(1));
+    }
+
+    @Test
+    void testExistsByName_ShouldReturnFalse() {
+        assertFalse(dao.existsByPersonalId(""));
+    }
+
+    @Test
+    void testExistsByName_ShouldReturnTrue() {
+        assertTrue(dao.existsByPersonalId("1"));
     }
 }

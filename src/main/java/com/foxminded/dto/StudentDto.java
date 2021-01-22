@@ -26,4 +26,13 @@ public class StudentDto  extends UserDto {
     public int hashCode() {
         return Objects.hash(this.name, this.surname);
     }
+
+    @Override
+    public String toString() {
+        return "StudentDto{" +
+                "personalId='" + personalId + '\'' +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                '}';
+    }
 }

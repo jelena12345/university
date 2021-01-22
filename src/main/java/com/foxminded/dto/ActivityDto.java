@@ -86,4 +86,14 @@ public class ActivityDto {
         return Objects.hash(id, professor, course, startTime, endTime);
     }
 
+    @Override
+    public String toString() {
+        return "ActivityDto{" +
+                "id=" + id +
+                ", professor=" + professor +
+                ", course=" + course +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                '}';
+    }
 }
