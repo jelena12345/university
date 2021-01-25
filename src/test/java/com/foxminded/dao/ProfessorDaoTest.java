@@ -73,11 +73,10 @@ class ProfessorDaoTest {
     @Test
     void testUpdate_ShouldUpdateValues() {
         Professor expected = dao.findById(1);
-        expected.setPersonalId("3");
         expected.setName("name_new");
         expected.setSurname("surname_new");
         expected.setQualification("q_new");
-        dao.update(1, expected);
+        dao.update(expected);
         Professor actual = dao.findById(1);
         assertEquals(expected, actual);
     }

@@ -79,16 +79,15 @@ public class ProfessorDao {
         return Objects.requireNonNull(keyHolder.getKey()).intValue();
     }
 
-    public void update(int id, Professor professor) {
+    public void update(Professor professor) {
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue(ID, id)
-                .addValue(PERSONAL_ID, professor.getPersonalId())
+        params.addValue(PERSONAL_ID, professor.getPersonalId())
                 .addValue(NAME, professor.getName())
                 .addValue(SURNAME, professor.getSurname())
                 .addValue(QUALIFICATION, professor.getQualification());
         template.update("UPDATE professors " +
-                "SET personal_id=:personal_id, name=:name, surname=:surname, qualification=:qualification " +
-                "WHERE id=:id", params);
+                "SET name=:name, surname=:surname, qualification=:qualification " +
+                "WHERE personal_id=:personal_id", params);
     }
 
     public void deleteById(int id) {

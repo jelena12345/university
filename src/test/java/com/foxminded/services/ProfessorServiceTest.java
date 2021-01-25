@@ -71,9 +71,9 @@ class ProfessorServiceTest {
     @Test
     void testUpdate_ShouldCallUpdateMethodForDao() {
         Professor expected = new Professor("1", "name", "surname", "q");
-        when(dao.existsById(anyInt())).thenReturn(true);
-        service.update(1, new ProfessorDto("1", "name", "surname", "q"));
-        verify(dao, times(1)).update(1, expected);
+        when(dao.existsByPersonalId(anyString())).thenReturn(true);
+        service.update(new ProfessorDto("1", "name", "surname", "q"));
+        verify(dao, times(1)).update(expected);
     }
 
     @Test
@@ -100,7 +100,7 @@ class ProfessorServiceTest {
     @Test
     void testUpdate_ShouldThrowEntityNotFoundException() {
         ProfessorDto professorDto = new ProfessorDto("1", "name", "surname", "q");
-        assertThrows(EntityNotFoundException.class, () -> service.update(1, professorDto));
+        assertThrows(EntityNotFoundException.class, () -> service.update(professorDto));
     }
 
     @Test

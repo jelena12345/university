@@ -62,14 +62,14 @@ public class ProfessorService {
         dao.add(mapper.map(professor, Professor.class));
     }
 
-    public void update(int id, ProfessorDto professor) {
+    public void update(ProfessorDto professor) {
         logger.debug("Updating ProfessorDto");
-        logger.trace("Updating ProfessorDto: {} with provided id: {}", professor, id);
-        if (!dao.existsById(id)) {
-            logger.warn("Not found Professor with id: {}", id);
-            throw new EntityNotFoundException("Not found Professor with id: " + id);
+        logger.trace("Updating ProfessorDto: {} ", professor);
+        if (!dao.existsByPersonalId(professor.getPersonalId())) {
+            logger.warn("Not found Professor with personal id: {}", professor.getPersonalId());
+            throw new EntityNotFoundException("Not found Professor with personal id: " + professor.getPersonalId());
         }
-        dao.update(id, mapper.map(professor, Professor.class));
+        dao.update(mapper.map(professor, Professor.class));
     }
 
     public void deleteById(int id) {

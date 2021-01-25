@@ -1,11 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
   <head>
-    <title>Index</title>
+    <title>Login</title>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <style>
+      .form-signin {
+        max-width: 330px;
+        margin: auto;
+      }
+    </style>
   </head>
-  <body>
-  This is index
-  with new text
-  <a href="/test">Test</a>
+  <body class="text-center">
+    <main class="form-signin">
+      <form th:action="@{/signIn}" method="POST">
+        <h1>University</h1>
+        <h2 class="h3 mb-3 fw-normal">Please sign in</h2>
+        <label for="personalId" class="visually-hidden">Enter personal id</label>
+        <input type="text" id="personalId" class="form-control" th:name="personalId" placeholder="Personal Id" required autofocus>
+        <label for="selectRole" class="visually-hidden">Select Role</label>
+        <select id="selectRole" class="form-control">
+          <option value="professor" selected>Professor</option>
+          <option value="student">Student</option>
+        </select>
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+      </form>
+    </main>
   </body>
 </html>
