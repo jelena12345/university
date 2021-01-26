@@ -6,21 +6,21 @@ import java.util.Objects;
 public class ActivityDto {
 
     private Integer id;
-    private ProfessorDto professor;
+    private UserDto user;
     private CourseDto course;
     private Timestamp startTime;
     private Timestamp endTime;
 
-    public ActivityDto(Integer id, ProfessorDto professor, CourseDto course, Timestamp startTime, Timestamp endTime) {
+    public ActivityDto(Integer id, UserDto user, CourseDto course, Timestamp startTime, Timestamp endTime) {
         this.id = id;
-        this.professor = professor;
+        this.user = user;
         this.course = course;
         this.startTime = startTime;
         this.endTime = endTime;
     }
 
-    public ActivityDto(ProfessorDto professor, CourseDto course, Timestamp startTime, Timestamp endTime) {
-        this(null, professor, course, startTime, endTime);
+    public ActivityDto(UserDto user, CourseDto course, Timestamp startTime, Timestamp endTime) {
+        this(null, user, course, startTime, endTime);
     }
 
     private ActivityDto() { }
@@ -33,12 +33,12 @@ public class ActivityDto {
         this.id = id;
     }
 
-    public ProfessorDto getProfessor() {
-        return professor;
+    public UserDto getUser() {
+        return user;
     }
 
-    public void setProfessor(ProfessorDto professor) {
-        this.professor = professor;
+    public void setUser(UserDto user) {
+        this.user = user;
     }
 
     public CourseDto getCourse() {
@@ -75,7 +75,7 @@ public class ActivityDto {
         }
         return (o instanceof ActivityDto)
                 && (((ActivityDto) o).getId().equals(this.id))
-                && (((ActivityDto) o).getProfessor().equals(this.professor))
+                && (((ActivityDto) o).getUser().equals(this.user))
                 && (((ActivityDto) o).getCourse().equals(this.course))
                 && (((ActivityDto) o).getStartTime().equals(this.startTime))
                 && (((ActivityDto) o).getEndTime().equals(this.endTime));
@@ -83,14 +83,14 @@ public class ActivityDto {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, professor, course, startTime, endTime);
+        return Objects.hash(id, user, course, startTime, endTime);
     }
 
     @Override
     public String toString() {
         return "ActivityDto{" +
                 "id=" + id +
-                ", professor=" + professor +
+                ", professor=" + user +
                 ", course=" + course +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +

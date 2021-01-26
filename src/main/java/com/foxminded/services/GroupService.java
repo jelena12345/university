@@ -3,10 +3,10 @@ package com.foxminded.services;
 import com.foxminded.dao.GroupDao;
 import com.foxminded.dto.CourseDto;
 import com.foxminded.dto.GroupDto;
-import com.foxminded.dto.StudentDto;
+import com.foxminded.dto.UserDto;
 import com.foxminded.entities.Course;
 import com.foxminded.entities.Group;
-import com.foxminded.entities.Student;
+import com.foxminded.entities.User;
 import com.foxminded.services.exceptions.EntityAlreadyExistsException;
 import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
@@ -30,7 +30,7 @@ public class GroupService {
         this.dao = dao;
     }
 
-    PropertyMap<StudentDto, Student> skipIdFieldMap = new PropertyMap<StudentDto, Student>() {
+    PropertyMap<UserDto, User> skipIdFieldMap = new PropertyMap<UserDto, User>() {
         protected void configure() {
             skip().setId(null);
         }
@@ -43,29 +43,29 @@ public class GroupService {
         return mapper.map(group, GroupDto.class);
     }
 
-    public void add(StudentDto studentDto, CourseDto courseDto) {
-        logger.debug("Adding StudentDto for CourseDto");
-        logger.trace("Adding StudentDto: {} for CourseDto: {}", studentDto, courseDto);
-        if (dao.existsCourseForStudent(mapper.map(studentDto, Student.class), mapper.map(courseDto, Course.class))) {
-            logger.warn("Student {} for Course {} already exists.", studentDto, courseDto);
-            throw new EntityAlreadyExistsException("Student " + studentDto + " for Course " + courseDto + " already exists.");
+    public void add(UserDto userDto, CourseDto courseDto) {
+        logger.debug("Adding UserDto for CourseDto");
+        logger.trace("Adding UserDto: {} for CourseDto: {}", userDto, courseDto);
+        if (dao.existsCourseForUser(mapper.map(userDto, User.class), mapper.map(courseDto, Course.class))) {
+            logger.warn("User {} for Course {} already exists.", userDto, courseDto);
+            throw new EntityAlreadyExistsException("User " + userDto + " for Course " + courseDto + " already exists.");
         }
-        dao.add(mapper.map(studentDto, Student.class), mapper.map(courseDto, Course.class));
+        dao.add(mapper.map(userDto, User.class), mapper.map(courseDto, Course.class));
     }
 
-    public void delete(StudentDto studentDto, CourseDto courseDto) {
-        logger.debug("Deleting StudentDto for CourseDto");
-        logger.trace("Deleting StudentDto: {} for CourseDto: {}", studentDto, courseDto);
-        if (!dao.existsCourseForStudent(mapper.map(studentDto, Student.class), mapper.map(courseDto, Course.class))) {
-            logger.warn("Not found Student : {} for Course {}", studentDto, courseDto);
-            throw new EntityNotFoundException("Not found Student : " + studentDto + " with Course: " + courseDto);
+    public void delete(UserDto userDto, CourseDto courseDto) {
+        logger.debug("Deleting UserDto for CourseDto");
+        logger.trace("Deleting UserDto: {} for CourseDto: {}", userDto, courseDto);
+        if (!dao.existsCourseForUser(mapper.map(userDto, User.class), mapper.map(courseDto, Course.class))) {
+            logger.warn("Not found User : {} for Course {}", userDto, courseDto);
+            throw new EntityNotFoundException("Not found User : " + userDto + " with Course: " + courseDto);
         }
-        dao.delete(mapper.map(studentDto, Student.class), mapper.map(courseDto, Course.class));
+        dao.delete(mapper.map(userDto, User.class), mapper.map(courseDto, Course.class));
     }
 
-    public boolean existsCourseForStudent(StudentDto studentDto, CourseDto courseDto) {
-        logger.debug("Checking if StudentDto added to CourseDto");
-        logger.trace("Checking if StudentDto: {} added to CourseDto: {}", studentDto, courseDto);
-        return dao.existsCourseForStudent(mapper.map(studentDto, Student.class), mapper.map(courseDto, Course.class));
+    public boolean existsCourseForUser(UserDto userDto, CourseDto courseDto) {
+        logger.debug("Checking if UserDto added to CourseDto");
+        logger.trace("Checking if UserDto: {} added to CourseDto: {}", userDto, courseDto);
+        return dao.existsCourseForUser(mapper.map(userDto, User.class), mapper.map(courseDto, Course.class));
     }
 }

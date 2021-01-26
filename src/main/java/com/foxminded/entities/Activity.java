@@ -6,21 +6,21 @@ import java.util.Objects;
 public class Activity {
 
     private Integer id;
-    private Professor professor;
+    private User user;
     private Course course;
     private Timestamp startTime;
     private Timestamp endTime;
 
-    public Activity(Integer id, Professor professor, Course course, Timestamp startTime, Timestamp endTime) {
+    public Activity(Integer id, User user, Course course, Timestamp startTime, Timestamp endTime) {
         this.id = id;
-        this.professor = professor;
+        this.user = user;
         this.course = course;
         this.startTime = startTime;
         this.endTime = endTime;
     }
 
-    public Activity(Professor professor, Course course, Timestamp startTime, Timestamp endTime) {
-        this(null, professor, course, startTime, endTime);
+    public Activity(User user, Course course, Timestamp startTime, Timestamp endTime) {
+        this(null, user, course, startTime, endTime);
     }
 
     private Activity() { }
@@ -33,12 +33,12 @@ public class Activity {
         this.id = id;
     }
 
-    public Professor getProfessor() {
-        return professor;
+    public User getUser() {
+        return user;
     }
 
-    public void setProfessor(Professor professor) {
-        this.professor = professor;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Course getCourse() {
@@ -75,7 +75,7 @@ public class Activity {
         }
         return (o instanceof Activity)
                 && (((Activity) o).getId().equals(this.id))
-                && (((Activity) o).getProfessor().equals(this.professor))
+                && (((Activity) o).getUser().equals(this.user))
                 && (((Activity) o).getCourse().equals(this.course))
                 && (((Activity) o).getStartTime().equals(this.startTime))
                 && (((Activity) o).getEndTime().equals(this.endTime));
@@ -83,7 +83,7 @@ public class Activity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, professor, course, startTime, endTime);
+        return Objects.hash(id, user, course, startTime, endTime);
     }
 
 }

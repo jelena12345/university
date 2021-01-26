@@ -28,11 +28,11 @@ public class ActivityDao {
 
     public List<Activity> findAll() {
         return template.query("SELECT activities.id, " +
-                        "professor_id, personal_id, professors.name, surname, qualification, " +
+                        "user_id, personal_id, role, users.name, surname, about, " +
                         "course_id, courses.name, description, " +
                         "start_time, end_time " +
                         "FROM activities " +
-                        "INNER JOIN professors ON professor_id=professors.id " +
+                        "INNER JOIN users ON user_id=users.id " +
                         "INNER JOIN courses ON course_id=courses.id",
                 new ActivityMapper());
     }
@@ -41,11 +41,11 @@ public class ActivityDao {
         MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
         try {
             return template.queryForObject("SELECT activities.id, " +
-                    "professor_id, personal_id, professors.name, surname, qualification, " +
+                    "user_id, personal_id, role, users.name, surname, about, " +
                     "course_id, courses.name, description, " +
                     "start_time, end_time " +
                     "FROM activities " +
-                    "INNER JOIN professors ON professor_id=professors.id " +
+                    "INNER JOIN users ON user_id=users.id " +
                     "INNER JOIN courses ON course_id=courses.id WHERE activities.id=:id",
                     params,
                     new ActivityMapper());
@@ -58,13 +58,13 @@ public class ActivityDao {
     public Integer add(Activity activity) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("professor_id", activity.getProfessor().getId())
+        params.addValue("user_id", activity.getUser().getId())
                 .addValue("course_id", activity.getCourse().getId())
                 .addValue("start_time", activity.getStartTime())
                 .addValue("end_time", activity.getEndTime());
 
-        template.update("INSERT INTO activities(professor_id, course_id, start_time, end_time) " +
-                        "VALUES(:professor_id, :course_id, :start_time, :end_time)",
+        template.update("INSERT INTO activities(user_id, course_id, start_time, end_time) " +
+                        "VALUES(:user_id, :course_id, :start_time, :end_time)",
                 params,
                 keyHolder,
                 new String[]{"id"});
@@ -75,11 +75,11 @@ public class ActivityDao {
     public void update(Activity activity) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("id", activity.getId())
-                .addValue("professor_id", activity.getProfessor().getId())
+                .addValue("user_id", activity.getUser().getId())
                 .addValue("course_id", activity.getCourse().getId())
                 .addValue("start_time", activity.getStartTime())
                 .addValue("end_time", activity.getEndTime());
-        template.update("UPDATE activities SET professor_id=:professor_id, course_id=:course_id, " +
+        template.update("UPDATE activities SET user_id=:user_id, course_id=:course_id, " +
                 "start_time=:start_time, end_time=:end_time WHERE id=:id", params);
     }
 

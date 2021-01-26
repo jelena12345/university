@@ -5,11 +5,11 @@ import java.util.Objects;
 
 public class GroupDto {
     private CourseDto course;
-    private List<StudentDto> students;
+    private List<UserDto> users;
 
-    public GroupDto(CourseDto course, List<StudentDto> students) {
+    public GroupDto(CourseDto course, List<UserDto> users) {
         this.course = course;
-        this.students = students;
+        this.users = users;
     }
 
     private GroupDto() { }
@@ -22,12 +22,12 @@ public class GroupDto {
         this.course = course;
     }
 
-    public List<StudentDto> getStudents() {
-        return students;
+    public List<UserDto> getUsers() {
+        return users;
     }
 
-    public void setStudents(List<StudentDto> students) {
-        this.students = students;
+    public void setUsers(List<UserDto> users) {
+        this.users = users;
     }
 
     @Override
@@ -40,19 +40,19 @@ public class GroupDto {
         }
         GroupDto groupDto = (GroupDto) o;
         return course.equals(groupDto.course) &&
-                students.equals(groupDto.students);
+                users.equals(groupDto.users);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(course, students);
+        return Objects.hash(course, users);
     }
 
     @Override
     public String toString() {
         return "GroupDto{" +
                 "course=" + course +
-                ", students count=" + students.size() +
+                ", students count=" + users.size() +
                 '}';
     }
 }

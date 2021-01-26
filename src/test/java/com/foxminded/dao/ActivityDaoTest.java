@@ -19,7 +19,7 @@ class ActivityDaoTest {
     private EmbeddedDatabase db;
     private ActivityDao activityDao;
     private CourseDao courseDao;
-    private ProfessorDao professorDao;
+    private UserDao userDao;
 
     @BeforeEach
     public void setUp() {
@@ -31,7 +31,7 @@ class ActivityDaoTest {
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(db);
         activityDao = new ActivityDao(template);
         courseDao = new CourseDao(template);
-        professorDao = new ProfessorDao(template);
+        userDao = new UserDao(template);
     }
 
     @AfterEach
@@ -57,7 +57,7 @@ class ActivityDaoTest {
 
     @Test
     void testAdd_ShouldAddCorrectActivity() {
-        Activity expected = new Activity(3, professorDao.findById(1), courseDao.findById(1), new Timestamp(123), new Timestamp(456));
+        Activity expected = new Activity(3, userDao.findById(1), courseDao.findById(1), new Timestamp(123), new Timestamp(456));
         int id = activityDao.add(expected);
         Activity actual = activityDao.findById(id);
         assertEquals(expected, actual);
@@ -66,7 +66,7 @@ class ActivityDaoTest {
     @Test
     void testUpdate_ShouldUpdateValues() {
         Activity expected = activityDao.findById(1);
-        expected.setProfessor(professorDao.findById(1));
+        expected.setUser(userDao.findById(1));
         expected.setCourse(courseDao.findById(1));
         expected.setStartTime(new Timestamp(236));
         expected.setEndTime(new Timestamp(565));

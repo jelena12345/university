@@ -58,14 +58,8 @@ public class AppBeans {
 
     @Bean
     @Scope("prototype")
-    public ProfessorDao professorDao() {
-        return new ProfessorDao(jdbcTemplate());
-    }
-
-    @Bean
-    @Scope("prototype")
-    public StudentDao studentDao() {
-        return new StudentDao(jdbcTemplate());
+    public UserDao userDao() {
+        return new UserDao(jdbcTemplate());
     }
 
     @Bean
@@ -110,14 +104,8 @@ public class AppBeans {
 
     @Bean
     @Scope("prototype")
-    public ProfessorService professorService() {
-        return new ProfessorService(modelMapper(), professorDao());
-    }
-
-    @Bean
-    @Scope("prototype")
-    public StudentService studentService() {
-        return new StudentService(modelMapper(), studentDao());
+    public UserService userService() {
+        return new UserService(modelMapper(), userDao());
     }
 
 }

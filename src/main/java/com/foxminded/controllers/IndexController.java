@@ -1,6 +1,6 @@
 package com.foxminded.controllers;
 
-import com.foxminded.services.ProfessorService;
+import com.foxminded.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,10 +13,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/")
 public class IndexController {
 
-    private final ProfessorService service;
+    private final UserService service;
 
     @Autowired
-    IndexController(ProfessorService service) {
+    IndexController(UserService service) {
         this.service = service;
     }
 
@@ -28,7 +28,7 @@ public class IndexController {
     @PostMapping("signIn")
     public String signIn(RedirectAttributes redirectAttributes,
                          @ModelAttribute("personalId")String personalId) {
-        redirectAttributes.addFlashAttribute("professor", service.findByPersonalId(personalId));
+        redirectAttributes.addFlashAttribute("user", service.findByPersonalId(personalId));
         return "redirect:/profile";
     }
 

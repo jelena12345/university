@@ -3,10 +3,10 @@ package com.foxminded.services;
 import com.foxminded.dao.ActivityDao;
 import com.foxminded.dto.ActivityDto;
 import com.foxminded.dto.CourseDto;
-import com.foxminded.dto.ProfessorDto;
+import com.foxminded.dto.UserDto;
 import com.foxminded.entities.Activity;
 import com.foxminded.entities.Course;
-import com.foxminded.entities.Professor;
+import com.foxminded.entities.User;
 import com.foxminded.services.exceptions.EntityAlreadyExistsException;
 import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ public class ActivityService {
     private final ActivityDao dao;
     private static final Logger logger = LoggerFactory.getLogger(ActivityService.class);
 
-    PropertyMap<ProfessorDto, Professor> skipProfessorIdFieldMap = new PropertyMap<ProfessorDto, Professor>() {
+    PropertyMap<UserDto, User> skipUserIdFieldMap = new PropertyMap<UserDto, User>() {
         protected void configure() {
             skip().setId(null);
         }
@@ -41,7 +41,7 @@ public class ActivityService {
     public ActivityService(ModelMapper mapper, ActivityDao dao) {
         this.mapper = mapper;
         this.mapper.addMappings(skipCourseIdFieldMap);
-        this.mapper.addMappings(skipProfessorIdFieldMap);
+        this.mapper.addMappings(skipUserIdFieldMap);
         this.dao = dao;
     }
 

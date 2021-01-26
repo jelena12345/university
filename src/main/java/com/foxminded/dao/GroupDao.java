@@ -2,7 +2,7 @@ package com.foxminded.dao;
 
 import com.foxminded.entities.Course;
 import com.foxminded.entities.Group;
-import com.foxminded.entities.Student;
+import com.foxminded.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -17,7 +17,7 @@ public class GroupDao {
 
     private final NamedParameterJdbcTemplate template;
     private static final String COURSE_ID = "course_id";
-    private static final String STUDENT_ID = "student_id";
+    private static final String USER_ID = "user_id";
 
     @Autowired
     public GroupDao(NamedParameterJdbcTemplate template) {
@@ -26,37 +26,37 @@ public class GroupDao {
 
     public Group findGroupForCourse(Course course) {
         MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", course.getId());
-        List<Student> students = template.query("SELECT students.id, students.name, students.surname " +
-                        "FROM student_course " +
-                        "INNER JOIN students ON student_course.student_id=students.id " +
-                        "WHERE student_course.course_id=:id " +
-                        "ORDER BY student_course.student_id;",
+        List<User> users = template.query("SELECT users.id, users.name, users.surname " +
+                        "FROM user_course " +
+                        "INNER JOIN users ON user_course.user_id=users.id " +
+                        "WHERE user_course.course_id=:id " +
+                        "ORDER BY user_course.user_id;",
                 params,
-                new BeanPropertyRowMapper<>(Student.class));
-        return new Group(course, students);
+                new BeanPropertyRowMapper<>(User.class));
+        return new Group(course, users);
     }
 
-    public void add(Student student, Course course) {
+    public void add(User student, Course course) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue(COURSE_ID, course.getId())
-                .addValue(STUDENT_ID, student.getId());
-        template.update("INSERT INTO student_course(student_id, course_id) VALUES(:student_id, :course_id);",
+                .addValue(USER_ID, student.getId());
+        template.update("INSERT INTO user_course(user_id, course_id) VALUES(:user_id, :course_id);",
                 params);
     }
 
-    public void delete(Student student, Course course) {
+    public void delete(User user, Course course) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue(COURSE_ID, course.getId())
-                .addValue(STUDENT_ID, student.getId());
-        template.update("DELETE FROM student_course WHERE student_id=:student_id AND course_id=:course_id;", params);
+                .addValue(USER_ID, user.getId());
+        template.update("DELETE FROM user_course WHERE user_id=:user_id AND course_id=:course_id;", params);
     }
 
-    public boolean existsCourseForStudent(Student student, Course course) {
+    public boolean existsCourseForUser(User user, Course course) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue(COURSE_ID, course.getId())
-                .addValue(STUDENT_ID, student.getId());
+                .addValue(USER_ID, user.getId());
         return Objects.requireNonNull(
-                template.queryForObject("SELECT EXISTS(SELECT * FROM student_course " +
-                        "WHERE student_id=:student_id AND course_id=:course_id)", params, Boolean.class));
+                template.queryForObject("SELECT EXISTS(SELECT * FROM user_course " +
+                        "WHERE user_id=:user_id AND course_id=:course_id)", params, Boolean.class));
     }
 }

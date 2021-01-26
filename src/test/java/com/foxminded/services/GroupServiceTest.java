@@ -3,10 +3,10 @@ package com.foxminded.services;
 import com.foxminded.dao.GroupDao;
 import com.foxminded.dto.CourseDto;
 import com.foxminded.dto.GroupDto;
-import com.foxminded.dto.StudentDto;
+import com.foxminded.dto.UserDto;
 import com.foxminded.entities.Course;
 import com.foxminded.entities.Group;
-import com.foxminded.entities.Student;
+import com.foxminded.entities.User;
 import com.foxminded.services.exceptions.EntityAlreadyExistsException;
 import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,11 +38,11 @@ class GroupServiceTest {
     void testFindGroupForCourse_ShouldFindCorrectGroup() {
         CourseDto courseDto = new CourseDto("name", "description");
         Group group = new Group(new Course(1, "name", "description"),
-                Arrays.asList(new Student(1,  "1", "name", "surname"),
-                        new Student(2,  "2", "name2", "surname2")));
+                Arrays.asList(new User(1,  "1", "role","name", "surname", "about"),
+                        new User(2,  "2", "role","name2", "surname2", "about2")));
         GroupDto expected = new GroupDto(courseDto,
-                Arrays.asList(new StudentDto("1", "name", "surname"),
-                        new StudentDto("2", "name2", "surname2")));
+                Arrays.asList(new UserDto("1", "role","name", "surname", "about"),
+                        new UserDto("2", "role", "name2", "surname2", "about2")));
         when(dao.findGroupForCourse(any())).thenReturn(group);
         GroupDto actual = service.findGroupForCourse(courseDto);
         assertEquals(expected, actual);
@@ -51,46 +51,46 @@ class GroupServiceTest {
     @Test
     void testAdd_ShouldCallAddMethodForDao() {
         service.add(
-                new StudentDto("1", "name", "surname"),
+                new UserDto("1", "role", "name", "surname", "about"),
                 new CourseDto("name", "description"));
         verify(dao, times(1)).add(
-                new Student("1", "name", "surname"),
+                new User("1", "role", "name", "surname", "about"),
                 new Course("name", "description"));
     }
 
     @Test
     void testDelete_ShouldCallDeleteMethodForDao() {
-        when(dao.existsCourseForStudent(any(), any())).thenReturn(true);
+        when(dao.existsCourseForUser(any(), any())).thenReturn(true);
         service.delete(
-                new StudentDto("1", "name", "surname"),
+                new UserDto("1", "role", "name", "surname", "about"),
                 new CourseDto("name", "description"));
         verify(dao, times(1)).delete(
-                new Student("1", "name", "surname"),
+                new User("1", "role", "name", "surname", "about"),
                 new Course("name", "description"));
     }
 
     @Test
     void testExistsGroupForCourse_ShouldCallExistsByNameMethodOnDao() {
-        Student student = new Student("1", "name", "surname");
-        StudentDto studentDto = new StudentDto("1", "name", "surname");
+        User user = new User("1", "role", "name", "surname", "about");
+        UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
         Course course = new Course("name", "description");
         CourseDto courseDto = new CourseDto("name", "description");
-        service.existsCourseForStudent(studentDto, courseDto);
-        verify(dao, times(1)).existsCourseForStudent(student, course);
+        service.existsCourseForUser(userDto, courseDto);
+        verify(dao, times(1)).existsCourseForUser(user, course);
     }
 
     @Test
     void testAdd_ShouldThrowEntityAlreadyExistsException() {
         CourseDto courseDto = new CourseDto("name", "description");
-        StudentDto studentDto = new StudentDto("1", "name", "surname");
-        when(dao.existsCourseForStudent(any(), any())).thenReturn(true);
-        assertThrows(EntityAlreadyExistsException.class, () -> service.add(studentDto, courseDto));
+        UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
+        when(dao.existsCourseForUser(any(), any())).thenReturn(true);
+        assertThrows(EntityAlreadyExistsException.class, () -> service.add(userDto, courseDto));
     }
 
     @Test
     void testDelete_ShouldThrowEntityNotFoundException() {
         CourseDto courseDto = new CourseDto("name", "description");
-        StudentDto studentDto = new StudentDto("1", "name", "surname");
-        assertThrows(EntityNotFoundException.class, () -> service.delete(studentDto, courseDto));
+        UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
+        assertThrows(EntityNotFoundException.class, () -> service.delete(userDto, courseDto));
     }
 }

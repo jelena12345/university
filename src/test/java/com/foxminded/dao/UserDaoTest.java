@@ -1,6 +1,6 @@
 package com.foxminded.dao;
 
-import com.foxminded.entities.Student;
+import com.foxminded.entities.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,11 +12,12 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class StudentDaoTest {
+class UserDaoTest {
 
     private EmbeddedDatabase db;
-    private StudentDao dao;
+    private UserDao dao;
 
     @BeforeEach
     public void setUp() {
@@ -26,7 +27,7 @@ class StudentDaoTest {
                 .addScript("classpath:data.sql")
                 .build();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(db);
-        dao = new StudentDao(template);
+        dao = new UserDao(template);
     }
 
     @AfterEach
@@ -35,13 +36,13 @@ class StudentDaoTest {
     }
 
     @Test
-    void testFindAll_ShouldFindAllStudents() {
-        List<Student> actual = dao.findAll();
+    void testFindAll_ShouldFindAllRecords() {
+        List<User> actual = dao.findAll();
         assertEquals(2, actual.size());
     }
 
     @Test
-    void testFindById_ShouldFindStudent() {
+    void testFindById_ShouldFindRecord() {
         assertNotNull(dao.findById(1));
     }
 
@@ -51,7 +52,7 @@ class StudentDaoTest {
     }
 
     @Test
-    void testFindByPersonalId_ShouldFindStudent() {
+    void testFindByPersonalId_ShouldFindRecord() {
         assertNotNull(dao.findByPersonalId("1"));
     }
 
@@ -61,21 +62,21 @@ class StudentDaoTest {
     }
 
     @Test
-    void testAdd_ShouldAddStudent() {
-        Student expected = new Student(3, "3", "name", "surname");
+    void testAdd_ShouldAddCorrectRecord() {
+        User expected = new User(3, "3", "role", "name", "surname", "about");
         int id = dao.add(expected);
-        Student actual = dao.findById(id);
+        User actual = dao.findById(id);
         assertEquals(expected, actual);
     }
 
     @Test
     void testUpdate_ShouldUpdateValues() {
-        Student expected = dao.findById(1);
-        expected.setPersonalId("3");
+        User expected = dao.findById(1);
         expected.setName("name_new");
         expected.setSurname("surname_new");
-        dao.update(1, expected);
-        Student actual = dao.findById(1);
+        expected.setAbout("about_new");
+        dao.update(expected);
+        User actual = dao.findById(1);
         assertEquals(expected, actual);
     }
 

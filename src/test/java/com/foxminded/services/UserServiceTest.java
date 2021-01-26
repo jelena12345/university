@@ -1,8 +1,8 @@
 package com.foxminded.services;
 
-import com.foxminded.dao.StudentDao;
-import com.foxminded.dto.StudentDto;
-import com.foxminded.entities.Student;
+import com.foxminded.dao.UserDao;
+import com.foxminded.dto.UserDto;
+import com.foxminded.entities.User;
 import com.foxminded.services.exceptions.EntityAlreadyExistsException;
 import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,59 +21,59 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class StudentServiceTest {
+class UserServiceTest {
 
     @Mock
-    private StudentDao dao;
-    private StudentService service;
+    private UserDao dao;
+    private UserService service;
 
     @BeforeEach
     void setUp() {
-        service = new StudentService(new ModelMapper(), dao);
+        service = new UserService(new ModelMapper(), dao);
     }
 
     @Test
-    void testFindAll_ShouldReturnAllStudents() {
-        List<Student> students = Arrays.asList(new Student(1, "1", "name", "surname"),
-                new Student(2, "2", "name2", "surname2"));
-        List<StudentDto> expected = Arrays.asList(new StudentDto("1", "name", "surname"),
-                new StudentDto("2", "name2", "surname2"));
-        when(dao.findAll()).thenReturn(students);
-        List<StudentDto> actual = service.findAll();
+    void testFindAll_ShouldReturnAllRecords() {
+        List<User> users = Arrays.asList(new User(1, "1", "role","name", "surname", "q"),
+                new User(2, "2", "role","name2", "surname2", "q2"));
+        List<UserDto> expected = Arrays.asList(new UserDto("1", "role","name", "surname", "q"),
+                new UserDto("2", "role","name2", "surname2", "q2"));
+        when(dao.findAll()).thenReturn(users);
+        List<UserDto> actual = service.findAll();
         assertEquals(expected, actual);
     }
 
     @Test
-    void testFindById_ShouldReturnCorrectStudent() {
-        Student student = new Student(1, "1", "name", "surname");
-        StudentDto expected = new StudentDto("1", "name", "surname");
-        when(dao.findById(anyInt())).thenReturn(student);
-        StudentDto actual = service.findById(anyInt());
+    void testFindById_ShouldReturnCorrectRecord() {
+        User user = new User(1, "1", "role","name", "surname", "q");
+        UserDto expected = new UserDto("1", "role","name", "surname", "q");
+        when(dao.findById(anyInt())).thenReturn(user);
+        UserDto actual = service.findById(anyInt());
         assertEquals(expected, actual);
     }
 
     @Test
-    void testFindByPersonalId_ShouldReturnCorrectStudent() {
-        Student student = new Student(1, "1", "name", "surname");
-        StudentDto expected = new StudentDto("1", "name", "surname");
-        when(dao.findByPersonalId(anyString())).thenReturn(student);
-        StudentDto actual = service.findByPersonalId(anyString());
+    void testFindByPersonalId_ShouldReturnCorrectRecord() {
+        User user = new User(1, "1", "role","name", "surname", "q");
+        UserDto expected = new UserDto("1", "role","name", "surname", "q");
+        when(dao.findByPersonalId(anyString())).thenReturn(user);
+        UserDto actual = service.findByPersonalId(anyString());
         assertEquals(expected, actual);
     }
 
     @Test
     void testAdd_ShouldCallAddMethodForDao() {
-        service.add(new StudentDto("1", "name", "surname"));
-        Student expected = new Student("1", "name", "surname");
+        service.add(new UserDto("1", "role","name", "surname", "q"));
+        User expected = new User("1", "role","name", "surname", "q");
         verify(dao, times(1)).add(expected);
     }
 
     @Test
     void testUpdate_ShouldCallUpdateMethodForDao() {
-        Student expected = new Student("1", "name", "surname");
-        when(dao.existsById(anyInt())).thenReturn(true);
-        service.update(1, new StudentDto("1", "name", "surname"));
-        verify(dao, times(1)).update(1, expected);
+        User expected = new User("1", "role","name", "surname", "q");
+        when(dao.existsByPersonalId(anyString())).thenReturn(true);
+        service.update(new UserDto("1", "role","name", "surname", "q"));
+        verify(dao, times(1)).update(expected);
     }
 
     @Test
@@ -92,15 +92,15 @@ class StudentServiceTest {
 
     @Test
     void testAdd_ShouldThrowEntityAlreadyExistsException() {
-        StudentDto studentDto = new StudentDto("1", "name", "surname");
+        UserDto userDto = new UserDto("1", "role","name", "surname", "q");
         when(dao.existsByPersonalId(anyString())).thenReturn(true);
-        assertThrows(EntityAlreadyExistsException.class, () -> service.add(studentDto));
+        assertThrows(EntityAlreadyExistsException.class, () -> service.add(userDto));
     }
 
     @Test
     void testUpdate_ShouldThrowEntityNotFoundException() {
-        StudentDto studentDto = new StudentDto("1", "name", "surname");
-        assertThrows(EntityNotFoundException.class, () -> service.update(1, studentDto));
+        UserDto userDto = new UserDto("1", "role","name", "surname", "q");
+        assertThrows(EntityNotFoundException.class, () -> service.update(userDto));
     }
 
     @Test
@@ -120,8 +120,8 @@ class StudentServiceTest {
     }
 
     @Test
-    void testExistsByPersonalId_ShouldCallExistsByNameMethodOnDao() {
-        service.existsByPersonalId(anyString());
+    void testExistsById_ShouldCallExistsByNameMethodOnDao() {
+        service.existsByName(anyString());
         verify(dao, times(1)).existsByPersonalId(anyString());
     }
 }
