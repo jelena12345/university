@@ -19,7 +19,7 @@ public class UserDto implements Serializable {
         this.about = about;
     }
 
-    private UserDto() { }
+    public UserDto() { }
 
     public String getRole() {
         return role;

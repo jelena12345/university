@@ -87,7 +87,7 @@ public class UserService {
         logger.trace("Deleting User by personalId: {}", personalId);
         if (!dao.existsByPersonalId(personalId)) {
             logger.warn("Not found User with personalId: {}", personalId);
-            throw new EntityNotFoundException("Not found User with name: " + personalId);
+            throw new EntityNotFoundException("Not found User with personalId: " + personalId);
         }
         dao.deleteByPersonalId(personalId);
     }

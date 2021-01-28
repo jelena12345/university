@@ -37,8 +37,10 @@ public class ProfileController {
     }
 
     @PostMapping("/delete")
-    public String deleteUser(@ModelAttribute("user") UserDto user) {
+    public String deleteUser(HttpSession session,
+                             @ModelAttribute("user") UserDto user) {
         service.deleteByPersonalId(user.getPersonalId());
+        session.removeAttribute("user");
         return "redirect:/";
     }
 

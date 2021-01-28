@@ -4,6 +4,7 @@ import com.foxminded.dto.UserDto;
 import com.foxminded.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -29,7 +30,8 @@ public class IndexController {
     }
 
     @GetMapping("/register")
-    public String registrationPage() {
+    public String registrationPage(Model model) {
+        model.addAttribute("user", new UserDto());
         return "user/registration";
     }
 

@@ -33,7 +33,7 @@
     <hr class="my-4">
     <form method="POST" th:action="@{/profile/delete}">
         <button class="w-100 btn btn-primary btn-lg" type="submit">Delete</button>
-        <input type="hidden" id="deleteId" th:value="*{personalId}">
+        <input type="hidden" id="deleteId" th:field="*{personalId}">
     </form>
 </div>
 </body>
