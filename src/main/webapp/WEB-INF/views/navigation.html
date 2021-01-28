@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang=en xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>NavigationBar</title>
+</head>
+<body>
+<div class="vertical-nav bg-white" th:fragment="sidebar" th:object="${session.user}">
+    <h1>University</h1>
+    <div class="py-4 px-3 mb-4 bg-light">
+        <a href="/profile" class="nav-link text-dark bg-light">
+            <div class="media d-flex align-items-center">
+                <em class="fas fa-user-circle mr-3 text-primary fa-3x"></em>
+                <div class="media-body">
+                    <p class="font-weight-light text-muted mb-0" th:if="*{role == 'professor'}">Professor</p>
+                    <p class="font-weight-light text-muted mb-0" th:unless="*{role == 'professor'}">Student</p>
+                    <h4 th:text = "*{name + ' ' + surname}" class="m-0" ></h4>
+                </div>
+            </div>
+        </a>
+    </div>
+    <ul class="nav flex-column bg-white mb-0">
+        <li class="nav-item">
+            <a href="/timetable" class="nav-link text-dark font-italic">
+                <em class="fas fa-calendar-alt mr-3 text-primary fa-fw"></em>
+                Timetable
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/courses" class="nav-link text-dark font-italic">
+                <em class="fas fa-clipboard mr-3 text-primary fa-fw"></em>
+                Courses
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/signOut" class="nav-link text-dark font-italic">
+                <em class="fas fa-door-open mr-3 text-primary fa-fw"></em>
+                Sign out
+            </a>
+        </li>
+    </ul>
+</div>
+</body>
+</html>
+

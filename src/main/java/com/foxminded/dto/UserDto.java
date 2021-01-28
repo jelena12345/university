@@ -1,8 +1,9 @@
 package com.foxminded.dto;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class UserDto {
+public class UserDto implements Serializable {
 
     private String personalId;
     private String role;

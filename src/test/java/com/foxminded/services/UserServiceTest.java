@@ -121,7 +121,7 @@ class UserServiceTest {
 
     @Test
     void testExistsById_ShouldCallExistsByNameMethodOnDao() {
-        service.existsByName(anyString());
+        service.existsByPersonalId(anyString());
         verify(dao, times(1)).existsByPersonalId(anyString());
     }
 }

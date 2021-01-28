@@ -98,7 +98,7 @@ public class UserService {
         return dao.existsById(id);
     }
 
-    public boolean existsByName(String personalId) {
+    public boolean existsByPersonalId(String personalId) {
         logger.debug("Checking if User exists by personalId");
         logger.trace("Checking if User exists by personalId: {}", personalId);
         return dao.existsByPersonalId(personalId);
