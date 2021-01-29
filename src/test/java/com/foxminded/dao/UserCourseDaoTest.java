@@ -12,10 +12,10 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GroupDaoTest {
+class UserCourseDaoTest {
 
     private EmbeddedDatabase db;
-    private GroupDao dao;
+    private UserCourseDao dao;
     private CourseDao courseDao;
     private UserDao userDao;
 
@@ -27,7 +27,7 @@ class GroupDaoTest {
                 .addScript("classpath:data.sql")
                 .build();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(db);
-        dao = new GroupDao(template);
+        dao = new UserCourseDao(template);
         courseDao = new CourseDao(template);
         userDao = new UserDao(template);
     }
@@ -38,9 +38,15 @@ class GroupDaoTest {
     }
 
     @Test
-    void testFindGroupForCourse_ShouldFindCorrectGroup() {
+    void testFindUsersForCourse_ShouldFindCorrectRecords() {
         Course course = courseDao.findById(1);
-        assertNotNull(dao.findGroupForCourse(course));
+        assertNotNull(dao.findUsersForCourse(course));
+    }
+
+    @Test
+    void testFindCoursesForUser_ShouldFindCorrectRecords() {
+        User user = userDao.findById(1);
+        assertNotNull(dao.findCoursesForUser(user));
     }
 
     @Test

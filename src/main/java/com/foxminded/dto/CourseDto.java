@@ -12,7 +12,7 @@ public class CourseDto {
         this.description = description;
     }
 
-    private CourseDto() { }
+    public CourseDto() { }
 
     public String getName() {
         return name;

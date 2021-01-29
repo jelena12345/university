@@ -64,8 +64,8 @@ public class AppBeans {
 
     @Bean
     @Scope("prototype")
-    public GroupDao groupDao() {
-        return new GroupDao(jdbcTemplate());
+    public UserCourseDao userCourseDao() {
+        return new UserCourseDao(jdbcTemplate());
     }
 
     @Bean
@@ -98,8 +98,8 @@ public class AppBeans {
 
     @Bean
     @Scope("prototype")
-    public GroupService groupService() {
-        return new GroupService(modelMapper(), groupDao());
+    public UserCourseService userCourseService() {
+        return new UserCourseService(modelMapper(), userCourseDao(), userDao(), courseDao());
     }
 
     @Bean

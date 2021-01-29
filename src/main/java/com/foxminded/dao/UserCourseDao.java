@@ -1,7 +1,6 @@
 package com.foxminded.dao;
 
 import com.foxminded.entities.Course;
-import com.foxminded.entities.Group;
 import com.foxminded.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -13,27 +12,37 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class GroupDao {
+public class UserCourseDao {
 
     private final NamedParameterJdbcTemplate template;
     private static final String COURSE_ID = "course_id";
     private static final String USER_ID = "user_id";
 
     @Autowired
-    public GroupDao(NamedParameterJdbcTemplate template) {
+    public UserCourseDao(NamedParameterJdbcTemplate template) {
         this.template = template;
     }
 
-    public Group findGroupForCourse(Course course) {
+    public List<User> findUsersForCourse(Course course) {
         MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", course.getId());
-        List<User> users = template.query("SELECT users.id, users.name, users.surname " +
+        return template.query("SELECT users.id, users.name, users.surname " +
                         "FROM user_course " +
                         "INNER JOIN users ON user_course.user_id=users.id " +
                         "WHERE user_course.course_id=:id " +
                         "ORDER BY user_course.user_id;",
                 params,
                 new BeanPropertyRowMapper<>(User.class));
-        return new Group(course, users);
+    }
+
+    public List<Course> findCoursesForUser(User user) {
+        MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", user.getId());
+        return template.query("SELECT courses.id, courses.name, courses.description " +
+                        "FROM user_course " +
+                        "INNER JOIN courses ON user_course.course_id=courses.id " +
+                        "WHERE user_course.user_id=:id " +
+                        "ORDER BY user_course.course_id;",
+                params,
+                new BeanPropertyRowMapper<>(Course.class));
     }
 
     public void add(User student, Course course) {

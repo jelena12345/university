@@ -12,6 +12,23 @@
 <div th:insert="navigation :: sidebar"></div>
 <div class="page-content p-5" id="content">
     <h2 class="display-4">Current courses</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <caption>Table</caption>
+            <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="course : ${courses}">
+                <td th:text="${course.name}"></td>
+                <td th:text="${course.description}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
     <hr class="my-4">
     <form method="POST" th:action="@{/courses/connect}">
         <label for="courses" class="visually-hidden">Connect to course</label>

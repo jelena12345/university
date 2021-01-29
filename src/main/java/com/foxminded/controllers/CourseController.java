@@ -1,21 +1,43 @@
 package com.foxminded.controllers;
 
+import com.foxminded.dto.CourseDto;
+import com.foxminded.dto.UserDto;
+import com.foxminded.services.CourseService;
+import com.foxminded.services.UserCourseService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/courses")
 public class CourseController {
 
+    private final CourseService service;
+    private final UserCourseService userCourseService;
+
+    @Autowired
+    CourseController(CourseService service, UserCourseService userCourseService) {
+        this.service = service;
+        this.userCourseService = userCourseService;
+    }
+
     @GetMapping()
-    public String courses() {
+    public String courses(Model model,
+                          HttpSession session) {
+        model.addAttribute("courses",
+                userCourseService.findCoursesForUser((UserDto)session.getAttribute("user")));
         return "courses/courses";
     }
 
     @GetMapping("/new")
-    public String creationPage() {
+    public String creationPage(Model model) {
+        model.addAttribute("course", new CourseDto());
         return "courses/newCourse";
     }
 
@@ -25,7 +47,10 @@ public class CourseController {
     }
 
     @PostMapping("/new")
-    public String createEvent() {
+    public String createCourse(@ModelAttribute("course") CourseDto course,
+                               HttpSession session) {
+        service.add(course);
+        userCourseService.add((UserDto)session.getAttribute("user"), course);
         return "redirect:/courses";
     }
 
