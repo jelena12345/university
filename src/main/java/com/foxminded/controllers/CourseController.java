@@ -36,9 +36,12 @@ public class CourseController {
     }
 
     @GetMapping("/new")
-    public String creationPage(Model model) {
+    public String creationPage(Model model,
+                               HttpSession session) {
         model.addAttribute("course", new CourseDto());
-        return "courses/newCourse";
+        model.addAttribute("courses",
+                userCourseService.findAvailableCoursesForUser((UserDto)session.getAttribute("user")));
+        return "courses/addCourse";
     }
 
     @GetMapping("/students")
@@ -55,7 +58,9 @@ public class CourseController {
     }
 
     @PostMapping("/connect")
-    public String connect() {
+    public String connect(@ModelAttribute("course") CourseDto course,
+                          HttpSession session) {
+        userCourseService.add((UserDto)session.getAttribute("user"), course);
         return "redirect:/courses";
     }
 }

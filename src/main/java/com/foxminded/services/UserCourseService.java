@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserCourseService {
@@ -55,6 +56,18 @@ public class UserCourseService {
         logger.trace("Searching Users for CourseDto: {}", courseDto);
         return mapper.map(dao.findUsersForCourse(
                 enrichedCourse(courseDto)), new TypeToken<List<UserDto>>() {}.getType());
+    }
+
+    public List<CourseDto> findAvailableCoursesForUser(UserDto userDto) {
+        logger.debug("Searching available Courses for UserDto");
+        logger.trace("Searching available Courses for UserDto: {}", userDto);
+        List<Course> currentCourses = dao.findCoursesForUser(enrichedUser(userDto));
+        return mapper.map(
+                courseDao.findAll()
+                        .stream()
+                        .filter(course -> !currentCourses.contains(course))
+                        .collect(Collectors.toList()),
+                new TypeToken<List<CourseDto>>() {}.getType());
     }
 
     public List<CourseDto> findCoursesForUser(UserDto userDto) {
