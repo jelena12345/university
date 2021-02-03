@@ -24,12 +24,19 @@
             <tr>
                 <th scope="col">Name</th>
                 <th scope="col">Description</th>
+                <th scope="col"></th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="course : ${courses}">
-                <td th:text="${course.name}"></td>
-                <td th:text="${course.description}"></td>
+            <tr th:each="courseItem : ${courses}">
+                <td th:text="${courseItem.name}"></td>
+                <td th:text="${courseItem.description}"></td>
+                <td>
+                    <form id="form" method="POST" th:action="@{/courses/disconnect}">
+                        <button class="btn btn-primary" type="submit">Disconnect</button>
+                        <input type="hidden" id="courseName" name="courseName" th:value="${courseItem.name}">
+                    </form>
+                </td>
             </tr>
             </tbody>
         </table>
@@ -37,7 +44,13 @@
     <div th:if="${session.user.role == 'professor'}">
         <hr class="my-4">
         <form method="GET" th:action="@{/courses/students}">
-            <button class="w-100 btn btn-primary btn-lg" type="submit">All students for course</button>
+            <label for="courses" class="visually-hidden">Choose course</label>
+            <select th:object="${course}" th:field="*{name}" id="courses" class="form-control">
+                <option th:each="dropDownItem : ${courses}"
+                        th:value="${dropDownItem.name}"
+                        th:text="${dropDownItem.name}"></option>
+            </select>
+            <button class="w-100 btn btn-primary btn-lg" type="submit">Show student list</button>
         </form>
     </div>
 </div>

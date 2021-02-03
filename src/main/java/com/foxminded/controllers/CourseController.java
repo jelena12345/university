@@ -30,6 +30,7 @@ public class CourseController {
     @GetMapping()
     public String courses(Model model,
                           HttpSession session) {
+        model.addAttribute("course", new CourseDto());
         model.addAttribute("courses",
                 userCourseService.findCoursesForUser((UserDto)session.getAttribute("user")));
         return "courses/courses";
@@ -45,7 +46,9 @@ public class CourseController {
     }
 
     @GetMapping("/students")
-    public String students() {
+    public String students(Model model,
+                           @ModelAttribute("course") CourseDto course) {
+        model.addAttribute("students", userCourseService.findStudentsForCourse(course));
         return "courses/students";
     }
 
@@ -61,6 +64,13 @@ public class CourseController {
     public String connect(@ModelAttribute("course") CourseDto course,
                           HttpSession session) {
         userCourseService.add((UserDto)session.getAttribute("user"), course);
+        return "redirect:/courses";
+    }
+
+    @PostMapping("/disconnect")
+    public String remove(@ModelAttribute("courseName") String courseName,
+                          HttpSession session) {
+        userCourseService.delete((UserDto)session.getAttribute("user"), service.findByName(courseName));
         return "redirect:/courses";
     }
 }

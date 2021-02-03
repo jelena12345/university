@@ -25,7 +25,7 @@ public class UserCourseDao {
 
     public List<User> findUsersForCourse(Course course) {
         MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", course.getId());
-        return template.query("SELECT users.id, users.name, users.surname " +
+        return template.query("SELECT users.id, personal_id, role, name, surname, about " +
                         "FROM user_course " +
                         "INNER JOIN users ON user_course.user_id=users.id " +
                         "WHERE user_course.course_id=:id " +

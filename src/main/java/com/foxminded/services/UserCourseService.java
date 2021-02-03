@@ -58,6 +58,16 @@ public class UserCourseService {
                 enrichedCourse(courseDto)), new TypeToken<List<UserDto>>() {}.getType());
     }
 
+    public List<UserDto> findStudentsForCourse(CourseDto courseDto) {
+        logger.debug("Searching students for CourseDto");
+        logger.trace("Searching students for CourseDto: {}", courseDto);
+        List<User> students = dao.findUsersForCourse(enrichedCourse(courseDto))
+                .stream()
+                .filter(user -> user.getRole().equals("student"))
+                .collect(Collectors.toList());
+        return mapper.map(students, new TypeToken<List<UserDto>>() {}.getType());
+    }
+
     public List<CourseDto> findAvailableCoursesForUser(UserDto userDto) {
         logger.debug("Searching available Courses for UserDto");
         logger.trace("Searching available Courses for UserDto: {}", userDto);
