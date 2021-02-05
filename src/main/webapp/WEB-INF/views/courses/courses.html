@@ -25,33 +25,28 @@
                 <th scope="col">Name</th>
                 <th scope="col">Description</th>
                 <th scope="col"></th>
+                <th scope="col" th:if="${session.user.role == 'professor'}"></th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="courseItem : ${courses}">
                 <td th:text="${courseItem.name}"></td>
                 <td th:text="${courseItem.description}"></td>
+                <td th:if="${session.user.role == 'professor'}">
+                    <form id="form_users" method="GET" th:action="@{/courses/students}">
+                        <button class="btn btn-light fas fa-users" type="submit"></button>
+                        <input type="hidden" id="course_users" name="course_users" th:value="${courseItem.name}">
+                    </form>
+                </td>
                 <td>
-                    <form id="form" method="POST" th:action="@{/courses/disconnect}">
-                        <button class="btn btn-primary" type="submit">Disconnect</button>
-                        <input type="hidden" id="courseName" name="courseName" th:value="${courseItem.name}">
+                    <form id="form_remove" method="POST" th:action="@{/courses/disconnect}">
+                        <button class="btn btn-light fas fa-times" type="submit"></button>
+                        <input type="hidden" id="course_remove" name="course_remove" th:value="${courseItem.name}">
                     </form>
                 </td>
             </tr>
             </tbody>
         </table>
-    </div>
-    <div th:if="${session.user.role == 'professor'}">
-        <hr class="my-4">
-        <form method="GET" th:action="@{/courses/students}">
-            <label for="courses" class="visually-hidden">Choose course</label>
-            <select th:object="${course}" th:field="*{name}" id="courses" class="form-control">
-                <option th:each="dropDownItem : ${courses}"
-                        th:value="${dropDownItem.name}"
-                        th:text="${dropDownItem.name}"></option>
-            </select>
-            <button class="w-100 btn btn-primary btn-lg" type="submit">Show student list</button>
-        </form>
     </div>
 </div>
 </body>

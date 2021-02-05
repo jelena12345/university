@@ -1,6 +1,8 @@
 package com.foxminded.services;
 
 import com.foxminded.dao.ActivityDao;
+import com.foxminded.dao.CourseDao;
+import com.foxminded.dao.UserDao;
 import com.foxminded.dto.ActivityDto;
 import com.foxminded.dto.CourseDto;
 import com.foxminded.dto.UserDto;
@@ -24,6 +26,8 @@ public class ActivityService {
 
     private final ModelMapper mapper;
     private final ActivityDao dao;
+    private final UserDao userDao;
+    private final CourseDao courseDao;
     private static final Logger logger = LoggerFactory.getLogger(ActivityService.class);
 
     PropertyMap<UserDto, User> skipUserIdFieldMap = new PropertyMap<UserDto, User>() {
@@ -38,11 +42,13 @@ public class ActivityService {
     };
 
     @Autowired
-    public ActivityService(ModelMapper mapper, ActivityDao dao) {
+    public ActivityService(ModelMapper mapper, ActivityDao dao, UserDao userDao, CourseDao courseDao) {
         this.mapper = mapper;
         this.mapper.addMappings(skipCourseIdFieldMap);
         this.mapper.addMappings(skipUserIdFieldMap);
         this.dao = dao;
+        this.userDao = userDao;
+        this.courseDao = courseDao;
     }
 
     public List<ActivityDto> findAll() {
@@ -57,14 +63,17 @@ public class ActivityService {
         return mapper.map(dao.findById(id), ActivityDto.class);
     }
 
-    public void add(ActivityDto activity) {
+    public void add(ActivityDto activityDto) {
         logger.debug("Adding ActivityDto");
-        logger.trace("Adding ActivityDto: {}", activity);
-        if (dao.existsById(activity.getId())) {
-            logger.warn("Activity with id {} already exists.", activity.getId());
-            throw new EntityAlreadyExistsException("Activity with id " + activity.getId() + " already exists.");
+        logger.trace("Adding ActivityDto: {}", activityDto);
+        if (dao.existsById(activityDto.getId())) {
+            logger.warn("Activity with id {} already exists.", activityDto.getId());
+            throw new EntityAlreadyExistsException("Activity with id " + activityDto.getId() + " already exists.");
         }
-        dao.add(mapper.map(activity, Activity.class));
+        Activity activity = mapper.map(activityDto, Activity.class);
+        activity.setUser(enrichedUser(activityDto.getUser()));
+        activity.setCourse(enrichedCourse(activityDto.getCourse()));
+        dao.add(activity);
     }
 
     public void update(ActivityDto activity) {
@@ -93,4 +102,11 @@ public class ActivityService {
         return dao.existsById(id);
     }
 
+    private User enrichedUser(UserDto userDto) {
+        return userDao.findByPersonalId(userDto.getPersonalId());
+    }
+
+    private Course enrichedCourse(CourseDto courseDto) {
+        return courseDao.findByName(courseDto.getName());
+    }
 }

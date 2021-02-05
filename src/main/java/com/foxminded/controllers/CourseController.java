@@ -47,8 +47,8 @@ public class CourseController {
 
     @GetMapping("/students")
     public String students(Model model,
-                           @ModelAttribute("course") CourseDto course) {
-        model.addAttribute("students", userCourseService.findStudentsForCourse(course));
+                           @ModelAttribute("course_users") String course) {
+        model.addAttribute("students", userCourseService.findStudentsForCourse(service.findByName(course)));
         return "courses/students";
     }
 
@@ -68,9 +68,9 @@ public class CourseController {
     }
 
     @PostMapping("/disconnect")
-    public String remove(@ModelAttribute("courseName") String courseName,
+    public String remove(@ModelAttribute("course_remove") String course,
                           HttpSession session) {
-        userCourseService.delete((UserDto)session.getAttribute("user"), service.findByName(courseName));
+        userCourseService.delete((UserDto)session.getAttribute("user"), service.findByName(course));
         return "redirect:/courses";
     }
 }

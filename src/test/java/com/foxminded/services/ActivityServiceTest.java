@@ -1,6 +1,8 @@
 package com.foxminded.services;
 
 import com.foxminded.dao.ActivityDao;
+import com.foxminded.dao.CourseDao;
+import com.foxminded.dao.UserDao;
 import com.foxminded.dto.ActivityDto;
 import com.foxminded.dto.CourseDto;
 import com.foxminded.dto.UserDto;
@@ -30,11 +32,15 @@ class ActivityServiceTest {
 
     @Mock
     private ActivityDao dao;
+    @Mock
+    private UserDao userDao;
+    @Mock
+    private CourseDao courseDao;
     private ActivityService service;
 
     @BeforeEach
     void setUp() {
-        service = new ActivityService(new ModelMapper(), dao);
+        service = new ActivityService(new ModelMapper(), dao, userDao, courseDao);
     }
 
     @Test

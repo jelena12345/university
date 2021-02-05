@@ -11,10 +11,45 @@
 <body>
 <div th:insert="navigation :: sidebar"></div>
 <div class="page-content p-5" id="content">
-    <h2 class="display-4">Timetable</h2>
     <form method="GET" th:action="@{/timetable/new}" th:if="${session.user.role == 'professor'}">
-        <button class="w-100 btn btn-primary btn-lg" type="submit">Create event</button>
+        <h2 class="display-4">
+            <span>Timetable</span>
+            <button class='btn btn-primary pull-right'>+</button>
+        </h2>
     </form>
+    <form class="form-inline">
+        <label for="from" class="mr-sm-2">From</label>
+        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="date" value="2011-08-19" id="from">
+        <label for="to" class="mr-sm-2">To</label>
+        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="date" value="2011-08-19" id="to">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <caption></caption>
+            <thead>
+            <tr>
+                <th scope="col">Course</th>
+                <th scope="col">From</th>
+                <th scope="col">To</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="eventItem : ${events}">
+                <td th:text="${eventItem.course.name}"></td>
+                <td th:text="${eventItem.startTime}"></td>
+                <td th:text="${eventItem.endTime}"></td>
+                <td>
+                    <form id="form" method="GET" th:action="@{/timetable/new}">
+                        <button class="btn btn-light fas fa-pencil-alt" type="submit"></button>
+                        <input type="hidden" id="eventId" name="eventId" th:value="${eventItem.id}">
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 </body>
 </html>

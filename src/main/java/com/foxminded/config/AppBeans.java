@@ -87,7 +87,7 @@ public class AppBeans {
     @Bean
     @Scope("prototype")
     public ActivityService activityService() {
-        return new ActivityService(modelMapper(), activityDao());
+        return new ActivityService(modelMapper(), activityDao(), userDao(), courseDao());
     }
 
     @Bean
