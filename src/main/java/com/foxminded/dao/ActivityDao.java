@@ -41,8 +41,8 @@ public class ActivityDao {
         MapSqlParameterSource params = new MapSqlParameterSource().addValue("id", id);
         try {
             return template.queryForObject("SELECT activities.id, " +
-                    "user_id, personal_id, role, users.name, surname, about, " +
-                    "course_id, courses.name, description, " +
+                    "user_id, personal_id, role, users.name AS \"users.name\", surname, about, " +
+                    "course_id, courses.name AS \"courses.name\", description, " +
                     "start_time, end_time " +
                     "FROM activities " +
                     "INNER JOIN users ON user_id=users.id " +

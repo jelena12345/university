@@ -76,14 +76,17 @@ public class ActivityService {
         dao.add(activity);
     }
 
-    public void update(ActivityDto activity) {
+    public void update(ActivityDto activityDto) {
         logger.debug("Updating ActivityDto");
-        logger.trace("Updating ActivityDto: {}", activity);
-        if (!dao.existsById(activity.getId())) {
-            logger.warn("Not found Activity with id: {}", activity.getId());
-            throw new EntityNotFoundException("Not found Activity with id: " + activity.getId());
+        logger.trace("Updating ActivityDto: {}", activityDto);
+        if (!dao.existsById(activityDto.getId())) {
+            logger.warn("Not found Activity with id: {}", activityDto.getId());
+            throw new EntityNotFoundException("Not found Activity with id: " + activityDto.getId());
         }
-        dao.update(mapper.map(activity, Activity.class));
+        Activity activity = mapper.map(activityDto, Activity.class);
+        activity.setUser(enrichedUser(activityDto.getUser()));
+        activity.setCourse(enrichedCourse(activityDto.getCourse()));
+        dao.update(activity);
     }
 
     public void deleteById(int id) {

@@ -26,6 +26,7 @@
                 <th scope="col">Description</th>
                 <th scope="col"></th>
                 <th scope="col" th:if="${session.user.role == 'professor'}"></th>
+                <th scope="col" th:if="${session.user.role == 'professor'}"></th>
             </tr>
             </thead>
             <tbody>
@@ -36,6 +37,12 @@
                     <form id="form_users" method="GET" th:action="@{/courses/students}">
                         <button class="btn btn-light fas fa-users" type="submit"></button>
                         <input type="hidden" id="course_users" name="course_users" th:value="${courseItem.name}">
+                    </form>
+                </td>
+                <td>
+                    <form id="updateForm" method="GET" th:action="@{/courses/update}">
+                        <button class="btn btn-light fas fa-pencil-alt" type="submit"></button>
+                        <input type="hidden" id="updateName" name="updateName" th:value="${courseItem.name}">
                     </form>
                 </td>
                 <td>

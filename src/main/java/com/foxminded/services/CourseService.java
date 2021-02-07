@@ -63,14 +63,14 @@ public class CourseService {
         dao.add(mapper.map(course, Course.class));
     }
 
-    public void update(int id, CourseDto courseDto) {
+    public void update(CourseDto courseDto) {
         logger.debug("Updating CourseDto");
-        logger.trace("Updating CourseDto: {} with provided id: {}", courseDto, id);
-        if (!dao.existsById(id)) {
-            logger.warn("Not found Course with id: {}", id);
-            throw new EntityNotFoundException("Not found Course by id: " + id);
+        logger.trace("Updating CourseDto: {}", courseDto);
+        if (!dao.existsByName(courseDto.getName())) {
+            logger.warn("Not found Course with name: {}", courseDto.getName());
+            throw new EntityNotFoundException("Not found Course by name: " + courseDto.getName());
         }
-        dao.update(id, mapper.map(courseDto, Course.class));
+        dao.update(enrichedCourse(mapper.map(courseDto, Course.class)));
     }
 
     public void deleteById(int id) {
@@ -103,6 +103,11 @@ public class CourseService {
         logger.debug("Checking if Course exists by name");
         logger.trace("Checking if Course exists by name: {}", name);
         return dao.existsByName(name);
+    }
+
+    private Course enrichedCourse(Course course) {
+        course.setId(dao.findByName(course.getName()).getId());
+        return course;
     }
 
 }

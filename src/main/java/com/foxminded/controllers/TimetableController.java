@@ -43,6 +43,13 @@ public class TimetableController {
         return "timetable/newEvent";
     }
 
+    @GetMapping("/update")
+    public String updatePage(Model model,
+                             @ModelAttribute("updateId") int id) {
+        model.addAttribute("event", service.findById(id));
+        return "timetable/updateEvent";
+    }
+
     @PostMapping("/new")
     public String createEvent(HttpSession session,
                               @ModelAttribute("courseName") String courseName,
@@ -54,6 +61,26 @@ public class TimetableController {
                 new CourseDto(courseName, ""),
                 Timestamp.valueOf(LocalDateTime.parse(from)),
                 Timestamp.valueOf(LocalDateTime.parse(to))));
+        return "redirect:/timetable";
+    }
+
+    @PostMapping("/update")
+    public String updateEvent(HttpSession session,
+                              @ModelAttribute("event") ActivityDto event,
+                              @ModelAttribute("from") String from,
+                              @ModelAttribute("to") String to) {
+        event.setCourse(courseService.findByName(event.getCourse().getName()));
+        event.setUser((UserDto)session.getAttribute("user"));
+        event.setStartTime(Timestamp.valueOf(LocalDateTime.parse(from)));
+        event.setEndTime(Timestamp.valueOf(LocalDateTime.parse(to)));
+        service.update(event);
+        return "redirect:/timetable";
+    }
+
+    @PostMapping("/delete")
+    public String deleteEvent(@ModelAttribute("deleteId") String id) {
+
+        service.deleteById(Integer.parseInt(id));
         return "redirect:/timetable";
     }
 }

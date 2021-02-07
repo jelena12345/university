@@ -45,6 +45,13 @@ public class CourseController {
         return "courses/addCourse";
     }
 
+    @GetMapping("/update")
+    public String creationPage(Model model,
+                               @ModelAttribute("updateName") String name) {
+        model.addAttribute("course", service.findByName(name));
+        return "courses/updateCourse";
+    }
+
     @GetMapping("/students")
     public String students(Model model,
                            @ModelAttribute("course_users") String course) {
@@ -71,6 +78,12 @@ public class CourseController {
     public String remove(@ModelAttribute("course_remove") String course,
                           HttpSession session) {
         userCourseService.delete((UserDto)session.getAttribute("user"), service.findByName(course));
+        return "redirect:/courses";
+    }
+
+    @PostMapping("/update")
+    public String update(@ModelAttribute("course") CourseDto course) {
+        service.update(course);
         return "redirect:/courses";
     }
 }

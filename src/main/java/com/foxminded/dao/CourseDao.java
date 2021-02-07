@@ -73,9 +73,9 @@ public class CourseDao {
         return Objects.requireNonNull(keyHolder.getKey()).intValue();
     }
 
-    public void update(int id, Course course) {
+    public void update(Course course) {
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue(ID, id)
+        params.addValue(ID, course.getId())
                 .addValue(NAME, course.getName())
                 .addValue(DESCRIPTION, course.getDescription());
         template.update("UPDATE courses SET name=:name, description=:description WHERE id=:id", params);

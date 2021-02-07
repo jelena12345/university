@@ -73,7 +73,7 @@ class CourseDaoTest {
         Course expected = dao.findById(1);
         expected.setName("name_new");
         expected.setDescription("description_new");
-        dao.update(1, expected);
+        dao.update(expected);
         Course actual = dao.findById(1);
         assertEquals(expected, actual);
     }
