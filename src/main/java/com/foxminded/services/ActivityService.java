@@ -71,8 +71,8 @@ public class ActivityService {
             throw new EntityAlreadyExistsException("Activity with id " + activityDto.getId() + " already exists.");
         }
         Activity activity = mapper.map(activityDto, Activity.class);
-        activity.setUser(enrichedUser(activityDto.getUser()));
-        activity.setCourse(enrichedCourse(activityDto.getCourse()));
+        activity.setUser(enrich(activity.getUser()));
+        activity.setCourse(enrich(activity.getCourse()));
         dao.add(activity);
     }
 
@@ -84,8 +84,8 @@ public class ActivityService {
             throw new EntityNotFoundException("Not found Activity with id: " + activityDto.getId());
         }
         Activity activity = mapper.map(activityDto, Activity.class);
-        activity.setUser(enrichedUser(activityDto.getUser()));
-        activity.setCourse(enrichedCourse(activityDto.getCourse()));
+        activity.setUser(enrich(activity.getUser()));
+        activity.setCourse(enrich(activity.getCourse()));
         dao.update(activity);
     }
 
@@ -105,11 +105,13 @@ public class ActivityService {
         return dao.existsById(id);
     }
 
-    private User enrichedUser(UserDto userDto) {
-        return userDao.findByPersonalId(userDto.getPersonalId());
+    private User enrich(User user) {
+        user.setId(userDao.findByPersonalId(user.getPersonalId()).getId());
+        return user;
     }
 
-    private Course enrichedCourse(CourseDto courseDto) {
-        return courseDao.findByName(courseDto.getName());
+    private Course enrich(Course course) {
+        course.setId(courseDao.findByName(course.getName()).getId());
+        return course;
     }
 }

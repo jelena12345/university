@@ -70,7 +70,7 @@ public class CourseService {
             logger.warn("Not found Course with name: {}", courseDto.getName());
             throw new EntityNotFoundException("Not found Course by name: " + courseDto.getName());
         }
-        dao.update(enrichedCourse(mapper.map(courseDto, Course.class)));
+        dao.update(enrich(mapper.map(courseDto, Course.class)));
     }
 
     public void deleteById(int id) {
@@ -105,7 +105,7 @@ public class CourseService {
         return dao.existsByName(name);
     }
 
-    private Course enrichedCourse(Course course) {
+    private Course enrich(Course course) {
         course.setId(dao.findByName(course.getName()).getId());
         return course;
     }

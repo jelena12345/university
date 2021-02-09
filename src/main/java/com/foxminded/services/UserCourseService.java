@@ -55,13 +55,13 @@ public class UserCourseService {
         logger.debug("Searching Users for CourseDto");
         logger.trace("Searching Users for CourseDto: {}", courseDto);
         return mapper.map(dao.findUsersForCourse(
-                enrichedCourse(courseDto)), new TypeToken<List<UserDto>>() {}.getType());
+                enrich(mapper.map(courseDto, Course.class))), new TypeToken<List<UserDto>>() {}.getType());
     }
 
     public List<UserDto> findStudentsForCourse(CourseDto courseDto) {
         logger.debug("Searching students for CourseDto");
         logger.trace("Searching students for CourseDto: {}", courseDto);
-        List<User> students = dao.findUsersForCourse(enrichedCourse(courseDto))
+        List<User> students = dao.findUsersForCourse(enrich(mapper.map(courseDto, Course.class)))
                 .stream()
                 .filter(user -> user.getRole().equals("student"))
                 .collect(Collectors.toList());
@@ -71,7 +71,7 @@ public class UserCourseService {
     public List<CourseDto> findAvailableCoursesForUser(UserDto userDto) {
         logger.debug("Searching available Courses for UserDto");
         logger.trace("Searching available Courses for UserDto: {}", userDto);
-        List<Course> currentCourses = dao.findCoursesForUser(enrichedUser(userDto));
+        List<Course> currentCourses = dao.findCoursesForUser(enrich(mapper.map(userDto, User.class)));
         return mapper.map(
                 courseDao.findAll()
                         .stream()
@@ -84,14 +84,14 @@ public class UserCourseService {
         logger.debug("Searching Courses for UserDto");
         logger.trace("Searching Courses for UserDto: {}", userDto);
         return mapper.map(dao.findCoursesForUser(
-                enrichedUser(userDto)), new TypeToken<List<CourseDto>>() {}.getType());
+                enrich(mapper.map(userDto, User.class))), new TypeToken<List<CourseDto>>() {}.getType());
     }
 
     public void add(UserDto userDto, CourseDto courseDto) {
         logger.debug("Adding UserDto for CourseDto");
         logger.trace("Adding UserDto: {} for CourseDto: {}", userDto, courseDto);
-        User user = enrichedUser(userDto);
-        Course course = enrichedCourse(courseDto);
+        User user = enrich(mapper.map(userDto, User.class));
+        Course course = enrich(mapper.map(courseDto, Course.class));
         if (dao.existsCourseForUser(user, course)) {
             logger.warn("User {} for Course {} already exists.", userDto, courseDto);
             throw new EntityAlreadyExistsException(
@@ -103,8 +103,8 @@ public class UserCourseService {
     public void delete(UserDto userDto, CourseDto courseDto) {
         logger.debug("Deleting UserDto for CourseDto");
         logger.trace("Deleting UserDto: {} for CourseDto: {}", userDto, courseDto);
-        User user = enrichedUser(userDto);
-        Course course = enrichedCourse(courseDto);
+        User user = enrich(mapper.map(userDto, User.class));
+        Course course = enrich(mapper.map(courseDto, Course.class));
         if (!dao.existsCourseForUser(user, course)) {
             logger.warn("Not found User : {} for Course {}", userDto, courseDto);
             throw new EntityNotFoundException("Not found User : " + userDto + " with Course: " + courseDto);
@@ -115,14 +115,17 @@ public class UserCourseService {
     public boolean existsCourseForUser(UserDto userDto, CourseDto courseDto) {
         logger.debug("Checking if UserDto added to CourseDto");
         logger.trace("Checking if UserDto: {} added to CourseDto: {}", userDto, courseDto);
-        return dao.existsCourseForUser(enrichedUser(userDto), enrichedCourse(courseDto));
+        return dao.existsCourseForUser(enrich(mapper.map(userDto, User.class)),
+                enrich(mapper.map(courseDto, Course.class)));
     }
 
-    private User enrichedUser(UserDto userDto) {
-        return userDao.findByPersonalId(userDto.getPersonalId());
+    private User enrich(User user) {
+        user.setId(userDao.findByPersonalId(user.getPersonalId()).getId());
+        return user;
     }
 
-    private Course enrichedCourse(CourseDto courseDto) {
-        return courseDao.findByName(courseDto.getName());
+    private Course enrich(Course course) {
+        course.setId(courseDao.findByName(course.getName()).getId());
+        return course;
     }
 }
