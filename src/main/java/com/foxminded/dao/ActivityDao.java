@@ -60,8 +60,8 @@ public class ActivityDao {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("user_id", activity.getUser().getId())
                 .addValue("course_id", activity.getCourse().getId())
-                .addValue("start_time", activity.getStartTime())
-                .addValue("end_time", activity.getEndTime());
+                .addValue("start_time", activity.getFrom())
+                .addValue("end_time", activity.getTo());
 
         template.update("INSERT INTO activities(user_id, course_id, start_time, end_time) " +
                         "VALUES(:user_id, :course_id, :start_time, :end_time)",
@@ -77,8 +77,8 @@ public class ActivityDao {
         params.addValue("id", activity.getId())
                 .addValue("user_id", activity.getUser().getId())
                 .addValue("course_id", activity.getCourse().getId())
-                .addValue("start_time", activity.getStartTime())
-                .addValue("end_time", activity.getEndTime());
+                .addValue("start_time", activity.getFrom())
+                .addValue("end_time", activity.getTo());
         template.update("UPDATE activities SET user_id=:user_id, course_id=:course_id, " +
                 "start_time=:start_time, end_time=:end_time WHERE id=:id", params);
     }

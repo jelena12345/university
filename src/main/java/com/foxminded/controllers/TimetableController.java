@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpSession;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -56,8 +55,8 @@ public class TimetableController {
         userCourseService.findCoursesForUser((UserDto)session.getAttribute("user"))
                 .stream()
                 .map(course -> service.findEventsForCourseFromTo(course,
-                        Timestamp.valueOf(from.atStartOfDay()),
-                        Timestamp.valueOf(to.atTime(LocalTime.MAX))))
+                        from.atStartOfDay(),
+                        to.atTime(LocalTime.MAX)))
                 .forEach(activities::addAll);
         model.addAttribute("filter_from", from);
         model.addAttribute("filter_to", to);
@@ -66,8 +65,15 @@ public class TimetableController {
     }
 
     @GetMapping("/new")
-    public String creationPage(Model model) {
+    public String creationPage(Model model,
+                               HttpSession session) {
         model.addAttribute("courses", courseService.findAll());
+        model.addAttribute("event", new ActivityDto((UserDto)session.getAttribute("user"),
+                new CourseDto("", ""),
+                LocalDateTime.now(),
+                LocalDateTime.now()));
+        model.addAttribute("from", LocalDateTime.now().withNano(0).withSecond(0));
+        model.addAttribute("to", LocalDateTime.now().plusHours(1).withNano(0).withSecond(0));
         return "timetable/newEvent";
     }
 
@@ -79,28 +85,24 @@ public class TimetableController {
     }
 
     @PostMapping("/new")
-    public String createEvent(HttpSession session,
-                              @ModelAttribute("courseName") String courseName,
-                              @ModelAttribute("from") String from,
-                              @ModelAttribute("to") String to) {
-
-        service.add(new ActivityDto(0,
-                (UserDto)session.getAttribute("user"),
-                new CourseDto(courseName, ""),
-                Timestamp.valueOf(LocalDateTime.parse(from)),
-                Timestamp.valueOf(LocalDateTime.parse(to))));
+    public String createEvent(@ModelAttribute("event") ActivityDto event,
+                              @ModelAttribute("create_from") String from,
+                              @ModelAttribute("create_to") String to) {
+        event.setFrom(LocalDateTime.parse(from));
+        event.setTo(LocalDateTime.parse(to));
+        service.add(event);
         return "redirect:/timetable";
     }
 
     @PostMapping("/update")
     public String updateEvent(HttpSession session,
                               @ModelAttribute("event") ActivityDto event,
-                              @ModelAttribute("from") String from,
-                              @ModelAttribute("to") String to) {
+                              @ModelAttribute("update_from") String from,
+                              @ModelAttribute("update_to") String to) {
         event.setCourse(courseService.findByName(event.getCourse().getName()));
         event.setUser((UserDto)session.getAttribute("user"));
-        event.setStartTime(Timestamp.valueOf(LocalDateTime.parse(from)));
-        event.setEndTime(Timestamp.valueOf(LocalDateTime.parse(to)));
+        event.setFrom(LocalDateTime.parse(from));
+        event.setTo(LocalDateTime.parse(to));
         service.update(event);
         return "redirect:/timetable";
     }

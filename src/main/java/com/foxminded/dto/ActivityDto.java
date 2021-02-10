@@ -1,6 +1,6 @@
 package com.foxminded.dto;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class ActivityDto {
@@ -8,19 +8,19 @@ public class ActivityDto {
     private Integer id;
     private UserDto user;
     private CourseDto course;
-    private Timestamp startTime;
-    private Timestamp endTime;
+    private LocalDateTime from;
+    private LocalDateTime to;
 
-    public ActivityDto(Integer id, UserDto user, CourseDto course, Timestamp startTime, Timestamp endTime) {
+    public ActivityDto(Integer id, UserDto user, CourseDto course, LocalDateTime from, LocalDateTime to) {
         this.id = id;
         this.user = user;
         this.course = course;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.from = from;
+        this.to = to;
     }
 
-    public ActivityDto(UserDto user, CourseDto course, Timestamp startTime, Timestamp endTime) {
-        this(null, user, course, startTime, endTime);
+    public ActivityDto(UserDto user, CourseDto course, LocalDateTime from, LocalDateTime to) {
+        this(null, user, course, from, to);
     }
 
     private ActivityDto() { }
@@ -49,20 +49,20 @@ public class ActivityDto {
         this.course = course;
     }
 
-    public Timestamp getStartTime() {
-        return startTime;
+    public LocalDateTime getFrom() {
+        return from;
     }
 
-    public void setStartTime(Timestamp startTime) {
-        this.startTime = startTime;
+    public void setFrom(LocalDateTime from) {
+        this.from = from;
     }
 
-    public Timestamp getEndTime() {
-        return endTime;
+    public LocalDateTime getTo() {
+        return to;
     }
 
-    public void setEndTime(Timestamp duration) {
-        this.endTime = duration;
+    public void setTo(LocalDateTime duration) {
+        this.to = duration;
     }
 
     @Override
@@ -77,13 +77,13 @@ public class ActivityDto {
                 && (((ActivityDto) o).getId().equals(this.id))
                 && (((ActivityDto) o).getUser().equals(this.user))
                 && (((ActivityDto) o).getCourse().equals(this.course))
-                && (((ActivityDto) o).getStartTime().equals(this.startTime))
-                && (((ActivityDto) o).getEndTime().equals(this.endTime));
+                && (((ActivityDto) o).getFrom().equals(this.from))
+                && (((ActivityDto) o).getTo().equals(this.to));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, course, startTime, endTime);
+        return Objects.hash(id, user, course, from, to);
     }
 
     @Override
@@ -92,8 +92,8 @@ public class ActivityDto {
                 "id=" + id +
                 ", professor=" + user +
                 ", course=" + course +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
+                ", startTime=" + from +
+                ", endTime=" + to +
                 '}';
     }
 }

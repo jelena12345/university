@@ -18,9 +18,9 @@
         <label for="courseName" class="form-label">Course</label>
         <input type="text" class="form-control" id="courseName" th:field="*{course.name}" readonly>
         <label for="from" class="mr-sm-2">From</label>
-        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="datetime-local" id="from" name="from" th:value="*{startTime.toLocalDateTime()}">
+        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="datetime-local" id="from" name="update_from" th:value="*{from}">
         <label for="to" class="mr-sm-2">To</label>
-        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="datetime-local" id="to" name="to" th:value="*{endTime.toLocalDateTime()}">
+        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="datetime-local" id="to" name="update_to" th:value="*{to}">
         <button type="submit" class="w-100 btn btn-primary btn-lg">Update</button>
     </form>
 </div>

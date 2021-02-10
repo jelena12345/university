@@ -12,17 +12,21 @@
 <div th:insert="navigation :: sidebar"></div>
 <div class="page-content p-5" id="content">
     <h2 class="display-4">Create new event</h2>
-    <form method="POST" th:action="@{/timetable/new}">
+    <form method="POST" th:action="@{/timetable/new}" th:object="${event}">
         <label for="courses" class="visually-hidden">Choose course</label>
-        <select name="courseName" id="courses" class="form-control">
+        <select name="courseName" id="courses" class="form-control" th:field="*{course.name}">
             <option th:each="dropDownItem : ${courses}"
                     th:value="${dropDownItem.name}"
                     th:text="${dropDownItem.name}"></option>
         </select>
+        <label for="full_name" class="form-label">Professor</label>
+        <input type="text" class="form-control" id="full_name" th:value="*{user.name + ' ' + user.surname}" readonly>
+        <input type="hidden" id="personal_id" th:field="*{user.personalId}">
+
         <label for="from" class="mr-sm-2">From</label>
-        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="datetime-local" id="from" name="from" value="2021-01-01T08:30">
+        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="datetime-local" id="from" name="create_from" th:value="${from}">
         <label for="to" class="mr-sm-2">To</label>
-        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="datetime-local" id="to" name="to" value="2021-01-01T09:30">
+        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="datetime-local" id="to" name="create_to" th:value="${to}">
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>

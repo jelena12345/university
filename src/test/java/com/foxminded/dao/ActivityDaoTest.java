@@ -10,6 +10,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,7 +58,7 @@ class ActivityDaoTest {
 
     @Test
     void testAdd_ShouldAddCorrectActivity() {
-        Activity expected = new Activity(3, userDao.findById(1), courseDao.findById(1), new Timestamp(123), new Timestamp(456));
+        Activity expected = new Activity(3, userDao.findById(1), courseDao.findById(1), LocalDateTime.now(), LocalDateTime.now().plusHours(1));
         int id = activityDao.add(expected);
         Activity actual = activityDao.findById(id);
         assertEquals(expected, actual);
@@ -68,8 +69,8 @@ class ActivityDaoTest {
         Activity expected = activityDao.findById(1);
         expected.setUser(userDao.findById(1));
         expected.setCourse(courseDao.findById(1));
-        expected.setStartTime(new Timestamp(236));
-        expected.setEndTime(new Timestamp(565));
+        expected.setFrom(LocalDateTime.now());
+        expected.setTo(LocalDateTime.now().plusHours(1));
         activityDao.update(expected);
         Activity actual = activityDao.findById(1);
         assertEquals(expected, actual);

@@ -25,8 +25,8 @@ public class ActivityMapper implements RowMapper<Activity> {
                 rs.getInt("id"),
                 user,
                 course,
-                rs.getTimestamp("start_time"),
-                rs.getTimestamp("end_time"));
+                rs.getTimestamp("start_time").toLocalDateTime(),
+                rs.getTimestamp("end_time").toLocalDateTime());
     }
 
 }

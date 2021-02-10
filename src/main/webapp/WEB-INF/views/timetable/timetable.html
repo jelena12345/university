@@ -11,10 +11,10 @@
 <body>
 <div th:insert="navigation :: sidebar"></div>
 <div class="page-content p-5" id="content">
-    <form method="GET" th:action="@{/timetable/new}" th:if="${session.user.role == 'professor'}">
+    <form method="GET" th:action="@{/timetable/new}">
         <h2 class="display-4">
             <span>Timetable</span>
-            <button class='btn btn-primary pull-right'>+</button>
+            <button class='btn btn-primary pull-right' th:if="${session.user.role == 'professor'}">+</button>
         </h2>
     </form>
     <form class="form-inline" method="GET" th:action="@{/timetable}">
@@ -39,8 +39,8 @@
             <tbody>
             <tr th:each="eventItem : ${events}">
                 <td th:text="${eventItem.course.name}"></td>
-                <td th:text="${eventItem.startTime}"></td>
-                <td th:text="${eventItem.endTime}"></td>
+                <td th:text="${eventItem.from}"></td>
+                <td th:text="${eventItem.to}"></td>
                 <td>
                     <form id="updateForm" method="GET" th:action="@{/timetable/update}">
                         <button class="btn btn-light fas fa-pencil-alt" type="submit"></button>

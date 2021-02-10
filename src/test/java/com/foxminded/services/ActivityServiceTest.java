@@ -11,6 +11,7 @@ import com.foxminded.entities.Course;
 import com.foxminded.entities.User;
 import com.foxminded.services.exceptions.EntityAlreadyExistsException;
 import com.foxminded.services.exceptions.EntityNotFoundException;
+import net.bytebuddy.asm.Advice;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,11 +52,11 @@ class ActivityServiceTest {
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
         CourseDto courseDto = new CourseDto("name", "description");
         List<Activity> activities = Arrays.asList(
-                new Activity(1, user, course, new Timestamp(123), new Timestamp(456)),
-                new Activity(2, user, course, new Timestamp(789), new Timestamp(101)));
+                new Activity(1, user, course, LocalDateTime.now(), LocalDateTime.now().plusHours(1)),
+                new Activity(2, user, course, LocalDateTime.now(), LocalDateTime.now().plusHours(1)));
         List<ActivityDto> expected = Arrays.asList(
-                new ActivityDto(1, userDto, courseDto, new Timestamp(123), new Timestamp(456)),
-                new ActivityDto(2, userDto, courseDto, new Timestamp(789), new Timestamp(101)));
+                new ActivityDto(1, userDto, courseDto, LocalDateTime.now(), LocalDateTime.now().plusHours(1)),
+                new ActivityDto(2, userDto, courseDto, LocalDateTime.now(), LocalDateTime.now().plusHours(1)));
         when(dao.findAll()).thenReturn(activities);
         List<ActivityDto> actual = service.findAll();
         assertEquals(expected, actual);
@@ -66,8 +68,8 @@ class ActivityServiceTest {
         Course course = new Course(1, "name", "description");
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
         CourseDto courseDto = new CourseDto("name", "description");
-        Activity activity = new Activity(2, user, course, new Timestamp(789), new Timestamp(101));
-        ActivityDto expected = new ActivityDto(2, userDto, courseDto, new Timestamp(789), new Timestamp(101));
+        Activity activity = new Activity(2, user, course, LocalDateTime.now(), LocalDateTime.now().plusHours(1));
+        ActivityDto expected = new ActivityDto(2, userDto, courseDto, LocalDateTime.now(), LocalDateTime.now().plusHours(1));
         when(dao.findById(anyInt())).thenReturn(activity);
         ActivityDto actual = service.findById(anyInt());
         assertEquals(expected, actual);
@@ -79,11 +81,11 @@ class ActivityServiceTest {
         Course course = new Course(1, "name", "description");
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
         CourseDto courseDto = new CourseDto("name", "description");
-        ActivityDto activity = new ActivityDto(1, userDto, courseDto, new Timestamp(789), new Timestamp(101));
+        ActivityDto activity = new ActivityDto(1, userDto, courseDto, LocalDateTime.now(), LocalDateTime.now().plusHours(1));
         when(userDao.findByPersonalId(anyString())).thenReturn(user);
         when(courseDao.findByName(anyString())).thenReturn(course);
         service.add(activity);
-        Activity expected = new Activity(1, user, course, new Timestamp(789), new Timestamp(101));
+        Activity expected = new Activity(1, user, course, LocalDateTime.now(), LocalDateTime.now().plusHours(1));
         verify(dao, times(1)).add(expected);
     }
 
@@ -91,10 +93,10 @@ class ActivityServiceTest {
     void testUpdate_ShouldCallUpdateMethodForDao() {
         User user = new User(1, "1", "role", "name", "surname", "about");
         Course course = new Course(1, "name", "description");
-        Activity expected = new Activity(1, user, course, new Timestamp(789), new Timestamp(101));
+        Activity expected = new Activity(1, user, course, LocalDateTime.now(), LocalDateTime.now().plusHours(1));
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
         CourseDto courseDto = new CourseDto("name", "description");
-        ActivityDto activity = new ActivityDto(1, userDto, courseDto, new Timestamp(789), new Timestamp(101));
+        ActivityDto activity = new ActivityDto(1, userDto, courseDto, LocalDateTime.now(), LocalDateTime.now().plusHours(1));
         when(userDao.findByPersonalId(anyString())).thenReturn(user);
         when(courseDao.findByName(anyString())).thenReturn(course);
         when(dao.existsById(anyInt())).thenReturn(true);
@@ -114,7 +116,7 @@ class ActivityServiceTest {
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
         CourseDto courseDto = new CourseDto("name", "description");
         when(dao.existsById(anyInt())).thenReturn(true);
-        ActivityDto activityDto = new ActivityDto(1, userDto, courseDto, new Timestamp(789), new Timestamp(101));
+        ActivityDto activityDto = new ActivityDto(1, userDto, courseDto, LocalDateTime.now(), LocalDateTime.now().plusHours(1));
         assertThrows(EntityAlreadyExistsException.class, () -> service.add(activityDto));
     }
 
@@ -122,7 +124,7 @@ class ActivityServiceTest {
     void testUpdate_ShouldThrowEntityNotFoundException() {
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
         CourseDto courseDto = new CourseDto("name", "description");
-        ActivityDto activityDto = new ActivityDto(1, userDto, courseDto, new Timestamp(789), new Timestamp(101));
+        ActivityDto activityDto = new ActivityDto(1, userDto, courseDto, LocalDateTime.now(), LocalDateTime.now().plusHours(1));
         assertThrows(EntityNotFoundException.class, () -> service.update(activityDto));
     }
 

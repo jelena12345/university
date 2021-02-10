@@ -9,7 +9,6 @@ import com.foxminded.dto.UserDto;
 import com.foxminded.entities.Activity;
 import com.foxminded.entities.Course;
 import com.foxminded.entities.User;
-import com.foxminded.services.exceptions.EntityAlreadyExistsException;
 import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +17,7 @@ import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,19 +56,19 @@ public class ActivityService {
         logger.debug("Searching for all ActivityDto records");
         return dao.findAll().stream()
                 .map(item -> mapper.map(item, ActivityDto.class))
-                .sorted(Comparator.comparing(ActivityDto::getStartTime))
+                .sorted(Comparator.comparing(ActivityDto::getFrom))
                 .collect(Collectors.toList());
     }
 
-    public List<ActivityDto> findEventsForCourseFromTo(CourseDto course, Timestamp from, Timestamp to) {
+    public List<ActivityDto> findEventsForCourseFromTo(CourseDto course, LocalDateTime from, LocalDateTime to) {
         logger.debug("Searching for ActivityDto records");
         logger.trace("Searching for ActivityDto records for Course:{} from: {} to: {}", course, from, to);
         return dao.findAll().stream()
                 .filter(event -> event.getCourse().getName().equals(course.getName())
-                        && event.getStartTime().after(from)
-                        && event.getEndTime().before(to))
+                        && event.getFrom().isAfter(from)
+                        && event.getTo().isBefore(to))
                 .map(event -> mapper.map(event, ActivityDto.class))
-                .sorted(Comparator.comparing(ActivityDto::getStartTime))
+                .sorted(Comparator.comparing(ActivityDto::getFrom))
                 .collect(Collectors.toList());
     }
 
@@ -82,10 +81,6 @@ public class ActivityService {
     public void add(ActivityDto activityDto) {
         logger.debug("Adding ActivityDto");
         logger.trace("Adding ActivityDto: {}", activityDto);
-        if (dao.existsById(activityDto.getId())) {
-            logger.warn("Activity with id {} already exists.", activityDto.getId());
-            throw new EntityAlreadyExistsException("Activity with id " + activityDto.getId() + " already exists.");
-        }
         Activity activity = mapper.map(activityDto, Activity.class);
         activity.setUser(enrich(activity.getUser()));
         activity.setCourse(enrich(activity.getCourse()));
