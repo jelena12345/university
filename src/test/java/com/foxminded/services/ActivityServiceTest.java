@@ -68,8 +68,10 @@ class ActivityServiceTest {
         Course course = new Course(1, "name", "description");
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
         CourseDto courseDto = new CourseDto("name", "description");
-        Activity activity = new Activity(2, user, course, LocalDateTime.now(), LocalDateTime.now().plusHours(1));
-        ActivityDto expected = new ActivityDto(2, userDto, courseDto, LocalDateTime.now(), LocalDateTime.now().plusHours(1));
+        LocalDateTime from = LocalDateTime.now();
+        LocalDateTime to = LocalDateTime.now().plusHours(1);
+        Activity activity = new Activity(2, user, course, from, to);
+        ActivityDto expected = new ActivityDto(2, userDto, courseDto, from, to);
         when(dao.findById(anyInt())).thenReturn(activity);
         ActivityDto actual = service.findById(anyInt());
         assertEquals(expected, actual);
@@ -81,11 +83,13 @@ class ActivityServiceTest {
         Course course = new Course(1, "name", "description");
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
         CourseDto courseDto = new CourseDto("name", "description");
-        ActivityDto activity = new ActivityDto(1, userDto, courseDto, LocalDateTime.now(), LocalDateTime.now().plusHours(1));
+        LocalDateTime from = LocalDateTime.now();
+        LocalDateTime to = LocalDateTime.now().plusHours(1);
+        ActivityDto activity = new ActivityDto(1, userDto, courseDto, from, to);
         when(userDao.findByPersonalId(anyString())).thenReturn(user);
         when(courseDao.findByName(anyString())).thenReturn(course);
         service.add(activity);
-        Activity expected = new Activity(1, user, course, LocalDateTime.now(), LocalDateTime.now().plusHours(1));
+        Activity expected = new Activity(1, user, course, from, to);
         verify(dao, times(1)).add(expected);
     }
 
@@ -109,15 +113,6 @@ class ActivityServiceTest {
         when(dao.existsById(anyInt())).thenReturn(true);
         service.deleteById(anyInt());
         verify(dao, times(1)).deleteById(anyInt());
-    }
-
-    @Test
-    void testAdd_ShouldThrowEntityAlreadyExistsException() {
-        UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
-        CourseDto courseDto = new CourseDto("name", "description");
-        when(dao.existsById(anyInt())).thenReturn(true);
-        ActivityDto activityDto = new ActivityDto(1, userDto, courseDto, LocalDateTime.now(), LocalDateTime.now().plusHours(1));
-        assertThrows(EntityAlreadyExistsException.class, () -> service.add(activityDto));
     }
 
     @Test
