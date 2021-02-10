@@ -106,16 +106,24 @@ class UserCourseServiceTest {
 
     @Test
     void testAdd_ShouldThrowEntityAlreadyExistsException() {
+        User user = new User(1, "1", "role", "name", "surname", "about");
+        Course course = new Course(1, "name", "description");
         CourseDto courseDto = new CourseDto("name", "description");
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
         when(dao.existsCourseForUser(any(), any())).thenReturn(true);
+        when(userDao.findByPersonalId(anyString())).thenReturn(user);
+        when(courseDao.findByName(anyString())).thenReturn(course);
         assertThrows(EntityAlreadyExistsException.class, () -> service.add(userDto, courseDto));
     }
 
     @Test
     void testDelete_ShouldThrowEntityNotFoundException() {
+        User user = new User(1, "1", "role", "name", "surname", "about");
+        Course course = new Course(1, "name", "description");
         CourseDto courseDto = new CourseDto("name", "description");
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
+        when(userDao.findByPersonalId(anyString())).thenReturn(user);
+        when(courseDao.findByName(anyString())).thenReturn(course);
         assertThrows(EntityNotFoundException.class, () -> service.delete(userDto, courseDto));
     }
 }

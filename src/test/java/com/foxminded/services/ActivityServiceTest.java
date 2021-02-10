@@ -75,11 +75,13 @@ class ActivityServiceTest {
 
     @Test
     void testAdd_ShouldCallAddMethodForDao() {
-        User user = new User("1", "role", "name", "surname", "about");
-        Course course = new Course("name", "description");
+        User user = new User(1,"1", "role", "name", "surname", "about");
+        Course course = new Course(1, "name", "description");
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
         CourseDto courseDto = new CourseDto("name", "description");
         ActivityDto activity = new ActivityDto(1, userDto, courseDto, new Timestamp(789), new Timestamp(101));
+        when(userDao.findByPersonalId(anyString())).thenReturn(user);
+        when(courseDao.findByName(anyString())).thenReturn(course);
         service.add(activity);
         Activity expected = new Activity(1, user, course, new Timestamp(789), new Timestamp(101));
         verify(dao, times(1)).add(expected);
@@ -87,12 +89,14 @@ class ActivityServiceTest {
 
     @Test
     void testUpdate_ShouldCallUpdateMethodForDao() {
-        User user = new User("1", "role", "name", "surname", "about");
-        Course course = new Course("name", "description");
+        User user = new User(1, "1", "role", "name", "surname", "about");
+        Course course = new Course(1, "name", "description");
         Activity expected = new Activity(1, user, course, new Timestamp(789), new Timestamp(101));
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
         CourseDto courseDto = new CourseDto("name", "description");
         ActivityDto activity = new ActivityDto(1, userDto, courseDto, new Timestamp(789), new Timestamp(101));
+        when(userDao.findByPersonalId(anyString())).thenReturn(user);
+        when(courseDao.findByName(anyString())).thenReturn(course);
         when(dao.existsById(anyInt())).thenReturn(true);
         service.update(activity);
         verify(dao, times(1)).update(expected);
