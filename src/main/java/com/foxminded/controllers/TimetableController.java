@@ -70,10 +70,8 @@ public class TimetableController {
         model.addAttribute("courses", courseService.findAll());
         model.addAttribute("event", new ActivityDto((UserDto)session.getAttribute("user"),
                 new CourseDto("", ""),
-                LocalDateTime.now(),
-                LocalDateTime.now()));
-        model.addAttribute("from", LocalDateTime.now().withNano(0).withSecond(0));
-        model.addAttribute("to", LocalDateTime.now().plusHours(1).withNano(0).withSecond(0));
+                LocalDateTime.now().withNano(0).withSecond(0),
+                LocalDateTime.now().plusHours(1).withNano(0).withSecond(0)));
         return "timetable/newEvent";
     }
 
