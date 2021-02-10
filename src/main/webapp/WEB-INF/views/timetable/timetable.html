@@ -17,11 +17,11 @@
             <button class='btn btn-primary pull-right'>+</button>
         </h2>
     </form>
-    <form class="form-inline">
+    <form class="form-inline" method="GET" th:action="@{/timetable}">
         <label for="from" class="mr-sm-2">From</label>
-        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="date" value="2011-08-19" id="from">
+        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="date" th:value="${filter_from}" th:name="filter_from" id="from">
         <label for="to" class="mr-sm-2">To</label>
-        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="date" value="2011-08-19" id="to">
+        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="date" th:value="${filter_to}" th:name="filter_to" id="to">
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     <div class="table-responsive">

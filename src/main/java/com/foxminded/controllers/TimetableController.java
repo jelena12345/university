@@ -5,6 +5,7 @@ import com.foxminded.dto.CourseDto;
 import com.foxminded.dto.UserDto;
 import com.foxminded.services.ActivityService;
 import com.foxminded.services.CourseService;
+import com.foxminded.services.UserCourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,7 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Controller
@@ -24,16 +29,39 @@ public class TimetableController {
 
     private final ActivityService service;
     private final CourseService courseService;
+    private final UserCourseService userCourseService;
 
     @Autowired
-    TimetableController(ActivityService service, CourseService courseService) {
+    TimetableController(ActivityService service, CourseService courseService, UserCourseService userCourseService) {
+        this.userCourseService = userCourseService;
         this.service = service;
         this.courseService = courseService;
     }
 
     @GetMapping()
-    public String timetable(Model model) {
-        model.addAttribute("events", service.findAll());
+    public String timetable(Model model,
+                            HttpSession session,
+                            @ModelAttribute("filter_from") String fromStr,
+                            @ModelAttribute("filter_to") String toStr) {
+        LocalDate from;
+        LocalDate to;
+        if (fromStr.isEmpty()) {
+            from = LocalDate.now();
+            to = LocalDate.now().plusMonths(1);
+        } else {
+            from = LocalDate.parse(fromStr);
+            to = LocalDate.parse(toStr);
+        }
+        List<ActivityDto> activities = new ArrayList<>();
+        userCourseService.findCoursesForUser((UserDto)session.getAttribute("user"))
+                .stream()
+                .map(course -> service.findEventsForCourseFromTo(course,
+                        Timestamp.valueOf(from.atStartOfDay()),
+                        Timestamp.valueOf(to.atTime(LocalTime.MAX))))
+                .forEach(activities::addAll);
+        model.addAttribute("filter_from", from);
+        model.addAttribute("filter_to", to);
+        model.addAttribute("events", activities);
         return "timetable/timetable";
     }
 

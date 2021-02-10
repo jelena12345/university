@@ -18,6 +18,8 @@ import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,8 +55,22 @@ public class ActivityService {
 
     public List<ActivityDto> findAll() {
         logger.debug("Searching for all ActivityDto records");
-        List<Activity> activities = dao.findAll();
-        return activities.stream().map(item -> mapper.map(item, ActivityDto.class)).collect(Collectors.toList());
+        return dao.findAll().stream()
+                .map(item -> mapper.map(item, ActivityDto.class))
+                .sorted(Comparator.comparing(ActivityDto::getStartTime))
+                .collect(Collectors.toList());
+    }
+
+    public List<ActivityDto> findEventsForCourseFromTo(CourseDto course, Timestamp from, Timestamp to) {
+        logger.debug("Searching for ActivityDto records");
+        logger.trace("Searching for ActivityDto records for Course:{} from: {} to: {}", course, from, to);
+        return dao.findAll().stream()
+                .filter(event -> event.getCourse().getName().equals(course.getName())
+                        && event.getStartTime().after(from)
+                        && event.getEndTime().before(to))
+                .map(event -> mapper.map(event, ActivityDto.class))
+                .sorted(Comparator.comparing(ActivityDto::getStartTime))
+                .collect(Collectors.toList());
     }
 
     public ActivityDto findById(int id) {
