@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -92,9 +91,12 @@ class IndexControllerTest {
 
     @Test
     void testRegisterUser_Successful_ShouldRedirectToIndexPage() throws Exception {
-        this.mockMvc.perform(post("/register"))
+        UserDto user = new UserDto("1", "role", "name", "surname", "a");
+        this.mockMvc.perform(post("/register")
+                .flashAttr("user", user))
                 .andExpect(redirectedUrl("/"))
                 .andExpect(status().isFound());
+        verify(userService, times(1)).add(user);
     }
 
     @Test

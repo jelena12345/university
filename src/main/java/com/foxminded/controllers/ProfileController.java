@@ -24,6 +24,9 @@ public class ProfileController {
     @GetMapping()
     public String profile(Model model,
                           HttpSession session) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/";
+        }
         UserDto user = service.findByPersonalId(((UserDto)session.getAttribute("user")).getPersonalId());
         model.addAttribute("user", user);
         session.setAttribute("user", user);

@@ -22,7 +22,6 @@
         <label for="full_name" class="form-label">Professor</label>
         <input type="text" class="form-control" id="full_name" th:value="*{user.name + ' ' + user.surname}" readonly>
         <input type="hidden" id="personal_id" th:field="*{user.personalId}">
-
         <label for="from" class="mr-sm-2">From</label>
         <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="datetime-local" id="from" name="create_from" th:value="*{from}">
         <label for="to" class="mr-sm-2">To</label>
