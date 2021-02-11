@@ -46,7 +46,7 @@
                     </form>
                 </td>
                 <td>
-                    <form id="form_remove" method="POST" th:action="@{/courses/disconnect}">
+                    <form id="form_remove" method="POST" th:action="@{/courses/remove}">
                         <button class="btn btn-light fas fa-times" type="submit"></button>
                         <input type="hidden" id="course_remove" name="course_remove" th:value="${courseItem.name}">
                     </form>
