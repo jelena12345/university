@@ -33,7 +33,6 @@
                 <th scope="col">From</th>
                 <th scope="col">To</th>
                 <th scope="col"></th>
-                <th scope="col"></th>
             </tr>
             </thead>
             <tbody>
@@ -45,12 +44,6 @@
                     <form id="updateForm" method="GET" th:action="@{/timetable/update}">
                         <button class="btn btn-light fas fa-pencil-alt" type="submit"></button>
                         <input type="hidden" id="updateId" name="updateId" th:value="${eventItem.id}">
-                    </form>
-                </td>
-                <td>
-                    <form id="deleteForm" method="POST" th:action="@{/timetable/delete}">
-                        <button class="btn btn-light fas fa-times" type="submit"></button>
-                        <input type="hidden" id="deleteId" name="deleteId" th:value="${eventItem.id}">
                     </form>
                 </td>
             </tr>

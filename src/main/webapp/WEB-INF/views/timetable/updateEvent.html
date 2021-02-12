@@ -18,10 +18,14 @@
         <label for="courseName" class="form-label">Course</label>
         <input type="text" class="form-control" id="courseName" th:field="*{course.name}" readonly>
         <label for="from" class="mr-sm-2">From</label>
-        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="datetime-local" id="from" name="update_from" th:value="*{from}">
+        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="datetime-local" id="from" th:field="*{from}">
         <label for="to" class="mr-sm-2">To</label>
-        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="datetime-local" id="to" name="update_to" th:value="*{to}">
+        <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="datetime-local" id="to" th:field="*{to}">
         <button type="submit" class="w-100 btn btn-primary btn-lg">Update</button>
+    </form>
+    <form id="deleteForm" method="POST" th:action="@{/timetable/delete}">
+        <button type="submit" class="w-100 btn btn-primary btn-lg">Delete</button>
+        <input type="hidden" id="deleteId" name="deleteId" th:field="*{id}">
     </form>
 </div>
 </body>
