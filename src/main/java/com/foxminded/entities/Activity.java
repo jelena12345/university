@@ -1,5 +1,7 @@
 package com.foxminded.entities;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -8,7 +10,9 @@ public class Activity {
     private Integer id;
     private User user;
     private Course course;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime from;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime to;
 
     public Activity(Integer id, User user, Course course, LocalDateTime from, LocalDateTime to) {
