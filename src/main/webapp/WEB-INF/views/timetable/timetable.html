@@ -17,6 +17,7 @@
             <button class='btn btn-primary pull-right' th:if="${session.user.role == 'professor'}">+</button>
         </h2>
     </form>
+    <p class="text-danger" th:text="${message}"></p>
     <form class="form-inline" method="GET" th:action="@{/timetable}">
         <label for="from" class="mr-sm-2">From</label>
         <input class="form-control mb-2 mr-sm-2 mb-sm-0" type="date" th:value="${filter_from}" th:name="filter_from" id="from">

@@ -13,6 +13,7 @@
 <div class="page-content p-5" id="content" th:object="${user}">
     <form class="needs-validation" method="POST" th:action="@{/profile/save}" novalidate>
         <h2 class="display-4">Profile</h2>
+        <p class="text-danger" th:text="${message}"></p>
             <label for="personalId" class="form-label">Personal id</label>
             <input type="text" class="form-control" id="personalId" th:field="*{personalId}" readonly>
             <label for="firstName" class="form-label">First name</label>

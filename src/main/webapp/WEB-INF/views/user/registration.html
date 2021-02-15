@@ -11,6 +11,7 @@
 <main class="form-register">
     <form class="needs-validation" method="POST" th:action="@{/register}" th:object="${user}">
         <h2 class="display-4">Register new user</h2>
+        <p class="text-danger" th:text="${message}"></p>
         <label for="role" class="visually-hidden">Select Role</label>
         <select id="role" class="form-control" th:field="*{role}">
             <option value="professor" selected>Professor</option>

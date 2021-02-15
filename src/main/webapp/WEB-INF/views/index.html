@@ -11,6 +11,7 @@
       <form th:action="@{/signIn}" method="POST">
         <h1>Online University</h1>
         <h2 class="h3 mb-3 fw-normal">Please sign in</h2>
+        <p class="text-danger" th:text="${message}"></p>
         <label for="personalId" class="visually-hidden">Enter personal id</label>
         <input type="text" id="personalId" class="form-control" th:name="personalId" placeholder="Personal Id" required autofocus>
         <button class="w-100 btn btn-lg btn-primary mt-2" type="submit">Sign in</button>

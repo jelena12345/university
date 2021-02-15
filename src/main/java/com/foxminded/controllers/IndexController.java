@@ -2,6 +2,8 @@ package com.foxminded.controllers;
 
 import com.foxminded.dto.UserDto;
 import com.foxminded.services.UserService;
+import com.foxminded.services.exceptions.EntityAlreadyExistsException;
+import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -49,17 +51,20 @@ public class IndexController {
             session.setAttribute("user", service.findByPersonalId(personalId));
             return "redirect:/profile";
         } else {
-            redirectAttributes.addFlashAttribute("personalId", personalId);
+            redirectAttributes.addFlashAttribute("message", "User with personal id " + personalId + " not exists.");
         }
         return "redirect:/";
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute("user") UserDto user) {
-        if (service.existsByPersonalId(user.getPersonalId())) {
-            return "redirect:user/registration";
+    public String registerUser(RedirectAttributes redirectAttributes,
+                               @ModelAttribute("user") UserDto user) {
+        try {
+            service.add(user);
+        } catch (EntityAlreadyExistsException e) {
+            redirectAttributes.addFlashAttribute("message", "User with personal id " + user.getPersonalId() + " not exists.");
+            return "redirect:/register";
         }
-        service.add(user);
         return "redirect:/";
     }
 

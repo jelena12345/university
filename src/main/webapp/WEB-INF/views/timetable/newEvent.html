@@ -12,6 +12,7 @@
 <div th:insert="navigation :: sidebar"></div>
 <div class="page-content p-5" id="content">
     <h2 class="display-4">Create new event</h2>
+    <p class="text-danger" th:text="${message}"></p>
     <form method="POST" th:action="@{/timetable/new}" th:object="${event}">
         <label for="courses" class="visually-hidden">Choose course</label>
         <select name="courseName" id="courses" class="form-control" th:field="*{course.name}">

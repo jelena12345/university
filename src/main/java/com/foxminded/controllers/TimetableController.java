@@ -6,10 +6,13 @@ import com.foxminded.dto.UserDto;
 import com.foxminded.services.ActivityService;
 import com.foxminded.services.CourseService;
 import com.foxminded.services.UserCourseService;
+import com.foxminded.services.exceptions.EntityAlreadyExistsException;
+import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
@@ -26,6 +29,7 @@ public class TimetableController {
     private final ActivityService service;
     private final CourseService courseService;
     private final UserCourseService userCourseService;
+    private static final String MESSAGE = "message";
 
     @Autowired
     TimetableController(ActivityService service, CourseService courseService, UserCourseService userCourseService) {
@@ -80,23 +84,39 @@ public class TimetableController {
     }
 
     @PostMapping("/new")
-    public String createEvent(@ModelAttribute("event") ActivityDto event) {
-        service.add(event);
+    public String createEvent(@ModelAttribute("event") ActivityDto event,
+                              RedirectAttributes redirectAttributes) {
+        try {
+            service.add(event);
+        } catch (EntityAlreadyExistsException e) {
+            redirectAttributes.addFlashAttribute(MESSAGE, "Event already exists.");
+            return "timetable/newEvent";
+        }
         return "redirect:/timetable";
     }
 
     @PostMapping("/update")
     public String updateEvent(HttpSession session,
-                              @ModelAttribute("event") ActivityDto event) {
+                              @ModelAttribute("event") ActivityDto event,
+                              RedirectAttributes redirectAttributes) {
         event.setCourse(courseService.findByName(event.getCourse().getName()));
         event.setUser((UserDto)session.getAttribute("user"));
-        service.update(event);
+        try {
+            service.update(event);
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute(MESSAGE, "Event doesn't exists.");
+        }
         return "redirect:/timetable";
     }
 
     @PostMapping("/delete")
-    public String deleteEvent(@ModelAttribute("event") ActivityDto event) {
-        service.deleteById(event.getId());
+    public String deleteEvent(@ModelAttribute("event") ActivityDto event,
+                              RedirectAttributes redirectAttributes) {
+        try {
+            service.deleteById(event.getId());
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute(MESSAGE, "Event doesn't exists.");
+        }
         return "redirect:/timetable";
     }
 }

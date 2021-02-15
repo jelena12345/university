@@ -2,6 +2,7 @@ package com.foxminded.controllers;
 
 import com.foxminded.dto.UserDto;
 import com.foxminded.services.UserService;
+import com.foxminded.services.exceptions.EntityAlreadyExistsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -101,10 +102,10 @@ class IndexControllerTest {
 
     @Test
     void testRegisterUser_Unsuccessful_ShouldRedirectToRegistrationPage() throws Exception {
-        when(userService.existsByPersonalId(anyString())).thenReturn(true);
+        doThrow(new EntityAlreadyExistsException("")).when(userService).add(any());
         this.mockMvc.perform(post("/register")
-                .flashAttr("user", new UserDto("", "", "", "", "")))
-                .andExpect(redirectedUrl("user/registration"))
+                .flashAttr("user", new UserDto("1", "role", "name", "surname", "a")))
+                .andExpect(redirectedUrl("/register"))
                 .andExpect(status().isFound());
     }
 }
