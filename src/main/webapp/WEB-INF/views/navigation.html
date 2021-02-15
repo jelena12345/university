@@ -8,7 +8,7 @@
 <div class="vertical-nav bg-white" th:fragment="sidebar" th:object="${session.user}">
     <h1>University</h1>
     <div class="py-4 px-3 mb-4 bg-light">
-        <a href="/profile" class="nav-link text-dark bg-light">
+        <a th:href="@{/profile}" class="nav-link text-dark bg-light">
             <div class="media d-flex align-items-center">
                 <em class="fas fa-user-circle mr-3 text-primary fa-3x"></em>
                 <div class="media-body">
