@@ -57,7 +57,11 @@ class ActivityDaoTest {
 
     @Test
     void testAdd_ShouldAddCorrectActivity() {
-        Activity expected = new Activity(3, userDao.findById(1), courseDao.findById(1), LocalDateTime.now(), LocalDateTime.now().plusHours(1));
+        Activity expected = new Activity(3,
+                userDao.findById(1),
+                courseDao.findById(1),
+                LocalDateTime.parse("2021-02-15T16:31"),
+                LocalDateTime.parse("2021-02-15T17:31"));
         int id = activityDao.add(expected);
         Activity actual = activityDao.findById(id);
         assertEquals(expected, actual);
@@ -68,8 +72,8 @@ class ActivityDaoTest {
         Activity expected = activityDao.findById(1);
         expected.setUser(userDao.findById(1));
         expected.setCourse(courseDao.findById(1));
-        expected.setFrom(LocalDateTime.now());
-        expected.setTo(LocalDateTime.now().plusHours(1));
+        expected.setFrom(LocalDateTime.parse("2021-02-15T16:31"));
+        expected.setTo(LocalDateTime.parse("2021-02-15T17:31"));
         activityDao.update(expected);
         Activity actual = activityDao.findById(1);
         assertEquals(expected, actual);

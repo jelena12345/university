@@ -86,8 +86,7 @@ class IndexControllerTest {
     void testSignIn_Unsuccessful_ShouldRedirectToIndexPage() throws Exception {
         this.mockMvc.perform(post("/signIn").flashAttr("personalId", "1"))
                 .andExpect(redirectedUrl("/"))
-                .andExpect(status().isFound())
-                .andExpect(flash().attributeExists("personalId"));
+                .andExpect(status().isFound());
     }
 
     @Test

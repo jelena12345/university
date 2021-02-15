@@ -84,7 +84,7 @@ class CourseControllerTest {
                 .sessionAttr("user", user)
                 .flashAttr("course_remove", "name"))
                 .andExpect(status().isFound())
-                .andExpect(redirectedUrl("/courses?course_remove=name"));
+                .andExpect(redirectedUrl("/courses"));
         verify(userCourseService, times(1)).delete(user, course);
     }
 
@@ -105,8 +105,7 @@ class CourseControllerTest {
         this.mockMvc.perform(post("/courses/update")
                 .flashAttr("course", course))
                 .andExpect(status().isFound())
-                .andExpect(redirectedUrl("/courses"))
-                .andExpect(model().attributeExists("course"));
+                .andExpect(redirectedUrl("/courses"));
         verify(courseService, times(1)).update(course);
     }
 
