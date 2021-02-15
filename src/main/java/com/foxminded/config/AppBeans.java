@@ -16,7 +16,7 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import javax.sql.DataSource;
 
 @Configuration
-@ComponentScan("com.foxminded")
+@ComponentScan(basePackages = {"com.foxminded.dao", "com.foxminded.services", "com.foxminded.config"})
 @PropertySource("classpath:application.properties")
 public class AppBeans {
 
@@ -58,20 +58,14 @@ public class AppBeans {
 
     @Bean
     @Scope("prototype")
-    public ProfessorDao professorDao() {
-        return new ProfessorDao(jdbcTemplate());
+    public UserDao userDao() {
+        return new UserDao(jdbcTemplate());
     }
 
     @Bean
     @Scope("prototype")
-    public StudentDao studentDao() {
-        return new StudentDao(jdbcTemplate());
-    }
-
-    @Bean
-    @Scope("prototype")
-    public GroupDao groupDao() {
-        return new GroupDao(jdbcTemplate());
+    public UserCourseDao userCourseDao() {
+        return new UserCourseDao(jdbcTemplate());
     }
 
     @Bean
@@ -93,7 +87,7 @@ public class AppBeans {
     @Bean
     @Scope("prototype")
     public ActivityService activityService() {
-        return new ActivityService(modelMapper(), activityDao());
+        return new ActivityService(modelMapper(), activityDao(), userDao(), courseDao());
     }
 
     @Bean
@@ -104,20 +98,14 @@ public class AppBeans {
 
     @Bean
     @Scope("prototype")
-    public GroupService groupService() {
-        return new GroupService(modelMapper(), groupDao());
+    public UserCourseService userCourseService() {
+        return new UserCourseService(modelMapper(), userCourseDao(), userDao(), courseDao());
     }
 
     @Bean
     @Scope("prototype")
-    public ProfessorService professorService() {
-        return new ProfessorService(modelMapper(), professorDao());
-    }
-
-    @Bean
-    @Scope("prototype")
-    public StudentService studentService() {
-        return new StudentService(modelMapper(), studentDao());
+    public UserService userService() {
+        return new UserService(modelMapper(), userDao());
     }
 
 }

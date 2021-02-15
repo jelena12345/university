@@ -1,7 +1,7 @@
 package com.foxminded.dao;
 
 import com.foxminded.entities.Course;
-import com.foxminded.entities.Student;
+import com.foxminded.entities.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,12 +12,12 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GroupDaoTest {
+class UserCourseDaoTest {
 
     private EmbeddedDatabase db;
-    private GroupDao dao;
+    private UserCourseDao dao;
     private CourseDao courseDao;
-    private StudentDao studentDao;
+    private UserDao userDao;
 
     @BeforeEach
     public void setUp() {
@@ -27,9 +27,9 @@ class GroupDaoTest {
                 .addScript("classpath:data.sql")
                 .build();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(db);
-        dao = new GroupDao(template);
+        dao = new UserCourseDao(template);
         courseDao = new CourseDao(template);
-        studentDao = new StudentDao(template);
+        userDao = new UserDao(template);
     }
 
     @AfterEach
@@ -38,39 +38,45 @@ class GroupDaoTest {
     }
 
     @Test
-    void testFindGroupForCourse_ShouldFindCorrectGroup() {
+    void testFindUsersForCourse_ShouldFindCorrectRecords() {
         Course course = courseDao.findById(1);
-        assertNotNull(dao.findGroupForCourse(course));
+        assertNotNull(dao.findUsersForCourse(course));
     }
 
     @Test
-    void testAdd_ShouldAddCorrectStudentForCourse() {
-        Student student = studentDao.findById(2);
-        Course course = courseDao.findById(1);
-        dao.add(student, course);
-        assertTrue(dao.existsCourseForStudent(student, course));
+    void testFindCoursesForUser_ShouldFindCorrectRecords() {
+        User user = userDao.findById(1);
+        assertNotNull(dao.findCoursesForUser(user));
     }
 
     @Test
-    void testDelete_ShouldDeleteCorrectStudentForCourse() {
-        Student student = studentDao.findById(1);
+    void testAdd_ShouldAddCorrectUserForCourse() {
+        User user = userDao.findById(2);
         Course course = courseDao.findById(1);
-        dao.delete(student, course);
-        assertFalse(dao.existsCourseForStudent(student, course));
+        dao.add(user, course);
+        assertTrue(dao.existsCourseForUser(user, course));
     }
 
     @Test
-    void testExistsCourseForStudent_ShouldReturnTrue() {
-        Student student = studentDao.findById(1);
+    void testDelete_ShouldDeleteCorrectUserForCourse() {
+        User user = userDao.findById(1);
         Course course = courseDao.findById(1);
-        assertTrue(dao.existsCourseForStudent(student, course));
+        dao.delete(user, course);
+        assertFalse(dao.existsCourseForUser(user, course));
     }
 
     @Test
-    void testExistsCourseForStudent_ShouldReturnFalse() {
-        Student student = studentDao.findById(2);
+    void testExistsCourseForUser_ShouldReturnTrue() {
+        User user = userDao.findById(1);
         Course course = courseDao.findById(1);
-        assertFalse(dao.existsCourseForStudent(student, course));
+        assertTrue(dao.existsCourseForUser(user, course));
+    }
+
+    @Test
+    void testExistsCourseForUser_ShouldReturnFalse() {
+        User user = userDao.findById(2);
+        Course course = courseDao.findById(1);
+        assertFalse(dao.existsCourseForUser(user, course));
     }
 
 }

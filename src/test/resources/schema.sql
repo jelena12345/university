@@ -3,32 +3,27 @@ CREATE TABLE IF NOT EXISTS courses (
     name VARCHAR(15) NOT NULL UNIQUE,
     description TEXT NOT NULL
 );
-CREATE TABLE IF NOT EXISTS students (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY NOT NULL,
     personal_id VARCHAR(15) NOT NULL UNIQUE,
-    name TEXT NOT NULL,
-    surname TEXT NOT NULL
-);
-CREATE TABLE IF NOT EXISTS professors (
-    id SERIAL PRIMARY KEY NOT NULL,
-    personal_id VARCHAR(15) NOT NULL UNIQUE,
+    role TEXT NOT NULL,
     name TEXT NOT NULL,
     surname TEXT NOT NULL,
-    qualification TEXT NOT NULL
+    about TEXT NOT NULL
 );
-CREATE TABLE IF NOT EXISTS student_course (
-    student_id INT NOT NULL,
+CREATE TABLE IF NOT EXISTS user_course (
+    user_id INT NOT NULL,
     course_id INT NOT NULL,
-    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
-    UNIQUE (student_id, course_id)
+    UNIQUE (user_id, course_id)
 );
 CREATE TABLE IF NOT EXISTS activities (
     id SERIAL PRIMARY KEY NOT NULL,
-    professor_id INT NOT NULL,
+    user_id INT NOT NULL,
     course_id INT NOT NULL,
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
-    FOREIGN KEY (professor_id) REFERENCES professors(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 );

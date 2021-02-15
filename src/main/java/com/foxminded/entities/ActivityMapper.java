@@ -8,12 +8,13 @@ import java.sql.SQLException;
 public class ActivityMapper implements RowMapper<Activity> {
 
     public Activity mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Professor professor = new Professor(
-                rs.getInt("professor_id"),
+        User user = new User(
+                rs.getInt("user_id"),
                 rs.getString("personal_id"),
-                rs.getString("professors.name"),
+                rs.getString("role"),
+                rs.getString("users.name"),
                 rs.getString("surname"),
-                rs.getString("qualification")
+                rs.getString("about")
         );
         Course course = new Course(
                 rs.getInt("course_id"),
@@ -22,10 +23,10 @@ public class ActivityMapper implements RowMapper<Activity> {
         );
         return new Activity(
                 rs.getInt("id"),
-                professor,
+                user,
                 course,
-                rs.getTimestamp("start_time"),
-                rs.getTimestamp("end_time"));
+                rs.getTimestamp("start_time").toLocalDateTime(),
+                rs.getTimestamp("end_time").toLocalDateTime());
     }
 
 }

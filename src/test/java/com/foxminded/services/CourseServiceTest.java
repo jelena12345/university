@@ -16,7 +16,6 @@ import org.modelmapper.ModelMapper;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -69,10 +68,11 @@ class CourseServiceTest {
 
     @Test
     void testUpdate_ShouldCallUpdateMethodForDao() {
-        Course expected = new Course("name", "description");
-        when(dao.existsById(anyInt())).thenReturn(true);
-        service.update(1, new CourseDto("name", "description"));
-        verify(dao, times(1)).update(1, expected);
+        Course expected = new Course(1, "name", "description");
+        when(dao.existsByName(anyString())).thenReturn(true);
+        when(dao.findByName(anyString())).thenReturn(expected);
+        service.update(new CourseDto("name", "description"));
+        verify(dao, times(1)).update(expected);
     }
 
     @Test
@@ -99,7 +99,7 @@ class CourseServiceTest {
     @Test
     void testUpdate_ShouldThrowEntityNotFoundException() {
         CourseDto courseDto = new CourseDto("name", "description");
-        assertThrows(EntityNotFoundException.class, () -> service.update(1, courseDto));
+        assertThrows(EntityNotFoundException.class, () -> service.update(courseDto));
     }
 
     @Test

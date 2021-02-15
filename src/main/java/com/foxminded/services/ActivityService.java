@@ -1,13 +1,14 @@
 package com.foxminded.services;
 
 import com.foxminded.dao.ActivityDao;
+import com.foxminded.dao.CourseDao;
+import com.foxminded.dao.UserDao;
 import com.foxminded.dto.ActivityDto;
 import com.foxminded.dto.CourseDto;
-import com.foxminded.dto.ProfessorDto;
+import com.foxminded.dto.UserDto;
 import com.foxminded.entities.Activity;
 import com.foxminded.entities.Course;
-import com.foxminded.entities.Professor;
-import com.foxminded.services.exceptions.EntityAlreadyExistsException;
+import com.foxminded.entities.User;
 import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,8 @@ import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,9 +27,11 @@ public class ActivityService {
 
     private final ModelMapper mapper;
     private final ActivityDao dao;
+    private final UserDao userDao;
+    private final CourseDao courseDao;
     private static final Logger logger = LoggerFactory.getLogger(ActivityService.class);
 
-    PropertyMap<ProfessorDto, Professor> skipProfessorIdFieldMap = new PropertyMap<ProfessorDto, Professor>() {
+    PropertyMap<UserDto, User> skipUserIdFieldMap = new PropertyMap<UserDto, User>() {
         protected void configure() {
             skip().setId(null);
         }
@@ -38,17 +43,33 @@ public class ActivityService {
     };
 
     @Autowired
-    public ActivityService(ModelMapper mapper, ActivityDao dao) {
+    public ActivityService(ModelMapper mapper, ActivityDao dao, UserDao userDao, CourseDao courseDao) {
         this.mapper = mapper;
         this.mapper.addMappings(skipCourseIdFieldMap);
-        this.mapper.addMappings(skipProfessorIdFieldMap);
+        this.mapper.addMappings(skipUserIdFieldMap);
         this.dao = dao;
+        this.userDao = userDao;
+        this.courseDao = courseDao;
     }
 
     public List<ActivityDto> findAll() {
         logger.debug("Searching for all ActivityDto records");
-        List<Activity> activities = dao.findAll();
-        return activities.stream().map(item -> mapper.map(item, ActivityDto.class)).collect(Collectors.toList());
+        return dao.findAll().stream()
+                .map(item -> mapper.map(item, ActivityDto.class))
+                .sorted(Comparator.comparing(ActivityDto::getFrom))
+                .collect(Collectors.toList());
+    }
+
+    public List<ActivityDto> findEventsForCourseFromTo(CourseDto course, LocalDateTime from, LocalDateTime to) {
+        logger.debug("Searching for ActivityDto records");
+        logger.trace("Searching for ActivityDto records for Course:{} from: {} to: {}", course, from, to);
+        return dao.findAll().stream()
+                .filter(event -> event.getCourse().getName().equals(course.getName())
+                        && event.getFrom().isAfter(from)
+                        && event.getTo().isBefore(to))
+                .map(event -> mapper.map(event, ActivityDto.class))
+                .sorted(Comparator.comparing(ActivityDto::getFrom))
+                .collect(Collectors.toList());
     }
 
     public ActivityDto findById(int id) {
@@ -57,24 +78,26 @@ public class ActivityService {
         return mapper.map(dao.findById(id), ActivityDto.class);
     }
 
-    public void add(ActivityDto activity) {
+    public void add(ActivityDto activityDto) {
         logger.debug("Adding ActivityDto");
-        logger.trace("Adding ActivityDto: {}", activity);
-        if (dao.existsById(activity.getId())) {
-            logger.warn("Activity with id {} already exists.", activity.getId());
-            throw new EntityAlreadyExistsException("Activity with id " + activity.getId() + " already exists.");
-        }
-        dao.add(mapper.map(activity, Activity.class));
+        logger.trace("Adding ActivityDto: {}", activityDto);
+        Activity activity = mapper.map(activityDto, Activity.class);
+        activity.setUser(enrich(activity.getUser()));
+        activity.setCourse(enrich(activity.getCourse()));
+        dao.add(activity);
     }
 
-    public void update(ActivityDto activity) {
+    public void update(ActivityDto activityDto) {
         logger.debug("Updating ActivityDto");
-        logger.trace("Updating ActivityDto: {}", activity);
-        if (!dao.existsById(activity.getId())) {
-            logger.warn("Not found Activity with id: {}", activity.getId());
-            throw new EntityNotFoundException("Not found Activity with id: " + activity.getId());
+        logger.trace("Updating ActivityDto: {}", activityDto);
+        if (!dao.existsById(activityDto.getId())) {
+            logger.warn("Not found Activity with id: {}", activityDto.getId());
+            throw new EntityNotFoundException("Not found Activity with id: " + activityDto.getId());
         }
-        dao.update(mapper.map(activity, Activity.class));
+        Activity activity = mapper.map(activityDto, Activity.class);
+        activity.setUser(enrich(activity.getUser()));
+        activity.setCourse(enrich(activity.getCourse()));
+        dao.update(activity);
     }
 
     public void deleteById(int id) {
@@ -93,4 +116,13 @@ public class ActivityService {
         return dao.existsById(id);
     }
 
+    private User enrich(User user) {
+        user.setId(userDao.findByPersonalId(user.getPersonalId()).getId());
+        return user;
+    }
+
+    private Course enrich(Course course) {
+        course.setId(courseDao.findByName(course.getName()).getId());
+        return course;
+    }
 }

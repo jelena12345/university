@@ -1,26 +1,30 @@
 package com.foxminded.dto;
 
-import java.sql.Timestamp;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class ActivityDto {
 
     private Integer id;
-    private ProfessorDto professor;
+    private UserDto user;
     private CourseDto course;
-    private Timestamp startTime;
-    private Timestamp endTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime from;
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private LocalDateTime to;
 
-    public ActivityDto(Integer id, ProfessorDto professor, CourseDto course, Timestamp startTime, Timestamp endTime) {
+    public ActivityDto(Integer id, UserDto user, CourseDto course, LocalDateTime from, LocalDateTime to) {
         this.id = id;
-        this.professor = professor;
+        this.user = user;
         this.course = course;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.from = from;
+        this.to = to;
     }
 
-    public ActivityDto(ProfessorDto professor, CourseDto course, Timestamp startTime, Timestamp endTime) {
-        this(null, professor, course, startTime, endTime);
+    public ActivityDto(UserDto user, CourseDto course, LocalDateTime from, LocalDateTime to) {
+        this(null, user, course, from, to);
     }
 
     private ActivityDto() { }
@@ -33,12 +37,12 @@ public class ActivityDto {
         this.id = id;
     }
 
-    public ProfessorDto getProfessor() {
-        return professor;
+    public UserDto getUser() {
+        return user;
     }
 
-    public void setProfessor(ProfessorDto professor) {
-        this.professor = professor;
+    public void setUser(UserDto user) {
+        this.user = user;
     }
 
     public CourseDto getCourse() {
@@ -49,20 +53,20 @@ public class ActivityDto {
         this.course = course;
     }
 
-    public Timestamp getStartTime() {
-        return startTime;
+    public LocalDateTime getFrom() {
+        return from;
     }
 
-    public void setStartTime(Timestamp startTime) {
-        this.startTime = startTime;
+    public void setFrom(LocalDateTime from) {
+        this.from = from;
     }
 
-    public Timestamp getEndTime() {
-        return endTime;
+    public LocalDateTime getTo() {
+        return to;
     }
 
-    public void setEndTime(Timestamp duration) {
-        this.endTime = duration;
+    public void setTo(LocalDateTime duration) {
+        this.to = duration;
     }
 
     @Override
@@ -75,25 +79,25 @@ public class ActivityDto {
         }
         return (o instanceof ActivityDto)
                 && (((ActivityDto) o).getId().equals(this.id))
-                && (((ActivityDto) o).getProfessor().equals(this.professor))
+                && (((ActivityDto) o).getUser().equals(this.user))
                 && (((ActivityDto) o).getCourse().equals(this.course))
-                && (((ActivityDto) o).getStartTime().equals(this.startTime))
-                && (((ActivityDto) o).getEndTime().equals(this.endTime));
+                && (((ActivityDto) o).getFrom().equals(this.from))
+                && (((ActivityDto) o).getTo().equals(this.to));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, professor, course, startTime, endTime);
+        return Objects.hash(id, user, course, from, to);
     }
 
     @Override
     public String toString() {
         return "ActivityDto{" +
                 "id=" + id +
-                ", professor=" + professor +
+                ", professor=" + user +
                 ", course=" + course +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
+                ", startTime=" + from +
+                ", endTime=" + to +
                 '}';
     }
 }
