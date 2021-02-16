@@ -29,7 +29,7 @@ class UserCourseDaoTest {
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(db);
         dao = new UserCourseDao(template);
         courseDao = new CourseDao(template);
-        userDao = new UserDao(template);
+        userDao = new UserDao();
     }
 
     @AfterEach

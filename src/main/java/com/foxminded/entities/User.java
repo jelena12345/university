@@ -1,14 +1,24 @@
 package com.foxminded.entities;
 
+import javax.persistence.*;
 import java.util.Objects;
 
+@Entity
+@Table(name="users")
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+    @Column(name="personal_id", length=15, nullable=false, unique=true)
     private String personalId;
+    @Column(name="role", nullable=false)
     private String role;
+    @Column(name="name", nullable=false)
     private String name;
+    @Column(name="surname", nullable=false)
     private String surname;
+    @Column(name="about", nullable=false)
     private String about;
 
     public User(Integer id, String personalId, String role, String name, String surname, String about) {
@@ -24,7 +34,7 @@ public class User {
         this(null, personalId, role, name, surname, about);
     }
 
-    private User() { }
+    public User() { }
 
     public Integer getId() {
         return id;

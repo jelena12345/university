@@ -27,7 +27,7 @@ class UserDaoTest {
                 .addScript("classpath:data.sql")
                 .build();
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(db);
-        dao = new UserDao(template);
+        dao = new UserDao();
     }
 
     @AfterEach
