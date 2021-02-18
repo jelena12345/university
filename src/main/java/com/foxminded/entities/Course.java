@@ -1,18 +1,25 @@
 package com.foxminded.entities;
 
+import javax.persistence.*;
 import java.util.Objects;
 
+@Entity
+@Table(name="courses")
 public class Course {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name="name", nullable=false, unique=true)
     private String name;
+    @Column(name="description", nullable=false)
     private String description;
 
     public Course(String name, String description) {
         this(null, name, description);
     }
 
-    private Course() { }
+    public Course() { }
 
     public Course(Integer id, String name, String description) {
         this.id = id;

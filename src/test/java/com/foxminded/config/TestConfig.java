@@ -1,5 +1,6 @@
 package com.foxminded.config;
 
+import com.foxminded.dao.CourseDao;
 import com.foxminded.dao.UserDao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,5 +64,11 @@ public class TestConfig {
     @Scope("prototype")
     public UserDao userDao() {
         return new UserDao();
+    }
+
+    @Bean
+    @Scope("prototype")
+    public CourseDao courseDao() {
+        return new CourseDao();
     }
 }

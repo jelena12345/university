@@ -40,7 +40,7 @@ public class UserDao {
         }
     }
 
-    public int add(User user) {
+    public Integer add(User user) {
         entityManager.persist(user);
         entityManager.flush();
         return user.getId();

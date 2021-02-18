@@ -73,7 +73,7 @@ public class AppBeans {
     @Bean
     @Scope("prototype")
     public CourseDao courseDao() {
-        return new CourseDao(jdbcTemplate());
+        return new CourseDao();
     }
 
     @Bean

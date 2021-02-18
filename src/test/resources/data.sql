@@ -1,5 +1,5 @@
--- INSERT INTO courses(name, description) VALUES('name', 'description');
--- INSERT INTO courses(name, description) VALUES('name2', 'description2');
+INSERT INTO courses(name, description) VALUES('name', 'description');
+INSERT INTO courses(name, description) VALUES('name2', 'description2');
 INSERT INTO users(personal_id, role, name, surname, about) VALUES('1', 'role','name', 'surname', 'about');
 INSERT INTO users(personal_id, role, name, surname, about) VALUES('2', 'role', 'name2', 'surname2', 'about2');
 -- INSERT INTO user_course(user_id, course_id) VALUES(1, 1);
