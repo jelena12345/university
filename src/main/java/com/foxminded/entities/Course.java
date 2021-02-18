@@ -1,5 +1,8 @@
 package com.foxminded.entities;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
@@ -11,12 +14,19 @@ public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @Column(name="name", nullable=false, unique=true)
     private String name;
+
     @Column(name="description", nullable=false)
     private String description;
-    @ManyToMany(mappedBy = "coursesForUser", cascade = CascadeType.ALL)
+
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "coursesForUser", cascade = CascadeType.REMOVE)
     List<User> usersForCourse;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="course")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    List<Activity> activities;
 
     public Course(String name, String description) {
         this(null, name, description);
@@ -62,6 +72,13 @@ public class Course {
         this.usersForCourse = usersForCourse;
     }
 
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) {

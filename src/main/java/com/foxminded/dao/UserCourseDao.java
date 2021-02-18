@@ -25,12 +25,12 @@ public class UserCourseDao {
     }
 
     public void add(User user, Course course) {
-        entityManager.find(User.class, user.getId()).getCoursesForUser().add(course);
+        user.getCoursesForUser().add(course);
         entityManager.merge(user);
     }
 
     public void delete(User user, Course course) {
-        entityManager.find(User.class, user.getId()).getCoursesForUser().remove(course);
+        user.getCoursesForUser().remove(course);
         entityManager.merge(user);
     }
 

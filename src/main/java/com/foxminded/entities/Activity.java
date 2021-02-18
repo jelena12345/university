@@ -13,13 +13,19 @@ public class Activity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @OneToOne(fetch= FetchType.EAGER)
+
+    @ManyToOne(fetch= FetchType.EAGER, targetEntity = User.class)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
-    @OneToOne(fetch= FetchType.EAGER)
+
+    @ManyToOne(fetch= FetchType.EAGER, targetEntity = Course.class)
+    @JoinColumn(name = "course_id", referencedColumnName = "id")
     private Course course;
+
     @Column(name="start_time", nullable=false)
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime from;
+
     @Column(name="end_time", nullable=false)
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime to;
