@@ -8,7 +8,7 @@ import java.util.Objects;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     @Column(name="personal_id", length=15, nullable=false, unique=true)
     private String personalId;

@@ -91,7 +91,7 @@ public class AppBeans {
     @Bean
     @Scope("prototype")
     public ActivityDao activityDao() {
-        return new ActivityDao(jdbcTemplate());
+        return new ActivityDao();
     }
 
     @Bean

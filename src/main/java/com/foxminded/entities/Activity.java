@@ -2,16 +2,25 @@ package com.foxminded.entities;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Entity
+@Table(name="activities")
 public class Activity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
+    @OneToOne(fetch= FetchType.EAGER)
     private User user;
+    @OneToOne(fetch= FetchType.EAGER)
     private Course course;
+    @Column(name="start_time", nullable=false)
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime from;
+    @Column(name="end_time", nullable=false)
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime to;
 
@@ -27,7 +36,7 @@ public class Activity {
         this(null, user, course, from, to);
     }
 
-    private Activity() { }
+    public Activity() { }
 
     public Integer getId() {
         return id;
