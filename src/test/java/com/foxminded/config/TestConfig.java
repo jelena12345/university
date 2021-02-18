@@ -2,6 +2,7 @@ package com.foxminded.config;
 
 import com.foxminded.dao.ActivityDao;
 import com.foxminded.dao.CourseDao;
+import com.foxminded.dao.UserCourseDao;
 import com.foxminded.dao.UserDao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -77,5 +78,11 @@ public class TestConfig {
     @Scope("prototype")
     public ActivityDao activityDao() {
         return new ActivityDao();
+    }
+
+    @Bean
+    @Scope("prototype")
+    public UserCourseDao userCourseDao() {
+        return new UserCourseDao();
     }
 }

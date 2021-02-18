@@ -1,6 +1,7 @@
 package com.foxminded.entities;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -8,12 +9,14 @@ import java.util.Objects;
 public class Course {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name="name", nullable=false, unique=true)
     private String name;
     @Column(name="description", nullable=false)
     private String description;
+    @ManyToMany(mappedBy = "coursesForUser", cascade = CascadeType.ALL)
+    List<User> usersForCourse;
 
     public Course(String name, String description) {
         this(null, name, description);
@@ -49,6 +52,14 @@ public class Course {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<User> getUsersForCourse() {
+        return usersForCourse;
+    }
+
+    public void setUsersForCourse(List<User> usersForCourse) {
+        this.usersForCourse = usersForCourse;
     }
 
     @Override

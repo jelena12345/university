@@ -5,7 +5,6 @@ import com.foxminded.services.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.*;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jndi.JndiTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -66,12 +65,6 @@ public class AppBeans {
 
     @Bean
     @Scope("prototype")
-    public NamedParameterJdbcTemplate jdbcTemplate() {
-        return new NamedParameterJdbcTemplate(dataSource());
-    }
-
-    @Bean
-    @Scope("prototype")
     public CourseDao courseDao() {
         return new CourseDao();
     }
@@ -85,7 +78,7 @@ public class AppBeans {
     @Bean
     @Scope("prototype")
     public UserCourseDao userCourseDao() {
-        return new UserCourseDao(jdbcTemplate());
+        return new UserCourseDao();
     }
 
     @Bean

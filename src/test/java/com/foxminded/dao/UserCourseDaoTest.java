@@ -1,41 +1,32 @@
 package com.foxminded.dao;
 
+import com.foxminded.config.TestConfig;
 import com.foxminded.entities.Course;
 import com.foxminded.entities.User;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = { TestConfig.class })
+@Transactional
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Sql("classpath:data.sql")
 class UserCourseDaoTest {
 
-    private EmbeddedDatabase db;
+    @Autowired
     private UserCourseDao dao;
+    @Autowired
     private CourseDao courseDao;
+    @Autowired
     private UserDao userDao;
-
-    @BeforeEach
-    public void setUp() {
-        db = new EmbeddedDatabaseBuilder()
-                .setType(EmbeddedDatabaseType.H2)
-                .addScript("classpath:schema.sql")
-                .addScript("classpath:data.sql")
-                .build();
-        NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(db);
-        dao = new UserCourseDao(template);
-        courseDao = new CourseDao(template);
-        userDao = new UserDao();
-    }
-
-    @AfterEach
-    public void tearDown() {
-        db.shutdown();
-    }
 
     @Test
     void testFindUsersForCourse_ShouldFindCorrectRecords() {
