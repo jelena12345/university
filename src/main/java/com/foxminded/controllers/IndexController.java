@@ -24,7 +24,6 @@ public class IndexController {
 
     @GetMapping()
     public String index(HttpSession session) {
-        System.out.println("AAAAAAAAAAAAAAAA");
         if (session.getAttribute("user") != null) {
             return "redirect:/profile";
         }
@@ -33,7 +32,6 @@ public class IndexController {
 
     @GetMapping("/register")
     public String registrationPage(Model model) {
-        System.out.println("register");
         model.addAttribute("user", new UserDto());
         return "user/registration";
     }
