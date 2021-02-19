@@ -3,7 +3,6 @@ package com.foxminded.controllers;
 import com.foxminded.dto.UserDto;
 import com.foxminded.services.UserService;
 import com.foxminded.services.exceptions.EntityAlreadyExistsException;
-import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +24,7 @@ public class IndexController {
 
     @GetMapping()
     public String index(HttpSession session) {
+        System.out.println("AAAAAAAAAAAAAAAA");
         if (session.getAttribute("user") != null) {
             return "redirect:/profile";
         }
@@ -33,6 +33,7 @@ public class IndexController {
 
     @GetMapping("/register")
     public String registrationPage(Model model) {
+        System.out.println("register");
         model.addAttribute("user", new UserDto());
         return "user/registration";
     }
