@@ -1,11 +1,15 @@
 package com.foxminded.config;
 
-import com.foxminded.dao.*;
-import com.foxminded.services.*;
-import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.*;
+import com.foxminded.dao.ActivityDao;
+import com.foxminded.dao.CourseDao;
+import com.foxminded.dao.UserCourseDao;
+import com.foxminded.dao.UserDao;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
-import org.springframework.jndi.JndiTemplate;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -13,24 +17,18 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
-@ComponentScan(basePackages = {"com.foxminded.dao", "com.foxminded.services", "com.foxminded.config"})
-@PropertySource("classpath:application.properties")
-public class AppBeans {
+public class TestConfig {
 
     @Bean
     public DataSource dataSource() {
-        try {
-            return (DataSource) new JndiTemplate().lookup("java:comp/env/jdbc/University");
-        } catch (NamingException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .build();
     }
 
     @Bean
@@ -56,17 +54,11 @@ public class AppBeans {
         em.setJpaVendorAdapter(vendorAdapter);
 
         Properties properties = new Properties();
-        properties.setProperty("hibernate.hbm2ddl.auto", "validate");
+        properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         em.setJpaProperties(properties);
 
         return em;
-    }
-
-    @Bean
-    @Scope("prototype")
-    public CourseDao courseDao() {
-        return new CourseDao();
     }
 
     @Bean
@@ -77,8 +69,8 @@ public class AppBeans {
 
     @Bean
     @Scope("prototype")
-    public UserCourseDao userCourseDao() {
-        return new UserCourseDao();
+    public CourseDao courseDao() {
+        return new CourseDao();
     }
 
     @Bean
@@ -89,36 +81,7 @@ public class AppBeans {
 
     @Bean
     @Scope("prototype")
-    public ModelMapper modelMapper() {
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration()
-                .setFieldMatchingEnabled(true)
-                .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);
-        return mapper;
+    public UserCourseDao userCourseDao() {
+        return new UserCourseDao();
     }
-
-    @Bean
-    @Scope("prototype")
-    public ActivityService activityService() {
-        return new ActivityService(modelMapper(), activityDao(), userDao(), courseDao());
-    }
-
-    @Bean
-    @Scope("prototype")
-    public CourseService courseService() {
-        return new CourseService(modelMapper(), courseDao());
-    }
-
-    @Bean
-    @Scope("prototype")
-    public UserCourseService userCourseService() {
-        return new UserCourseService(modelMapper(), userCourseDao(), userDao(), courseDao());
-    }
-
-    @Bean
-    @Scope("prototype")
-    public UserService userService() {
-        return new UserService(modelMapper(), userDao());
-    }
-
 }

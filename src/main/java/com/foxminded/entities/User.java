@@ -1,15 +1,45 @@
 package com.foxminded.entities;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
+@Entity
+@Table(name="users")
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(name="personal_id", length=15, nullable=false, unique=true)
     private String personalId;
+
+    @Column(name="role", nullable=false)
     private String role;
+
+    @Column(name="name", nullable=false)
     private String name;
+
+    @Column(name="surname", nullable=false)
     private String surname;
+
+    @Column(name="about", nullable=false)
     private String about;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @JoinTable(
+            name = "user_course",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "course_id"))
+    List<Course> coursesForUser;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="user")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    List<Activity> activities;
 
     public User(Integer id, String personalId, String role, String name, String surname, String about) {
         this.id = id;
@@ -24,7 +54,7 @@ public class User {
         this(null, personalId, role, name, surname, about);
     }
 
-    private User() { }
+    public User() { }
 
     public Integer getId() {
         return id;
@@ -72,6 +102,22 @@ public class User {
 
     public void setPersonalId(String personalId) {
         this.personalId = personalId;
+    }
+
+    public List<Course> getCoursesForUser() {
+        return coursesForUser;
+    }
+
+    public void setCoursesForUser(List<Course> coursesForUser) {
+        this.coursesForUser = coursesForUser;
+    }
+
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
     }
 
     @Override

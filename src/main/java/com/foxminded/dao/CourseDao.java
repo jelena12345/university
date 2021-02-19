@@ -3,105 +3,70 @@ package com.foxminded.dao;
 import com.foxminded.entities.Course;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import java.util.List;
-import java.util.Objects;
 
 @Repository
+@Transactional
 public class CourseDao {
 
-    private static final String ID = "id";
-    private static final String NAME = "name";
-    private static final String DESCRIPTION = "description";
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    private final NamedParameterJdbcTemplate template;
     private static final Logger logger = LoggerFactory.getLogger(CourseDao.class);
 
-    @Autowired
-    public CourseDao(NamedParameterJdbcTemplate template) {
-        this.template = template;
-    }
-
     public List<Course> findAll() {
-        return template.query("SELECT id, name, description FROM courses",
-                new BeanPropertyRowMapper<>(Course.class));
+        return entityManager.createQuery("from Course", Course.class).getResultList();
     }
 
     public Course findById(int id) {
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue(ID, id);
-        try {
-            return template.queryForObject("SELECT id, name, description FROM courses WHERE id=:id",
-                    params,
-                    new BeanPropertyRowMapper<>(Course.class));
-        } catch (EmptyResultDataAccessException e) {
-            logger.error("Error trying to find Course with id = {}", id, e);
-            return null;
-        }
+        return entityManager.find(Course.class, id);
     }
 
     public Course findByName(String name) {
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue(NAME, name);
         try {
-            return template.queryForObject("SELECT id, name, description FROM courses WHERE name=:name",
-                    params,
-                    new BeanPropertyRowMapper<>(Course.class));
-        } catch (EmptyResultDataAccessException e) {
+            return entityManager
+                    .createQuery("SELECT c FROM Course c WHERE c.name = :name", Course.class)
+                    .setParameter("name", name)
+                    .getSingleResult();
+        } catch (NoResultException e) {
             logger.error("Error trying to find Course with name = {}", name, e);
             return null;
         }
     }
 
     public Integer add(Course course) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue(NAME, course.getName())
-                .addValue(DESCRIPTION, course.getDescription());
-
-        template.update("INSERT INTO courses(name, description) VALUES(:name, :description)",
-                params,
-                keyHolder,
-                new String[]{ID});
-
-        return Objects.requireNonNull(keyHolder.getKey()).intValue();
+        entityManager.persist(course);
+        entityManager.flush();
+        return course.getId();
     }
 
     public void update(Course course) {
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue(ID, course.getId())
-                .addValue(NAME, course.getName())
-                .addValue(DESCRIPTION, course.getDescription());
-        template.update("UPDATE courses SET name=:name, description=:description WHERE id=:id", params);
+        entityManager.merge(course);
     }
 
     public void deleteById(int id) {
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue(ID, id);
-        template.update("DELETE FROM courses WHERE id=:id", params);
+        entityManager.createQuery("delete from Course where id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     public void deleteByName(String name) {
-        MapSqlParameterSource params = new MapSqlParameterSource().addValue(NAME, name);
-        template.update("DELETE FROM courses WHERE name=:name", params);
+        entityManager.createQuery("delete from Course where name = :name")
+                .setParameter("name", name)
+                .executeUpdate();
     }
 
     public boolean existsById(int id) {
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue(ID, id);
-        return Objects.requireNonNull(
-                template.queryForObject("SELECT EXISTS(SELECT * FROM courses WHERE id=:id)", params, Boolean.class));
+        return findById(id) != null;
     }
 
     public boolean existsByName(String name) {
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue(NAME, name);
-        return Objects.requireNonNull(
-                template.queryForObject("SELECT EXISTS(SELECT * FROM courses WHERE name=:name)", params, Boolean.class));
+        return findByName(name) != null;
     }
 }

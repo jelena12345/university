@@ -120,12 +120,23 @@ public class UserCourseService {
     }
 
     private User enrich(User user) {
-        user.setId(userDao.findByPersonalId(user.getPersonalId()).getId());
+        User storedUser = userDao.findByPersonalId(user.getPersonalId());
+        user.setId(storedUser.getId());
+        if (user.getCoursesForUser() == null) {
+            user.setCoursesForUser(storedUser.getCoursesForUser());
+        }
         return user;
     }
 
     private Course enrich(Course course) {
-        course.setId(courseDao.findByName(course.getName()).getId());
+        Course storedCourse = courseDao.findByName(course.getName());
+        course.setId(storedCourse.getId());
+        if (course.getDescription() == null) {
+            course.setDescription(storedCourse.getDescription());
+        }
+        if (course.getUsersForCourse() == null) {
+            course.setUsersForCourse(storedCourse.getUsersForCourse());
+        }
         return course;
     }
 }

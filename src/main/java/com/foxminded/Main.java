@@ -7,7 +7,6 @@ import com.foxminded.services.CourseService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 public class Main {
 
@@ -17,7 +16,7 @@ public class Main {
         logger.info("Starting University app...");
         logger.info("Loading Application context");
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppBeans.class);
-        UserDao dao = new UserDao(context.getBean(NamedParameterJdbcTemplate.class));
+        UserDao dao = new UserDao();
         dao.deleteByPersonalId("1");
         User expected = new User("1", "role","name", "surname", "q");
         dao.add(expected);
