@@ -3,7 +3,6 @@ package com.foxminded.controllers;
 import com.foxminded.dto.UserDto;
 import com.foxminded.services.UserService;
 import com.foxminded.services.exceptions.EntityAlreadyExistsException;
-import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
