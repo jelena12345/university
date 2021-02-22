@@ -20,6 +20,7 @@ import org.modelmapper.ModelMapper;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -48,12 +49,14 @@ class ActivityServiceTest {
         Course course = new Course(1, "name", "description");
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
         CourseDto courseDto = new CourseDto("name", "description");
+        LocalDateTime from = LocalDateTime.now();
+        LocalDateTime to = LocalDateTime.now().plusHours(1);
         List<Activity> activities = Arrays.asList(
-                new Activity(1, user, course, LocalDateTime.now(), LocalDateTime.now().plusHours(1)),
-                new Activity(2, user, course, LocalDateTime.now(), LocalDateTime.now().plusHours(1)));
+                new Activity(1, user, course, from, to),
+                new Activity(2, user, course, from, to));
         List<ActivityDto> expected = Arrays.asList(
-                new ActivityDto(1, userDto, courseDto, LocalDateTime.now(), LocalDateTime.now().plusHours(1)),
-                new ActivityDto(2, userDto, courseDto, LocalDateTime.now(), LocalDateTime.now().plusHours(1)));
+                new ActivityDto(1, userDto, courseDto, from, to),
+                new ActivityDto(2, userDto, courseDto, from, to));
         when(dao.findAll()).thenReturn(activities);
         List<ActivityDto> actual = service.findAll();
         assertEquals(expected, actual);
@@ -69,25 +72,25 @@ class ActivityServiceTest {
         LocalDateTime to = LocalDateTime.now().plusHours(1);
         Activity activity = new Activity(2, user, course, from, to);
         ActivityDto expected = new ActivityDto(2, userDto, courseDto, from, to);
-        when(dao.findById(anyInt())).thenReturn(activity);
+        when(dao.findById(anyInt())).thenReturn(Optional.of(activity));
         ActivityDto actual = service.findById(anyInt());
         assertEquals(expected, actual);
     }
 
     @Test
     void testAdd_ShouldCallAddMethodForDao() {
-        User user = new User(1,"1", "role", "name", "surname", "about");
+        User user = new User(1, "1", "role", "name", "surname", "about");
         Course course = new Course(1, "name", "description");
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
         CourseDto courseDto = new CourseDto("name", "description");
         LocalDateTime from = LocalDateTime.now();
         LocalDateTime to = LocalDateTime.now().plusHours(1);
         ActivityDto activity = new ActivityDto(1, userDto, courseDto, from, to);
-        when(userDao.findByPersonalId(anyString())).thenReturn(user);
-        when(courseDao.findByName(anyString())).thenReturn(course);
+        when(userDao.findByPersonalId(anyString())).thenReturn(Optional.of(user));
+        when(courseDao.findByName(anyString())).thenReturn(Optional.of(course));
         service.add(activity);
         Activity expected = new Activity(1, user, course, from, to);
-        verify(dao, times(1)).add(expected);
+        verify(dao, times(1)).save(expected);
     }
 
     @Test
@@ -98,11 +101,11 @@ class ActivityServiceTest {
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
         CourseDto courseDto = new CourseDto("name", "description");
         ActivityDto activity = new ActivityDto(1, userDto, courseDto, LocalDateTime.now(), LocalDateTime.now().plusHours(1));
-        when(userDao.findByPersonalId(anyString())).thenReturn(user);
-        when(courseDao.findByName(anyString())).thenReturn(course);
+        when(userDao.findByPersonalId(anyString())).thenReturn(Optional.of(user));
+        when(courseDao.findByName(anyString())).thenReturn(Optional.of(course));
         when(dao.existsById(anyInt())).thenReturn(true);
         service.update(activity);
-        verify(dao, times(1)).update(expected);
+        verify(dao, times(1)).save(expected);
     }
 
     @Test
@@ -123,12 +126,6 @@ class ActivityServiceTest {
     @Test
     void testDeleteById_ShouldThrowEntityNotFoundException() {
         assertThrows(EntityNotFoundException.class, () -> service.deleteById(1));
-    }
-
-    @Test
-    void testExistsById_ShouldCallExistsByIdMethodOnDao() {
-        service.existsById(anyInt());
-        verify(dao, times(1)).existsById(anyInt());
     }
 
 }

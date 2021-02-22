@@ -1,26 +1,21 @@
 package com.foxminded.dao;
 
-import com.foxminded.config.TestConfig;
 import com.foxminded.entities.Activity;
+import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { TestConfig.class })
-@Transactional
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Sql("classpath:data.sql")
+@DataJpaTest
 class ActivityDaoTest {
 
     @Autowired
@@ -31,47 +26,45 @@ class ActivityDaoTest {
     private UserDao userDao;
 
     @Test
-    void testFindAll_ShouldFindAllActivities() {
+    void testFindAll_ShouldFindAllRecords() {
         List<Activity> actual = activityDao.findAll();
         assertEquals(2, actual.size());
     }
 
     @Test
-    void testFindById_ShouldFindActivity() {
-        assertNotNull(activityDao.findById(1));
+    void testFindById_ShouldFindRecord() {
+        assertTrue(activityDao.findById(1).isPresent());
     }
 
     @Test
-    void testFindById_ShouldReturnNull() {
-        assertNull(activityDao.findById(0));
+    void testFindById_ShouldFindNothing() {
+        assertFalse(activityDao.findById(0).isPresent());
     }
 
     @Test
-    void testAdd_ShouldAddCorrectActivity() {
-        Activity expected = new Activity(userDao.findById(1),
-                courseDao.findById(1),
+    void testSave_ShouldSaveCorrectRecord() {
+        Activity expected = new Activity(
+                userDao.findById(1).orElseThrow(EntityNotFoundException::new),
+                courseDao.findById(1).orElseThrow(EntityNotFoundException::new),
                 LocalDateTime.parse("2021-02-15T16:31"),
                 LocalDateTime.parse("2021-02-15T17:31"));
-        int id = activityDao.add(expected);
-        expected.setId(id);
-        Activity actual = activityDao.findById(id);
-        assertEquals(expected, actual);
+        expected = activityDao.save(expected);
+        assertTrue(activityDao.findById(expected.getId()).isPresent());
     }
 
     @Test
-    void testUpdate_ShouldUpdateValues() {
-        Activity expected = activityDao.findById(1);
-        expected.setUser(userDao.findById(1));
-        expected.setCourse(courseDao.findById(1));
+    void testSave_ShouldSaveUpdatedValues() {
+        Activity expected = activityDao.findById(1).orElseThrow(EntityNotFoundException::new);
+        expected.setUser(userDao.findById(1).orElseThrow(EntityNotFoundException::new));
+        expected.setCourse(courseDao.findById(1).orElseThrow(EntityNotFoundException::new));
         expected.setFrom(LocalDateTime.parse("2021-02-15T16:31"));
         expected.setTo(LocalDateTime.parse("2021-02-15T17:31"));
-        activityDao.update(expected);
-        Activity actual = activityDao.findById(1);
+        Activity actual = activityDao.save(expected);
         assertEquals(expected, actual);
     }
 
     @Test
-    void testDeleteById_ShouldDeleteSuccessfully() {
+    void testDeleteById_ShouldFindNothing() {
         activityDao.deleteById(1);
         assertFalse(activityDao.existsById(1));
     }

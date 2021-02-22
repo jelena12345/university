@@ -14,6 +14,7 @@ import org.modelmapper.ModelMapper;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -25,6 +26,7 @@ class UserServiceTest {
 
     @Mock
     private UserDao dao;
+    @Mock
     private UserService service;
 
     @BeforeEach
@@ -47,7 +49,7 @@ class UserServiceTest {
     void testFindById_ShouldReturnCorrectRecord() {
         User user = new User(1, "1", "role","name", "surname", "q");
         UserDto expected = new UserDto("1", "role","name", "surname", "q");
-        when(dao.findById(anyInt())).thenReturn(user);
+        when(dao.findById(any())).thenReturn(Optional.of(user));
         UserDto actual = service.findById(anyInt());
         assertEquals(expected, actual);
     }
@@ -56,7 +58,7 @@ class UserServiceTest {
     void testFindByPersonalId_ShouldReturnCorrectRecord() {
         User user = new User(1, "1", "role","name", "surname", "q");
         UserDto expected = new UserDto("1", "role","name", "surname", "q");
-        when(dao.findByPersonalId(anyString())).thenReturn(user);
+        when(dao.findByPersonalId(anyString())).thenReturn(Optional.of(user));
         UserDto actual = service.findByPersonalId(anyString());
         assertEquals(expected, actual);
     }
@@ -65,15 +67,16 @@ class UserServiceTest {
     void testAdd_ShouldCallAddMethodForDao() {
         service.add(new UserDto("1", "role","name", "surname", "q"));
         User expected = new User("1", "role","name", "surname", "q");
-        verify(dao, times(1)).add(expected);
+        verify(dao, times(1)).save(expected);
     }
 
     @Test
     void testUpdate_ShouldCallUpdateMethodForDao() {
-        User expected = new User("1", "role","name", "surname", "q");
+        User expected = new User(1, "1", "role","name", "surname", "q");
         when(dao.existsByPersonalId(anyString())).thenReturn(true);
+        when(dao.findByPersonalId(anyString())).thenReturn(Optional.of(expected));
         service.update(new UserDto("1", "role","name", "surname", "q"));
-        verify(dao, times(1)).update(expected);
+        verify(dao, times(1)).save(expected);
     }
 
     @Test
@@ -111,12 +114,6 @@ class UserServiceTest {
     @Test
     void testDeleteByName_ShouldThrowEntityNotFoundException() {
         assertThrows(EntityNotFoundException.class, () -> service.deleteByPersonalId("name"));
-    }
-
-    @Test
-    void testExistsById_ShouldCallExistsByIdMethodOnDao() {
-        service.existsById(anyInt());
-        verify(dao, times(1)).existsById(anyInt());
     }
 
     @Test
