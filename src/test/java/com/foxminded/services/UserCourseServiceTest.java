@@ -1,7 +1,6 @@
 package com.foxminded.services;
 
 import com.foxminded.dao.CourseDao;
-import com.foxminded.dao.UserCourseDao;
 import com.foxminded.dao.UserDao;
 import com.foxminded.dto.CourseDto;
 import com.foxminded.dto.UserDto;
@@ -16,8 +15,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -27,8 +28,6 @@ import static org.mockito.Mockito.*;
 class UserCourseServiceTest {
 
     @Mock
-    private UserCourseDao dao;
-    @Mock
     private UserDao userDao;
     @Mock
     private CourseDao courseDao;
@@ -36,84 +35,84 @@ class UserCourseServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new UserCourseService(new ModelMapper(), dao, userDao, courseDao);
+        service = new UserCourseService(new ModelMapper(), userDao, courseDao);
+    }
+
+    @Test
+    void testFindStudentsForCourse_ShouldFindCorrectRecords() {
+        CourseDto courseDto = new CourseDto("name", "description");
+        Course course = new Course("name", "description");
+        course.setUsersForCourse(Arrays.asList(
+                new User(1, "1", "student", "name", "surname", "about"),
+                new User(2, "2", "professor", "name1", "surname1", "about1")));
+        List<UserDto> expected = Collections.singletonList(
+                new UserDto("1", "student", "name", "surname", "about"));
+        when(courseDao.findByName(anyString())).thenReturn(Optional.of(course));
+        List<UserDto> actual = service.findStudentsForCourse(courseDto);
+        assertEquals(expected, actual);
     }
 
     @Test
     void testFindCoursesForUser_ShouldFindCorrectRecords() {
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
         User user = new User(1, "1", "role", "name", "surname", "about");
+        user.setCoursesForUser(Collections.singletonList(new Course("name", "description")));
         List<CourseDto> expected = Collections.singletonList(
                 new CourseDto("name", "description"));
-        when(userDao.findByPersonalId(anyString())).thenReturn(user);
-        when(dao.findCoursesForUser(any())).thenReturn(
-                Collections.singletonList(
-                        new Course("name", "description")));
+        when(userDao.findByPersonalId(anyString())).thenReturn(Optional.of(user));
         List<CourseDto> actual = service.findCoursesForUser(userDto);
         assertEquals(expected, actual);
     }
 
     @Test
-    void testFindUsersForCourse_ShouldFindCorrectRecords() {
-        CourseDto courseDto = new CourseDto("name", "description");
-        Course course = new Course("name", "description");
-        List<UserDto> expected = Collections.singletonList(
-                new UserDto("1", "role", "name", "surname", "about"));
-        when(courseDao.findByName(anyString())).thenReturn(course);
-        when(dao.findUsersForCourse(any())).thenReturn(
-                Collections.singletonList(
-                        new User(1, "1", "role", "name", "surname", "about")));
-        List<UserDto> actual = service.findUsersForCourse(courseDto);
+    void testFindAvailableCoursesForUser_ShouldFindCorrectRecords() {
+        UserDto userDto = new UserDto("1", "r", "n", "s", "a");
+        User user = new User(1, "1", "r", "n", "s", "a");
+        Course course = new Course("n", "d");
+        user.setCoursesForUser(Collections.singletonList(course));
+        List<CourseDto> expected = Collections.singletonList(
+                new CourseDto("n2", "d4"));
+        when(userDao.findByPersonalId(anyString())).thenReturn(Optional.of(user));
+        when(courseDao.findAll()).thenReturn(Arrays.asList(course, new Course("n2", "d4")));
+        List<CourseDto> actual = service.findAvailableCoursesForUser(userDto);
         assertEquals(expected, actual);
     }
 
     @Test
-    void testAdd_ShouldCallAddMethodForDao() {
+    void testSaveUserForCourse_ShouldCallSaveMethodForUserDao() {
         User user = new User(1, "1", "role", "name", "surname", "about");
         Course course = new Course(1, "name", "description");
-        when(userDao.findByPersonalId(anyString())).thenReturn(user);
-        when(courseDao.findByName(anyString())).thenReturn(course);
-        service.add(
+        when(userDao.findByPersonalId(anyString())).thenReturn(Optional.of(user));
+        when(courseDao.findByName(anyString())).thenReturn(Optional.of(course));
+        service.saveUserForCourse(
                 new UserDto("1", "role", "name", "surname", "about"),
                 new CourseDto("name", "description"));
-        verify(dao, times(1)).add(user, course);
+        verify(userDao, times(1)).save(user);
     }
 
     @Test
-    void testDelete_ShouldCallDeleteMethodForDao() {
-        when(dao.existsCourseForUser(any(), any())).thenReturn(true);
+    void testDeleteUserForCourse_ShouldCallSaveMethodForDao() {
         User user = new User(1, "1", "role", "name", "surname", "about");
         Course course = new Course(1, "name", "description");
-        when(userDao.findByPersonalId(anyString())).thenReturn(user);
-        when(courseDao.findByName(anyString())).thenReturn(course);
-        service.delete(
+        user.getCoursesForUser().add(course);
+        when(userDao.findByPersonalId(anyString())).thenReturn(Optional.of(user));
+        when(courseDao.findByName(anyString())).thenReturn(Optional.of(course));
+        service.deleteUserForCourse(
                 new UserDto("1", "role", "name", "surname", "about"),
                 new CourseDto("name", "description"));
-        verify(dao, times(1)).delete(user, course);
+        verify(userDao, times(1)).save(user);
     }
 
     @Test
-    void testExistsUserForCourse_ShouldCallExistsByNameMethodOnDao() {
-        User user = new User(1, "1", "role", "name", "surname", "about");
-        UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
-        Course course = new Course(1, "name", "description");
-        CourseDto courseDto = new CourseDto("name", "description");
-        when(userDao.findByPersonalId(anyString())).thenReturn(user);
-        when(courseDao.findByName(anyString())).thenReturn(course);
-        service.existsCourseForUser(userDto, courseDto);
-        verify(dao, times(1)).existsCourseForUser(user, course);
-    }
-
-    @Test
-    void testAdd_ShouldThrowEntityAlreadyExistsException() {
+    void testSaveUserForCourse_ShouldThrowEntityAlreadyExistsException() {
         User user = new User(1, "1", "role", "name", "surname", "about");
         Course course = new Course(1, "name", "description");
+        user.getCoursesForUser().add(course);
         CourseDto courseDto = new CourseDto("name", "description");
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
-        when(dao.existsCourseForUser(any(), any())).thenReturn(true);
-        when(userDao.findByPersonalId(anyString())).thenReturn(user);
-        when(courseDao.findByName(anyString())).thenReturn(course);
-        assertThrows(EntityAlreadyExistsException.class, () -> service.add(userDto, courseDto));
+        when(userDao.findByPersonalId(anyString())).thenReturn(Optional.of(user));
+        when(courseDao.findByName(anyString())).thenReturn(Optional.of(course));
+        assertThrows(EntityAlreadyExistsException.class, () -> service.saveUserForCourse(userDto, courseDto));
     }
 
     @Test
@@ -122,8 +121,8 @@ class UserCourseServiceTest {
         Course course = new Course(1, "name", "description");
         CourseDto courseDto = new CourseDto("name", "description");
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
-        when(userDao.findByPersonalId(anyString())).thenReturn(user);
-        when(courseDao.findByName(anyString())).thenReturn(course);
-        assertThrows(EntityNotFoundException.class, () -> service.delete(userDto, courseDto));
+        when(userDao.findByPersonalId(anyString())).thenReturn(Optional.of(user));
+        when(courseDao.findByName(anyString())).thenReturn(Optional.of(course));
+        assertThrows(EntityNotFoundException.class, () -> service.deleteUserForCourse(userDto, courseDto));
     }
 }

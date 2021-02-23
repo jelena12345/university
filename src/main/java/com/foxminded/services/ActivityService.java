@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class ActivityService {
 
     private final ModelMapper mapper;
-    private final ActivityDao dao;
+    private final ActivityDao activityDao;
     private final UserDao userDao;
     private final CourseDao courseDao;
     private static final Logger logger = LoggerFactory.getLogger(ActivityService.class);
@@ -43,86 +43,94 @@ public class ActivityService {
     };
 
     @Autowired
-    public ActivityService(ModelMapper mapper, ActivityDao dao, UserDao userDao, CourseDao courseDao) {
+    public ActivityService(ModelMapper mapper, ActivityDao activityDao, UserDao userDao, CourseDao courseDao) {
         this.mapper = mapper;
         this.mapper.addMappings(skipCourseIdFieldMap);
         this.mapper.addMappings(skipUserIdFieldMap);
-        this.dao = dao;
+        this.activityDao = activityDao;
         this.userDao = userDao;
         this.courseDao = courseDao;
     }
 
     public List<ActivityDto> findAll() {
         logger.debug("Searching for all ActivityDto records");
-        return dao.findAll().stream()
+        return activityDao.findAll().stream()
                 .map(item -> mapper.map(item, ActivityDto.class))
                 .sorted(Comparator.comparing(ActivityDto::getFrom))
                 .collect(Collectors.toList());
     }
 
-    public List<ActivityDto> findEventsForCourseFromTo(CourseDto course, LocalDateTime from, LocalDateTime to) {
+    public List<ActivityDto> findEventsForCourseFromTo(CourseDto courseDto, LocalDateTime from, LocalDateTime to) {
         logger.debug("Searching for ActivityDto records");
-        logger.trace("Searching for ActivityDto records for Course:{} from: {} to: {}", course, from, to);
-        return dao.findAll().stream()
-                .filter(event -> event.getCourse().getName().equals(course.getName())
-                        && event.getFrom().isAfter(from)
+        logger.trace("Searching for ActivityDto records for CourseDto:{} from: {} to: {}", courseDto, from, to);
+        Course course = courseDao.findByName(courseDto.getName())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Not found Course  with name: " + courseDto.getName()));
+        return course.getActivities().stream()
+                .filter(event -> event.getFrom().isAfter(from)
                         && event.getTo().isBefore(to))
                 .map(event -> mapper.map(event, ActivityDto.class))
                 .sorted(Comparator.comparing(ActivityDto::getFrom))
                 .collect(Collectors.toList());
     }
 
-    public ActivityDto findById(int id) {
+    public ActivityDto findById(Integer id) {
         logger.debug("Searching for ActivityDto");
         logger.trace("Searching for ActivityDto with id: {}", id);
-        return mapper.map(dao.findById(id), ActivityDto.class);
+        return mapper.map(activityDao.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Not found Activity  with id: " + id)),
+                ActivityDto.class);
     }
 
     public void add(ActivityDto activityDto) {
         logger.debug("Adding ActivityDto");
         logger.trace("Adding ActivityDto: {}", activityDto);
         Activity activity = mapper.map(activityDto, Activity.class);
-        activity.setUser(enrich(activity.getUser()));
-        activity.setCourse(enrich(activity.getCourse()));
-        dao.add(activity);
+        activity.setUser(userDao.findByPersonalId(activityDto.getUser().getPersonalId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Not found User with personal id : " + activityDto.getUser().getPersonalId())));
+        activity.setCourse(courseDao.findByName(activityDto.getCourse().getName())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Not found Course with name: " + activityDto.getCourse().getName())));
+        activityDao.save(activity);
     }
 
     public void update(ActivityDto activityDto) {
         logger.debug("Updating ActivityDto");
         logger.trace("Updating ActivityDto: {}", activityDto);
-        if (!dao.existsById(activityDto.getId())) {
+        if (!activityDao.existsById(activityDto.getId())) {
             logger.warn("Not found Activity with id: {}", activityDto.getId());
             throw new EntityNotFoundException("Not found Activity with id: " + activityDto.getId());
         }
         Activity activity = mapper.map(activityDto, Activity.class);
         activity.setUser(enrich(activity.getUser()));
         activity.setCourse(enrich(activity.getCourse()));
-        dao.update(activity);
+        activityDao.save(activity);
     }
 
     public void deleteById(int id) {
         logger.debug("Deleting Activity");
         logger.trace("Deleting Activity with id: {}", id);
-        if (!dao.existsById(id)) {
+        if (!activityDao.existsById(id)) {
             logger.warn("Not found Activity with id: {}", id);
             throw new EntityNotFoundException("Not found Activity with id: " + id);
         }
-        dao.deleteById(id);
-    }
-
-    public boolean existsById(int id) {
-        logger.debug("Checking if Activity exists");
-        logger.trace("Checking if Activity exists with id: {}", id);
-        return dao.existsById(id);
+        activityDao.deleteById(id);
     }
 
     private User enrich(User user) {
-        user.setId(userDao.findByPersonalId(user.getPersonalId()).getId());
+        User storedUser = userDao.findByPersonalId(user.getPersonalId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                    "Not found User with personal id : " + user.getPersonalId()));
+        user.setId(storedUser.getId());
         return user;
     }
 
     private Course enrich(Course course) {
-        course.setId(courseDao.findByName(course.getName()).getId());
+        Course storedCourse = courseDao.findByName(course.getName())
+                .orElseThrow(() -> new EntityNotFoundException(
+                    "Not found Course with name: " + course.getName()));
+        course.setId(storedCourse.getId());
         return course;
     }
 }

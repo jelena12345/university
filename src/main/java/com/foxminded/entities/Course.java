@@ -4,6 +4,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,11 +23,11 @@ public class Course {
     private String description;
 
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "coursesForUser", cascade = CascadeType.REMOVE)
-    List<User> usersForCourse;
+    List<User> usersForCourse = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="course")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    List<Activity> activities;
+    List<Activity> activities = new ArrayList<>();
 
     public Course(String name, String description) {
         this(null, name, description);

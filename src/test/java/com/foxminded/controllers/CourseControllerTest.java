@@ -60,7 +60,7 @@ class CourseControllerTest {
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/courses"));
         verify(courseService, times(1)).add(course);
-        verify(userCourseService, times(1)).add(user, course);
+        verify(userCourseService, times(1)).saveUserForCourse(user, course);
     }
 
     @Test
@@ -72,7 +72,7 @@ class CourseControllerTest {
                 .flashAttr("course", course))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/courses"));
-        verify(userCourseService, times(1)).add(user, course);
+        verify(userCourseService, times(1)).saveUserForCourse(user, course);
     }
 
     @Test
@@ -85,7 +85,7 @@ class CourseControllerTest {
                 .flashAttr("course_remove", "name"))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/courses"));
-        verify(userCourseService, times(1)).delete(user, course);
+        verify(userCourseService, times(1)).deleteUserForCourse(user, course);
     }
 
     @Test

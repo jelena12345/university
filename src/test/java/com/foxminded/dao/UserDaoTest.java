@@ -1,15 +1,12 @@
 package com.foxminded.dao;
 
-import com.foxminded.config.TestConfig;
 import com.foxminded.entities.User;
+import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,10 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = { TestConfig.class })
-@Transactional
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@Sql("classpath:data.sql")
+@DataJpaTest
 class UserDaoTest {
 
     @Autowired
@@ -34,52 +28,48 @@ class UserDaoTest {
 
     @Test
     void testFindById_ShouldFindRecord() {
-        assertNotNull(dao.findById(1));
+        assertTrue(dao.findById(1).isPresent());
     }
 
     @Test
-    void testFindById_ShouldReturnNull() {
-        assertNull(dao.findById(0));
+    void testFindById_ShouldFindNothing() {
+        assertFalse(dao.findById(0).isPresent());
     }
 
     @Test
     void testFindByPersonalId_ShouldFindRecord() {
-        assertNotNull(dao.findByPersonalId("1"));
+        assertTrue(dao.findByPersonalId("1").isPresent());
     }
 
     @Test
-    void testFindByPersonalId_ShouldReturnNull() {
-        assertNull(dao.findByPersonalId(""));
+    void testFindByPersonalId_ShouldFindNothing() {
+        assertFalse(dao.findByPersonalId("").isPresent());
     }
 
     @Test
-    void testAdd_ShouldAddCorrectRecord() {
-        User expected = new User("3", "role", "name", "surname", "about");
-        int id = dao.add(expected);
-        expected.setId(id);
-        User actual = dao.findById(id);
-        assertEquals(expected, actual);
+    void testSave_ShouldSaveCorrectRecord() {
+        dao.save(new User("3", "role", "name", "surname", "about"));
+        assertTrue(dao.findByPersonalId("3").isPresent());
     }
 
     @Test
-    void testUpdate_ShouldUpdateValues() {
-        User expected = dao.findById(1);
+    void testSave_ShouldSaveUpdatedValues() {
+        User expected = dao.findById(1).orElseThrow(EntityNotFoundException::new);
         expected.setName("name_new");
         expected.setSurname("surname_new");
         expected.setAbout("about_new");
-        dao.update(expected);
-        User actual = dao.findById(1);
+        User actual = dao.save(expected);
         assertEquals(expected, actual);
     }
 
     @Test
-    void testDeleteById_ShouldFindNull() {
+    void testDeleteById_ShouldFindNothing() {
         dao.deleteById(1);
         assertFalse(dao.existsById(1));
     }
 
     @Test
-    void testDeleteByPersonalId_ShouldFindNull() {
+    void testDeleteByPersonalId_ShouldFindNothing() {
         dao.deleteByPersonalId("1");
         assertFalse(dao.existsByPersonalId("1"));
     }
@@ -95,12 +85,12 @@ class UserDaoTest {
     }
 
     @Test
-    void testExistsByName_ShouldReturnFalse() {
+    void testExistsByPersonalId_ShouldReturnFalse() {
         assertFalse(dao.existsByPersonalId(""));
     }
 
     @Test
-    void testExistsByName_ShouldReturnTrue() {
+    void testExistsByPersonalId_ShouldReturnTrue() {
         assertTrue(dao.existsByPersonalId("1"));
     }
 }

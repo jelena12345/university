@@ -1,0 +1,13 @@
+server:
+  port: 8082
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/University
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: 123
+  jpa:
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQL92Dialect
+    hibernate:
+      ddl-auto: validate

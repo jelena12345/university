@@ -76,7 +76,7 @@ public class CourseController {
             redirectAttributes.addFlashAttribute(MESSAGE, "Course already exists.");
         }
         try {
-            userCourseService.add((UserDto)session.getAttribute(USER), course);
+            userCourseService.saveUserForCourse((UserDto)session.getAttribute(USER), course);
         } catch (EntityAlreadyExistsException e) {
             redirectAttributes.addFlashAttribute(MESSAGE, "User already on course.");
         }
@@ -88,7 +88,7 @@ public class CourseController {
                       HttpSession session,
                       RedirectAttributes redirectAttributes) {
         try {
-            userCourseService.add((UserDto)session.getAttribute(USER), course);
+            userCourseService.saveUserForCourse((UserDto)session.getAttribute(USER), course);
         } catch (EntityAlreadyExistsException e) {
             redirectAttributes.addFlashAttribute(MESSAGE, "User already on course.");
         }
@@ -100,7 +100,7 @@ public class CourseController {
                          HttpSession session,
                          RedirectAttributes redirectAttributes) {
         try {
-            userCourseService.delete((UserDto)session.getAttribute(USER), service.findByName(course));
+            userCourseService.deleteUserForCourse((UserDto)session.getAttribute(USER), service.findByName(course));
         } catch (EntityNotFoundException e) {
             redirectAttributes.addFlashAttribute(MESSAGE, "User not on the course.");
         }

@@ -16,6 +16,7 @@ import org.modelmapper.ModelMapper;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -45,7 +46,7 @@ class CourseServiceTest {
     void testFindById_ShouldReturnCorrectCourse() {
         Course course = new Course(1, "name", "description");
         CourseDto expected = new CourseDto("name", "description");
-        when(dao.findById(anyInt())).thenReturn(course);
+        when(dao.findById(anyInt())).thenReturn(Optional.of(course));
         CourseDto actual = service.findById(anyInt());
         assertEquals(expected, actual);
     }
@@ -54,7 +55,7 @@ class CourseServiceTest {
     void testFindByName_ShouldReturnCorrectCourse() {
         Course course = new Course(1, "name", "description");
         CourseDto expected = new CourseDto("name", "description");
-        when(dao.findByName(anyString())).thenReturn(course);
+        when(dao.findByName(anyString())).thenReturn(Optional.of(course));
         CourseDto actual = service.findByName(anyString());
         assertEquals(expected, actual);
     }
@@ -63,16 +64,16 @@ class CourseServiceTest {
     void testAdd_ShouldCallAddMethodForDao() {
         service.add(new CourseDto("name", "description"));
         Course expected = new Course("name", "description");
-        verify(dao, times(1)).add(expected);
+        verify(dao, times(1)).save(expected);
     }
 
     @Test
     void testUpdate_ShouldCallUpdateMethodForDao() {
         Course expected = new Course(1, "name", "description");
         when(dao.existsByName(anyString())).thenReturn(true);
-        when(dao.findByName(anyString())).thenReturn(expected);
+        when(dao.findByName(anyString())).thenReturn(Optional.of(expected));
         service.update(new CourseDto("name", "description"));
-        verify(dao, times(1)).update(expected);
+        verify(dao, times(1)).save(expected);
     }
 
     @Test
@@ -112,15 +113,4 @@ class CourseServiceTest {
         assertThrows(EntityNotFoundException.class, () -> service.deleteByName("name"));
     }
 
-    @Test
-    void testExistsById_ShouldCallExistsByIdMethodOnDao() {
-        service.existsById(anyInt());
-        verify(dao, times(1)).existsById(anyInt());
-    }
-
-    @Test
-    void testExistsById_ShouldCallExistsByNameMethodOnDao() {
-        service.existsByName(anyString());
-        verify(dao, times(1)).existsByName(anyString());
-    }
 }

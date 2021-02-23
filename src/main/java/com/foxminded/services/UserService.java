@@ -43,13 +43,19 @@ public class UserService {
     public UserDto findById(int id) {
         logger.debug("Searching for UserDto by id");
         logger.trace("Searching for UserDto by id: {}", id);
-        return mapper.map(dao.findById(id), UserDto.class);
+        return mapper.map(dao.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                    "Not found User with id : " + id)),
+                UserDto.class);
     }
 
     public UserDto findByPersonalId(String personalId) {
         logger.debug("Searching for UserDto by personalId");
         logger.trace("Searching for UserDto by personalId: {}", personalId);
-        return mapper.map(dao.findByPersonalId(personalId), UserDto.class);
+        return mapper.map(dao.findByPersonalId(personalId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                    "Not found User with personal id : " + personalId)),
+                        UserDto.class);
     }
 
     public void add(UserDto user) {
@@ -59,7 +65,7 @@ public class UserService {
             logger.warn("User with personalId {} already exists.", user.getPersonalId());
             throw new EntityAlreadyExistsException("User with personalId " + user.getPersonalId() + " already exists.");
         }
-        dao.add(mapper.map(user, User.class));
+        dao.save(mapper.map(user, User.class));
     }
 
     public void update(UserDto user) {
@@ -69,10 +75,10 @@ public class UserService {
             logger.warn("Not found User with personal id: {}", user.getPersonalId());
             throw new EntityNotFoundException("Not found User with personal id: " + user.getPersonalId());
         }
-        dao.update(mapper.map(user, User.class));
+        dao.save(enrich(mapper.map(user, User.class)));
     }
 
-    public void deleteById(int id) {
+    public void deleteById(Integer id) {
         logger.debug("Deleting User by id");
         logger.trace("Deleting User by id: {}", id);
         if (!dao.existsById(id)) {
@@ -92,15 +98,29 @@ public class UserService {
         dao.deleteByPersonalId(personalId);
     }
 
-    public boolean existsById(int id) {
-        logger.debug("Checking if User exists by id");
-        logger.trace("Checking if User exists by id: {}", id);
-        return dao.existsById(id);
-    }
-
     public boolean existsByPersonalId(String personalId) {
         logger.debug("Checking if User exists by personalId");
         logger.trace("Checking if User exists by personalId: {}", personalId);
         return dao.existsByPersonalId(personalId);
+    }
+
+    private User enrich(User user) {
+        User storedUser = dao.findByPersonalId(user.getPersonalId()).orElseThrow(EntityNotFoundException::new);
+        user.setId(storedUser.getId());
+        user.setCoursesForUser(storedUser.getCoursesForUser());
+        user.setActivities(storedUser.getActivities());
+        if (user.getRole() == null) {
+            user.setRole(storedUser.getRole());
+        }
+        if (user.getName() == null) {
+            user.setName(storedUser.getName());
+        }
+        if (user.getSurname() == null) {
+            user.setSurname(storedUser.getSurname());
+        }
+        if (user.getAbout() == null) {
+            user.setAbout(storedUser.getAbout());
+        }
+        return user;
     }
 }
