@@ -13,6 +13,7 @@
 <div th:insert="navigation :: sidebar"></div>
 <div class="page-content p-5" id="content">
     <h2 class="display-4">Add course</h2>
+    <p class="text-danger" th:text="${message}"></p>
     <form th:if="${!courses.isEmpty()}" method="POST" th:action="@{/courses/add}">
         <label for="courses" class="visually-hidden">Connect to existing course</label>
         <select th:object="${course}" th:field="*{name}" id="courses" class="form-control">

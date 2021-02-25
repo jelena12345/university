@@ -7,12 +7,12 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name="activities")
-public class Activity {
+@Table(name="events")
+public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer id = 0;
 
     @ManyToOne(fetch= FetchType.EAGER, targetEntity = User.class)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -30,7 +30,7 @@ public class Activity {
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime to;
 
-    public Activity(Integer id, User user, Course course, LocalDateTime from, LocalDateTime to) {
+    public Event(Integer id, User user, Course course, LocalDateTime from, LocalDateTime to) {
         this.id = id;
         this.user = user;
         this.course = course;
@@ -38,11 +38,11 @@ public class Activity {
         this.to = to;
     }
 
-    public Activity(User user, Course course, LocalDateTime from, LocalDateTime to) {
-        this(null, user, course, from, to);
+    public Event(User user, Course course, LocalDateTime from, LocalDateTime to) {
+        this(0, user, course, from, to);
     }
 
-    public Activity() { }
+    public Event() { }
 
     public Integer getId() {
         return id;
@@ -92,12 +92,12 @@ public class Activity {
         if (o == null) {
             return false;
         }
-        return (o instanceof Activity)
-                && (((Activity) o).getId().equals(this.id))
-                && (((Activity) o).getUser().equals(this.user))
-                && (((Activity) o).getCourse().equals(this.course))
-                && (((Activity) o).getFrom().equals(this.from))
-                && (((Activity) o).getTo().equals(this.to));
+        return (o instanceof Event)
+                && (((Event) o).getId().equals(this.id))
+                && (((Event) o).getUser().equals(this.user))
+                && (((Event) o).getCourse().equals(this.course))
+                && (((Event) o).getFrom().equals(this.from))
+                && (((Event) o).getTo().equals(this.to));
     }
 
     @Override

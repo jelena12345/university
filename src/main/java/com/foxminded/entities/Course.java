@@ -27,7 +27,7 @@ public class Course {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="course")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    List<Activity> activities = new ArrayList<>();
+    List<Event> events = new ArrayList<>();
 
     public Course(String name, String description) {
         this(null, name, description);
@@ -73,12 +73,12 @@ public class Course {
         this.usersForCourse = usersForCourse;
     }
 
-    public List<Activity> getActivities() {
-        return activities;
+    public List<Event> getEvents() {
+        return events;
     }
 
-    public void setActivities(List<Activity> activities) {
-        this.activities = activities;
+    public void setEvents(List<Event> events) {
+        this.events = events;
     }
     @Override
     public boolean equals(Object o) {

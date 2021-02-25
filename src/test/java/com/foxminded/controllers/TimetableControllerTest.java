@@ -1,9 +1,9 @@
 package com.foxminded.controllers;
 
-import com.foxminded.dto.ActivityDto;
+import com.foxminded.dto.EventDto;
 import com.foxminded.dto.CourseDto;
 import com.foxminded.dto.UserDto;
-import com.foxminded.services.ActivityService;
+import com.foxminded.services.EventService;
 import com.foxminded.services.CourseService;
 import com.foxminded.services.UserCourseService;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +27,7 @@ class TimetableControllerTest {
 
     private MockMvc mockMvc;
     @Mock
-    private ActivityService activityService;
+    private EventService eventService;
     @Mock
     private CourseService courseService;
     @Mock
@@ -36,7 +36,7 @@ class TimetableControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(
-                new TimetableController(activityService, courseService, userCourseService)).build();
+                new TimetableController(eventService, courseService, userCourseService)).build();
     }
 
     @Test
@@ -79,22 +79,22 @@ class TimetableControllerTest {
 
     @Test
     void testCreateEvent_ShouldRedirectToTimetablePage() throws Exception {
-        ActivityDto activity = new ActivityDto(1,
+        EventDto eventDto = new EventDto(1,
                 new UserDto(),
                 new CourseDto("", ""),
                 LocalDateTime.now(),
-                LocalDateTime.now());
+                LocalDateTime.now().plusHours(1));
         this.mockMvc.perform(post("/timetable/new")
-                .flashAttr("event", activity))
+                .flashAttr("event", eventDto))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/timetable"));
-        verify(activityService, times(1)).add(activity);
+        verify(eventService, times(1)).add(eventDto);
     }
 
     @Test
     void testUpdatePage() throws Exception {
         int id = 1;
-        when(activityService.findById(anyInt())).thenReturn(new ActivityDto(1,
+        when(eventService.findById(anyInt())).thenReturn(new EventDto(1,
                 new UserDto(),
                 new CourseDto("", ""),
                 LocalDateTime.now(),
@@ -104,34 +104,34 @@ class TimetableControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("timetable/updateEvent"))
                 .andExpect(model().attributeExists("event"));
-        verify(activityService, times(1)).findById(id);
+        verify(eventService, times(1)).findById(id);
     }
 
     @Test
     void testUpdateEvent_ShouldRedirectToTimetablePage() throws Exception {
-        ActivityDto activity = new ActivityDto(1,
+        EventDto eventDto = new EventDto(1,
                 new UserDto(),
                 new CourseDto("", ""),
                 LocalDateTime.now(),
-                LocalDateTime.now());
+                LocalDateTime.now().plusHours(1));
         this.mockMvc.perform(post("/timetable/update")
-                .flashAttr("event", activity))
+                .flashAttr("event", eventDto))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/timetable"));
-        verify(activityService, times(1)).update(activity);
+        verify(eventService, times(1)).update(eventDto);
     }
 
     @Test
     void testDeleteEvent_ShouldRedirectToTimetablePage() throws Exception {
-        ActivityDto activity = new ActivityDto(1,
+        EventDto eventDto = new EventDto(1,
                 new UserDto(),
                 new CourseDto("", ""),
                 LocalDateTime.now(),
-                LocalDateTime.now());
+                LocalDateTime.now().plusHours(1));
         this.mockMvc.perform(post("/timetable/delete")
-                .flashAttr("event", activity))
+                .flashAttr("event", eventDto))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/timetable"));
-        verify(activityService, times(1)).deleteById(activity.getId());
+        verify(eventService, times(1)).deleteById(eventDto.getId());
     }
 }

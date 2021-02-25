@@ -1,10 +1,16 @@
 package com.foxminded.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.Objects;
 
 public class CourseDto {
 
+    @NotBlank(message = "Course name can't be blank.")
+    @Pattern(regexp="^[A-Za-z0-9 ]*$", message = "Course name should be in latin alphabet.")
     private String name;
+
+    @Pattern(regexp="^[A-Za-z0-9., ]*$", message = "Course description should be in latin alphabet.")
     private String description;
 
     public CourseDto(String name, String description) {
