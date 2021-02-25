@@ -56,7 +56,7 @@ class ProfileControllerTest {
 
     @Test
     void testSaveUser_ShouldRedirectToProfilePage() throws Exception {
-        UserDto user = new UserDto("1", "role", "name", "surname", "a");
+        UserDto user = new UserDto("1", "student", "name", "surname", "a");
         this.mockMvc.perform(post("/profile/save")
                 .flashAttr("user", user))
                 .andExpect(redirectedUrl("/profile"))
@@ -66,7 +66,7 @@ class ProfileControllerTest {
 
     @Test
     void testDeleteUser_ShouldRedirectToProfilePage() throws Exception {
-        UserDto user = new UserDto("1", "role", "name", "surname", "a");
+        UserDto user = new UserDto("1", "student", "name", "surname", "a");
         HttpSession session = this.mockMvc.perform(post("/profile/delete")
                 .flashAttr("user", user)
                 .sessionAttr("user", user))

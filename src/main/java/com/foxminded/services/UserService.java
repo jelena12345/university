@@ -108,7 +108,7 @@ public class UserService {
         User storedUser = dao.findByPersonalId(user.getPersonalId()).orElseThrow(EntityNotFoundException::new);
         user.setId(storedUser.getId());
         user.setCoursesForUser(storedUser.getCoursesForUser());
-        user.setActivities(storedUser.getActivities());
+        user.setEvents(storedUser.getEvents());
         if (user.getRole() == null) {
             user.setRole(storedUser.getRole());
         }

@@ -52,7 +52,7 @@ class CourseControllerTest {
 
     @Test
     void testCreateCourse_ShouldRedirectToCourses() throws Exception {
-        UserDto user = new UserDto("1", "role", "name", "surname", "a");
+        UserDto user = new UserDto("1", "student", "name", "surname", "a");
         CourseDto course = new CourseDto("name", "description");
         this.mockMvc.perform(post("/courses/new")
                 .sessionAttr("user", user)
@@ -60,7 +60,6 @@ class CourseControllerTest {
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/courses"));
         verify(courseService, times(1)).add(course);
-        verify(userCourseService, times(1)).saveUserForCourse(user, course);
     }
 
     @Test

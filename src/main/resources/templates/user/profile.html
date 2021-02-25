@@ -15,6 +15,7 @@
     <form class="needs-validation" method="POST" th:action="@{/profile/save}" novalidate>
         <h2 class="display-4">Profile</h2>
         <p class="text-danger" th:text="${message}"></p>
+        <input type="hidden" th:field="*{role}">
         <label for="personalId" class="form-label">Personal id</label>
         <input type="text" class="form-control" id="personalId" th:field="*{personalId}" readonly>
         <label for="firstName" class="form-label">First name</label>
@@ -31,11 +32,8 @@
         <input type="text" class="form-control" id="about" th:field="*{about}">
         <hr class="my-4">
         <button class="w-100 btn btn-primary btn-lg" type="submit">Save</button>
-    </form>
-    <hr class="my-4">
-    <form method="POST" th:action="@{/profile/delete}">
-        <button class="w-100 btn btn-primary btn-lg" type="submit">Delete</button>
-        <input type="hidden" id="deleteId" th:field="*{personalId}">
+        <hr class="my-4">
+        <button class="w-100 btn btn-primary btn-lg" type="submit" th:formaction="@{/profile/delete}">Delete</button>
     </form>
 </div>
 </body>

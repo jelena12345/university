@@ -1,9 +1,9 @@
 package com.foxminded.controllers;
 
-import com.foxminded.dto.ActivityDto;
+import com.foxminded.dto.EventDto;
 import com.foxminded.dto.CourseDto;
 import com.foxminded.dto.UserDto;
-import com.foxminded.services.ActivityService;
+import com.foxminded.services.EventService;
 import com.foxminded.services.CourseService;
 import com.foxminded.services.UserCourseService;
 import com.foxminded.services.exceptions.EntityAlreadyExistsException;
@@ -11,10 +11,12 @@ import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,13 +28,15 @@ import java.util.List;
 @RequestMapping("/timetable")
 public class TimetableController {
 
-    private final ActivityService service;
+    private final EventService service;
     private final CourseService courseService;
     private final UserCourseService userCourseService;
     private static final String MESSAGE = "message";
+    private static final String REDIRECT_TIMETABLE = "redirect:/timetable";
+    private static final String REDIRECT_NEW = "timetable/newEvent";
 
     @Autowired
-    TimetableController(ActivityService service, CourseService courseService, UserCourseService userCourseService) {
+    TimetableController(EventService service, CourseService courseService, UserCourseService userCourseService) {
         this.userCourseService = userCourseService;
         this.service = service;
         this.courseService = courseService;
@@ -52,16 +56,16 @@ public class TimetableController {
             from = LocalDate.parse(fromStr);
             to = LocalDate.parse(toStr);
         }
-        List<ActivityDto> activities = new ArrayList<>();
+        List<EventDto> events = new ArrayList<>();
         userCourseService.findCoursesForUser((UserDto)session.getAttribute("user"))
                 .stream()
                 .map(course -> service.findEventsForCourseFromTo(course,
                         from.atStartOfDay(),
                         to.atTime(LocalTime.MAX)))
-                .forEach(activities::addAll);
+                .forEach(events::addAll);
         model.addAttribute("filter_from", from);
         model.addAttribute("filter_to", to);
-        model.addAttribute("events", activities);
+        model.addAttribute("events", events);
         return "timetable/timetable";
     }
 
@@ -69,11 +73,11 @@ public class TimetableController {
     public String creationPage(Model model,
                                HttpSession session) {
         model.addAttribute("courses", courseService.findAll());
-        model.addAttribute("event", new ActivityDto((UserDto)session.getAttribute("user"),
+        model.addAttribute("event", new EventDto((UserDto)session.getAttribute("user"),
                 new CourseDto("", ""),
                 LocalDateTime.now().withNano(0).withSecond(0),
                 LocalDateTime.now().plusHours(1).withNano(0).withSecond(0)));
-        return "timetable/newEvent";
+        return REDIRECT_NEW;
     }
 
     @GetMapping("/update")
@@ -84,21 +88,33 @@ public class TimetableController {
     }
 
     @PostMapping("/new")
-    public String createEvent(@ModelAttribute("event") ActivityDto event,
+    public String createEvent(@Valid @ModelAttribute("event") EventDto event,
+                              BindingResult bindingResult,
                               RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute(MESSAGE,
+                    bindingResult.getAllErrors().get(0).getDefaultMessage());
+            return REDIRECT_NEW;
+        }
         try {
             service.add(event);
         } catch (EntityAlreadyExistsException e) {
             redirectAttributes.addFlashAttribute(MESSAGE, "Event already exists.");
-            return "timetable/newEvent";
+            return REDIRECT_NEW;
         }
-        return "redirect:/timetable";
+        return REDIRECT_TIMETABLE;
     }
 
     @PostMapping("/update")
     public String updateEvent(HttpSession session,
-                              @ModelAttribute("event") ActivityDto event,
+                              @Valid @ModelAttribute("event") EventDto event,
+                              BindingResult bindingResult,
                               RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute(MESSAGE,
+                    bindingResult.getAllErrors().get(0).getDefaultMessage());
+            return REDIRECT_TIMETABLE;
+        }
         event.setCourse(courseService.findByName(event.getCourse().getName()));
         event.setUser((UserDto)session.getAttribute("user"));
         try {
@@ -106,17 +122,23 @@ public class TimetableController {
         } catch (EntityNotFoundException e) {
             redirectAttributes.addFlashAttribute(MESSAGE, "Event doesn't exists.");
         }
-        return "redirect:/timetable";
+        return REDIRECT_TIMETABLE;
     }
 
     @PostMapping("/delete")
-    public String deleteEvent(@ModelAttribute("event") ActivityDto event,
+    public String deleteEvent(@Valid @ModelAttribute("event") EventDto event,
+                              BindingResult bindingResult,
                               RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute(MESSAGE,
+                    bindingResult.getAllErrors().get(0).getDefaultMessage());
+            return REDIRECT_TIMETABLE;
+        }
         try {
             service.deleteById(event.getId());
         } catch (EntityNotFoundException e) {
             redirectAttributes.addFlashAttribute(MESSAGE, "Event doesn't exists.");
         }
-        return "redirect:/timetable";
+        return REDIRECT_TIMETABLE;
     }
 }

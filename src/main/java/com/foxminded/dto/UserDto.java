@@ -1,14 +1,28 @@
 package com.foxminded.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Objects;
 
 public class UserDto implements Serializable {
 
+    @NotBlank(message = "Personal id can't be blank.")
     private String personalId;
+
+    @Pattern(regexp="^(student|professor)$",message = "Role should be student or professor.")
+    @NotBlank(message = "Role can't be blank.")
     private String role;
+
+    @Pattern(regexp="^[A-Za-z]*$", message = "User name should be in latin alphabet.")
+    @NotBlank(message = "Name can't be blank.")
     private String name;
+
+    @Pattern(regexp="^[A-Za-z]*$", message = "User surname should be in latin alphabet.")
+    @NotBlank(message = "Surname can't be blank.")
     private String surname;
+
+    @Pattern(regexp="^[A-Za-z0-9., ]*$", message = "User about text should be in latin alphabet.")
     private String about;
 
     public UserDto(String personalId, String role, String name, String surname, String about) {

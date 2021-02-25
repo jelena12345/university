@@ -40,7 +40,7 @@ public class User {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="user")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    List<Activity> activities = new ArrayList<>();
+    List<Event> events = new ArrayList<>();
 
     public User(Integer id, String personalId, String role, String name, String surname, String about) {
         this.id = id;
@@ -113,12 +113,12 @@ public class User {
         this.coursesForUser = coursesForUser;
     }
 
-    public List<Activity> getActivities() {
-        return activities;
+    public List<Event> getEvents() {
+        return events;
     }
 
-    public void setActivities(List<Activity> activities) {
-        this.activities = activities;
+    public void setEvents(List<Event> events) {
+        this.events = events;
     }
 
     @Override

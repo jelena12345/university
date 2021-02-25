@@ -91,7 +91,7 @@ class IndexControllerTest {
 
     @Test
     void testRegisterUser_Successful_ShouldRedirectToIndexPage() throws Exception {
-        UserDto user = new UserDto("1", "role", "name", "surname", "a");
+        UserDto user = new UserDto("1", "student", "name", "surname", "a");
         this.mockMvc.perform(post("/register")
                 .flashAttr("user", user))
                 .andExpect(redirectedUrl("/"))
@@ -101,9 +101,7 @@ class IndexControllerTest {
 
     @Test
     void testRegisterUser_Unsuccessful_ShouldRedirectToRegistrationPage() throws Exception {
-        doThrow(new EntityAlreadyExistsException("")).when(userService).add(any());
-        this.mockMvc.perform(post("/register")
-                .flashAttr("user", new UserDto("1", "role", "name", "surname", "a")))
+        this.mockMvc.perform(post("/register"))
                 .andExpect(redirectedUrl("/register"))
                 .andExpect(status().isFound());
     }
