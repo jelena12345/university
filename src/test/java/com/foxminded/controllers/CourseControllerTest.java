@@ -26,6 +26,19 @@ class CourseControllerTest {
     @Mock
     private UserCourseService userCourseService;
 
+    private static final String PERSONAL_ID = "1";
+    private static final String ROLE = "student";
+    private static final String USER_NAME = "name";
+    private static final String SURNAME = "surname";
+    private static final String ABOUT = "a";
+    private static final String COURSE_NAME = "name";
+    private static final String DESCRIPTION = "d";
+
+    private static final String USER = "user";
+    private static final String COURSE = "course";
+    private static final String COURSES = "courses";
+    private static final String AVAILABLE_COURSES = "availableCourses";
+
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(
@@ -33,87 +46,112 @@ class CourseControllerTest {
     }
 
     @Test
-    void testCoursesPage_ShouldReturnCoursesPage() throws Exception {
+    void testGetCoursesView_ShouldReturnCoursesView() throws Exception {
         this.mockMvc.perform(get("/courses"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("courses/courses"))
-                .andExpect(model().attributeExists("course"))
-                .andExpect(model().attributeExists("courses"));
+                .andExpect(model().attributeExists(COURSE))
+                .andExpect(model().attributeExists(COURSES))
+                .andExpect(model().attributeExists(AVAILABLE_COURSES));
     }
 
     @Test
-    void testNewCoursePage_ShouldReturnNewCoursePage() throws Exception {
-        this.mockMvc.perform(get("/courses/new"))
+    void testGetDetailsView_ShouldReturnDetailsView() throws Exception {
+        this.mockMvc.perform(get("/courses/details"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("courses/addCourse"))
-                .andExpect(model().attributeExists("course"))
-                .andExpect(model().attributeExists("courses"));
+                .andExpect(view().name("courses/courseDetails"))
+                .andExpect(model().attributeExists(COURSE));
     }
 
     @Test
-    void testCreateCourse_ShouldRedirectToCourses() throws Exception {
-        UserDto user = new UserDto("1", "student", "name", "surname", "a");
-        CourseDto course = new CourseDto("name", "description");
-        this.mockMvc.perform(post("/courses/new")
-                .sessionAttr("user", user)
-                .flashAttr("course", course))
+    void testGetStudentsView_ValidInput_ShouldReturnStudentsView() throws Exception {
+        CourseDto course = new CourseDto(COURSE_NAME, DESCRIPTION);
+        this.mockMvc.perform(get("/courses/students")
+                .flashAttr(COURSE, course))
+                .andExpect(status().isOk())
+                .andExpect(view().name("courses/students"))
+                .andExpect(model().attributeExists("students"))
+                .andExpect(model().hasNoErrors());
+    }
+
+    @Test
+    void testGetStudentsView_InvalidInput_ShouldReturnCoursesView() throws Exception {
+        CourseDto course = new CourseDto("", "??");
+        this.mockMvc.perform(get("/courses/students")
+                .flashAttr(COURSE, course))
+                .andExpect(status().isOk())
+                .andExpect(view().name("courses/courses"))
+                .andExpect(model().attributeHasFieldErrors(COURSE, "name", "description"));
+    }
+
+    @Test
+    void testSaveCourse_ValidInput_ShouldRedirectToCourses() throws Exception {
+        CourseDto course = new CourseDto(COURSE_NAME, DESCRIPTION);
+        this.mockMvc.perform(post("/courses/save")
+                .flashAttr(COURSE, course))
+                .andExpect(model().hasNoErrors())
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/courses"));
-        verify(courseService, times(1)).add(course);
+        verify(courseService, times(1)).save(course);
     }
 
     @Test
-    void testAdd_ShouldRedirectToCoursesPage() throws Exception {
-        UserDto user = new UserDto("1", "role", "name", "surname", "a");
-        CourseDto course = new CourseDto("name", "description");
+    void testSaveCourse_InvalidInput_ShouldReturnDetailsView() throws Exception {
+        CourseDto course = new CourseDto("", "??");
+        this.mockMvc.perform(post("/courses/save")
+                .flashAttr(COURSE, course))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeHasFieldErrors(COURSE, "name", "description"))
+                .andExpect(view().name("courses/courseDetails"));
+    }
+
+    @Test
+    void testAdd_ValidInput_ShouldRedirectToCoursesPage() throws Exception {
+        UserDto user = new UserDto(PERSONAL_ID, ROLE, USER_NAME, SURNAME, ABOUT);
+        CourseDto course = new CourseDto(COURSE_NAME, DESCRIPTION);
         this.mockMvc.perform(post("/courses/add")
-                .sessionAttr("user", user)
-                .flashAttr("course", course))
+                .sessionAttr(USER, user)
+                .flashAttr(COURSE, course))
+                .andExpect(model().hasNoErrors())
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/courses"));
         verify(userCourseService, times(1)).saveUserForCourse(user, course);
     }
 
     @Test
-    void testRemove_ShouldRedirectToCoursesPage() throws Exception {
-        UserDto user = new UserDto("1", "role", "name", "surname", "a");
-        CourseDto course = new CourseDto("name", "description");
-        when(courseService.findByName(anyString())).thenReturn(course);
+    void testAdd_InvalidInput_ShouldRedirectToCoursesPage() throws Exception {
+        UserDto user = new UserDto(PERSONAL_ID, ROLE, USER_NAME, SURNAME, ABOUT);
+        CourseDto course = new CourseDto("", "??");
+        this.mockMvc.perform(post("/courses/add")
+                .sessionAttr(USER, user)
+                .flashAttr(COURSE, course))
+                .andExpect(model().attributeHasFieldErrors(COURSE, "name", "description"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("courses/courses"));
+    }
+
+    @Test
+    void testRemove_ValidInput_ShouldRedirectToCoursesPage() throws Exception {
+        UserDto user = new UserDto(PERSONAL_ID, ROLE, USER_NAME, SURNAME, ABOUT);
+        CourseDto course = new CourseDto(COURSE_NAME, DESCRIPTION);
         this.mockMvc.perform(post("/courses/remove")
-                .sessionAttr("user", user)
-                .flashAttr("course_remove", "name"))
+                .sessionAttr(USER, user)
+                .flashAttr(COURSE, course))
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/courses"));
         verify(userCourseService, times(1)).deleteUserForCourse(user, course);
     }
 
     @Test
-    void testUpdateCoursePage_ShouldReturnUpdateCoursePage() throws Exception {
-        CourseDto course = new CourseDto("name", "description");
-        when(courseService.findByName(anyString())).thenReturn(course);
-        this.mockMvc.perform(get("/courses/update")
-                .flashAttr("updateName", "name"))
+    void testRemove_InvalidInput_ShouldRedirectToCoursesPage() throws Exception {
+        UserDto user = new UserDto(PERSONAL_ID, ROLE, USER_NAME, SURNAME, ABOUT);
+        CourseDto course = new CourseDto("", "??");
+        this.mockMvc.perform(post("/courses/remove")
+                .sessionAttr(USER, user)
+                .flashAttr(COURSE, course))
+                .andExpect(model().attributeHasFieldErrors(COURSE, "name", "description"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("courses/updateCourse"))
-                .andExpect(model().attributeExists("course"));
-    }
-
-    @Test
-    void testUpdate_ShouldRedirectToCoursesPage() throws Exception {
-        CourseDto course = new CourseDto("name", "description");
-        this.mockMvc.perform(post("/courses/update")
-                .flashAttr("course", course))
-                .andExpect(status().isFound())
-                .andExpect(redirectedUrl("/courses"));
-        verify(courseService, times(1)).update(course);
-    }
-
-    @Test
-    void testStudentsPage_ShouldReturnStudentsPage() throws Exception {
-        this.mockMvc.perform(get("/courses/students"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("courses/students"))
-                .andExpect(model().attributeExists("students"));
+                .andExpect(view().name("courses/courses"));
     }
 
 }

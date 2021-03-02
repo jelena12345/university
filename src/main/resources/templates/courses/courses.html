@@ -12,13 +12,25 @@
 <body>
 <div th:insert="navigation :: sidebar"></div>
 <div class="page-content p-5" id="content">
-    <form method="GET" th:action="@{/courses/new}">
+    <form method="GET" th:action="@{/courses/details}">
         <h2 class="display-4">
             <span>Current courses</span>
             <button class='btn btn-primary pull-right'>+</button>
         </h2>
     </form>
     <p class="text-danger" th:text="${message}"></p>
+    <form class="form-horizontal" th:if="${!availableCourses.isEmpty()}" method="POST" th:action="@{/courses/add}">
+        <label for="courses" class="visually-hidden">Connect to existing course</label>
+        <div class="input-group mb-3">
+            <select th:object="${course}" th:field="*{name}" id="courses" class="form-control">
+                <option th:each="dropDownItem : ${availableCourses}"
+                        th:value="${dropDownItem.name}"
+                        th:text="${dropDownItem.name}"></option>
+            </select>
+            <button class='btn btn-primary' type="submit">Add</button>
+        </div>
+    </form>
+    <p th:unless="${!availableCourses.isEmpty()}">No available courses</p>
     <div class="table-responsive">
         <table class="table table-striped table-sm">
             <caption></caption>
@@ -26,31 +38,34 @@
             <tr>
                 <th scope="col">Name</th>
                 <th scope="col">Description</th>
+                <th scope="col" th:if="${session.user.role == 'professor'}"></th>
+                <th scope="col" th:if="${session.user.role == 'professor'}"></th>
                 <th scope="col"></th>
-                <th scope="col" th:if="${session.user.role == 'professor'}"></th>
-                <th scope="col" th:if="${session.user.role == 'professor'}"></th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="courseItem : ${courses}">
                 <td th:text="${courseItem.name}"></td>
                 <td th:text="${courseItem.description}"></td>
-                <td th:if="${session.user.role == 'professor'}">
-                    <form id="form_users" method="GET" th:action="@{/courses/students}">
+                <td>
+                    <form id="students" method="GET" th:action="@{/courses/students}" th:object="${course}">
                         <button class="btn btn-light fas fa-users" type="submit"></button>
-                        <input type="hidden" id="course_users" name="course_users" th:value="${courseItem.name}">
+                        <input type="hidden" name="name" th:value="${courseItem.name}">
+                        <input type="hidden" name="description" th:value="${courseItem.description}">
                     </form>
                 </td>
                 <td>
-                    <form id="updateForm" method="GET" th:action="@{/courses/update}">
+                    <form id="update" method="GET" th:action="@{/courses/details}" th:object="${course}">
                         <button class="btn btn-light fas fa-pencil-alt" type="submit"></button>
-                        <input type="hidden" id="updateName" name="updateName" th:value="${courseItem.name}">
+                        <input type="hidden" name="name" th:value="${courseItem.name}">
+                        <input type="hidden" name="description" th:value="${courseItem.description}">
                     </form>
                 </td>
                 <td>
-                    <form id="form_remove" method="POST" th:action="@{/courses/remove}">
+                    <form id="remove" method="POST" th:action="@{/courses/remove}" th:object="${course}">
                         <button class="btn btn-light fas fa-times" type="submit"></button>
-                        <input type="hidden" id="course_remove" name="course_remove" th:value="${courseItem.name}">
+                        <input type="hidden" name="name" th:value="${courseItem.name}">
+                        <input type="hidden" name="description" th:value="${courseItem.description}">
                     </form>
                 </td>
             </tr>
