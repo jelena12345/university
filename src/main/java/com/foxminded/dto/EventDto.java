@@ -38,7 +38,7 @@ public class EventDto {
         this(0, user, course, from, to);
     }
 
-    private EventDto() { }
+    public EventDto() { }
 
     public Integer getId() {
         return id;

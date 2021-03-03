@@ -78,7 +78,7 @@ class TimetableControllerTest {
     }
 
     @Test
-    void testCreateEvent_ShouldRedirectToTimetablePage() throws Exception {
+    void testCreateEvent_ValidInput_ShouldRedirectToTimetablePage() throws Exception {
         EventDto eventDto = new EventDto(1,
                 new UserDto(),
                 new CourseDto("", ""),
@@ -86,13 +86,24 @@ class TimetableControllerTest {
                 LocalDateTime.now().plusHours(1));
         this.mockMvc.perform(post("/timetable/new")
                 .flashAttr("event", eventDto))
+                .andExpect(model().hasNoErrors())
                 .andExpect(status().isFound())
                 .andExpect(redirectedUrl("/timetable"));
         verify(eventService, times(1)).add(eventDto);
     }
 
     @Test
-    void testUpdatePage() throws Exception {
+    void testCreateEvent_InvalidInput_ShouldReturnTimetablePage() throws Exception {
+        EventDto eventDto = new EventDto();
+        this.mockMvc.perform(post("/timetable/new")
+                .flashAttr("event", eventDto))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeHasErrors("event"))
+                .andExpect(view().name("timetable/newEvent"));
+    }
+
+    @Test
+    void testUpdatePage_ShouldReturnUpdatePage() throws Exception {
         int id = 1;
         when(eventService.findById(anyInt())).thenReturn(new EventDto(1,
                 new UserDto(),
@@ -108,7 +119,7 @@ class TimetableControllerTest {
     }
 
     @Test
-    void testUpdateEvent_ShouldRedirectToTimetablePage() throws Exception {
+    void testUpdateEvent_ValidInput_ShouldRedirectToTimetablePage() throws Exception {
         EventDto eventDto = new EventDto(1,
                 new UserDto(),
                 new CourseDto("", ""),
@@ -117,12 +128,23 @@ class TimetableControllerTest {
         this.mockMvc.perform(post("/timetable/update")
                 .flashAttr("event", eventDto))
                 .andExpect(status().isFound())
+                .andExpect(model().hasNoErrors())
                 .andExpect(redirectedUrl("/timetable"));
         verify(eventService, times(1)).update(eventDto);
     }
 
     @Test
-    void testDeleteEvent_ShouldRedirectToTimetablePage() throws Exception {
+    void testUpdateEvent_InvalidInput_ShouldReturnUpdatePage() throws Exception {
+        EventDto eventDto = new EventDto();
+        this.mockMvc.perform(post("/timetable/update")
+                .flashAttr("event", eventDto))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeHasErrors("event"))
+                .andExpect(view().name("timetable/updateEvent"));
+    }
+
+    @Test
+    void testDeleteEvent_ValidInput_ShouldRedirectToTimetablePage() throws Exception {
         EventDto eventDto = new EventDto(1,
                 new UserDto(),
                 new CourseDto("", ""),
@@ -131,7 +153,18 @@ class TimetableControllerTest {
         this.mockMvc.perform(post("/timetable/delete")
                 .flashAttr("event", eventDto))
                 .andExpect(status().isFound())
+                .andExpect(model().hasNoErrors())
                 .andExpect(redirectedUrl("/timetable"));
         verify(eventService, times(1)).deleteById(eventDto.getId());
+    }
+
+    @Test
+    void testDeleteEvent_InvalidInput_ShouldRedirectToTimetablePage() throws Exception {
+        EventDto eventDto = new EventDto();
+        this.mockMvc.perform(post("/timetable/delete")
+                .flashAttr("event", eventDto))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeHasErrors("event"))
+                .andExpect(view().name("timetable/timetable"));
     }
 }

@@ -33,7 +33,9 @@ public class TimetableController {
     private final UserCourseService userCourseService;
     private static final String MESSAGE = "message";
     private static final String REDIRECT_TIMETABLE = "redirect:/timetable";
-    private static final String REDIRECT_NEW = "timetable/newEvent";
+    private static final String NEW_VIEW = "timetable/newEvent";
+    private static final String TIMETABLE_VIEW = "timetable/timetable";
+    private static final String UPDATE_VIEW = "timetable/updateEvent";
 
     @Autowired
     TimetableController(EventService service, CourseService courseService, UserCourseService userCourseService) {
@@ -66,7 +68,7 @@ public class TimetableController {
         model.addAttribute("filter_from", from);
         model.addAttribute("filter_to", to);
         model.addAttribute("events", events);
-        return "timetable/timetable";
+        return TIMETABLE_VIEW;
     }
 
     @GetMapping("/new")
@@ -77,14 +79,14 @@ public class TimetableController {
                 new CourseDto("", ""),
                 LocalDateTime.now().withNano(0).withSecond(0),
                 LocalDateTime.now().plusHours(1).withNano(0).withSecond(0)));
-        return REDIRECT_NEW;
+        return NEW_VIEW;
     }
 
     @GetMapping("/update")
     public String updatePage(Model model,
                              @ModelAttribute("updateId") int id) {
         model.addAttribute("event", service.findById(id));
-        return "timetable/updateEvent";
+        return UPDATE_VIEW;
     }
 
     @PostMapping("/new")
@@ -94,13 +96,13 @@ public class TimetableController {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute(MESSAGE,
                     bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return REDIRECT_NEW;
+            return NEW_VIEW;
         }
         try {
             service.add(event);
         } catch (EntityAlreadyExistsException e) {
             redirectAttributes.addFlashAttribute(MESSAGE, "Event already exists.");
-            return REDIRECT_NEW;
+            return NEW_VIEW;
         }
         return REDIRECT_TIMETABLE;
     }
@@ -113,7 +115,7 @@ public class TimetableController {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute(MESSAGE,
                     bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return REDIRECT_TIMETABLE;
+            return UPDATE_VIEW;
         }
         event.setCourse(courseService.findByName(event.getCourse().getName()));
         event.setUser((UserDto)session.getAttribute("user"));
@@ -121,6 +123,7 @@ public class TimetableController {
             service.update(event);
         } catch (EntityNotFoundException e) {
             redirectAttributes.addFlashAttribute(MESSAGE, "Event doesn't exists.");
+            return UPDATE_VIEW;
         }
         return REDIRECT_TIMETABLE;
     }
@@ -132,7 +135,7 @@ public class TimetableController {
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute(MESSAGE,
                     bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return REDIRECT_TIMETABLE;
+            return TIMETABLE_VIEW;
         }
         try {
             service.deleteById(event.getId());
