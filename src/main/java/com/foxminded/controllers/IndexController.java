@@ -8,11 +8,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 
 @Controller
 @RequestMapping("/")
@@ -21,7 +19,6 @@ public class IndexController {
     private final UserService service;
     private static final String MESSAGE = "message";
     private static final String REDIRECT_INDEX = "redirect:/";
-    private static final String REDIRECT_REGISTER = "redirect:/register";
     private static final String REDIRECT_PROFILE = "redirect:/profile";
 
     @Autowired
@@ -30,10 +27,12 @@ public class IndexController {
     }
 
     @GetMapping()
-    public String index(HttpSession session) {
+    public String getIndexView(HttpSession session,
+                               Model model) {
         if (session.getAttribute("user") != null) {
             return REDIRECT_PROFILE;
         }
+        model.addAttribute("personalId", "");
         return "index";
     }
 
@@ -51,39 +50,32 @@ public class IndexController {
 
     @PostMapping("/signIn")
     public String signIn(HttpSession session,
-                         RedirectAttributes redirectAttributes,
-                         @ModelAttribute("personalId")
-                             @NotBlank(message = "Personal id can't be blank.")
-                                     String personalId,
-                         BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute(MESSAGE,
-                    bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return REDIRECT_INDEX;
-        } else if (!service.existsByPersonalId(personalId)) {
-            redirectAttributes.addFlashAttribute(MESSAGE,
+                         Model model,
+                         @ModelAttribute("personalId") String personalId) {
+        if (!service.existsByPersonalId(personalId)) {
+            model.addAttribute(MESSAGE,
                     "User with personal id " + personalId + " not exists.");
-            return REDIRECT_INDEX;
+            return "index";
         }
         session.setAttribute("user", service.findByPersonalId(personalId));
         return REDIRECT_PROFILE;
     }
 
     @PostMapping("/register")
-    public String registerUser(RedirectAttributes redirectAttributes,
+    public String registerUser(Model model,
                                @Valid @ModelAttribute("user") UserDto user,
                                BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute(MESSAGE,
+            model.addAttribute(MESSAGE,
                     bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return REDIRECT_REGISTER;
+            return "/user/registration";
         }
         try {
             service.add(user);
         } catch (EntityAlreadyExistsException e) {
-            redirectAttributes.addFlashAttribute(MESSAGE,
-                    "User with personal id " + user.getPersonalId() + " not exists.");
-            return REDIRECT_REGISTER;
+            model.addAttribute(MESSAGE,
+                    "User with personal id " + user.getPersonalId() + " already exists.");
+            return "/user/registration";
         }
         return REDIRECT_INDEX;
     }
