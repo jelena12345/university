@@ -1,5 +1,6 @@
 package com.foxminded.controllers;
 
+import com.foxminded.dto.AccountCredentials;
 import com.foxminded.dto.UserDto;
 import com.foxminded.services.UserService;
 import com.foxminded.services.exceptions.EntityAlreadyExistsException;
@@ -20,6 +21,7 @@ public class IndexController {
     private static final String MESSAGE = "message";
     private static final String REDIRECT_INDEX = "redirect:/";
     private static final String REDIRECT_PROFILE = "redirect:/profile";
+    private static final String INDEX_VIEW = "index";
 
     @Autowired
     IndexController(UserService service) {
@@ -32,8 +34,8 @@ public class IndexController {
         if (session.getAttribute("user") != null) {
             return REDIRECT_PROFILE;
         }
-        model.addAttribute("personalId", "");
-        return "index";
+        model.addAttribute("credentials", new AccountCredentials(""));
+        return INDEX_VIEW;
     }
 
     @GetMapping("/register")
@@ -51,13 +53,18 @@ public class IndexController {
     @PostMapping("/signIn")
     public String signIn(HttpSession session,
                          Model model,
-                         @ModelAttribute("personalId") String personalId) {
-        if (!service.existsByPersonalId(personalId)) {
+                         @Valid @ModelAttribute("credentials") AccountCredentials credentials,
+                         BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             model.addAttribute(MESSAGE,
-                    "User with personal id " + personalId + " not exists.");
-            return "index";
+                    bindingResult.getAllErrors().get(0).getDefaultMessage());
+            return INDEX_VIEW;
+        } else if (!service.existsByPersonalId(credentials.getPersonalId())) {
+            model.addAttribute(MESSAGE,
+                    "User with personal id " + credentials.getPersonalId() + " not exists.");
+            return INDEX_VIEW;
         }
-        session.setAttribute("user", service.findByPersonalId(personalId));
+        session.setAttribute("user", service.findByPersonalId(credentials.getPersonalId()));
         return REDIRECT_PROFILE;
     }
 

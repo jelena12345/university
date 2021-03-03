@@ -1,5 +1,6 @@
 package com.foxminded.controllers;
 
+import com.foxminded.dto.AccountCredentials;
 import com.foxminded.dto.UserDto;
 import com.foxminded.services.UserService;
 import com.foxminded.services.exceptions.EntityAlreadyExistsException;
@@ -72,7 +73,8 @@ class IndexControllerTest {
     void testSignIn_Successful_ShouldRedirectToProfilePage() throws Exception {
         when(userService.existsByPersonalId(anyString())).thenReturn(true);
         when(userService.findByPersonalId(anyString())).thenReturn(new UserDto());
-        HttpSession session = this.mockMvc.perform(post("/signIn"))
+        HttpSession session = this.mockMvc.perform(post("/signIn")
+                .flashAttr("credentials", new AccountCredentials("1")))
                 .andExpect(redirectedUrl("/profile"))
                 .andExpect(status().isFound())
                 .andReturn()
@@ -84,11 +86,21 @@ class IndexControllerTest {
 
     @Test
     void testSignIn_Unsuccessful_ShouldRedirectToIndexPage() throws Exception {
-        this.mockMvc.perform(post("/signIn").flashAttr("personalId", "1"))
+        this.mockMvc.perform(post("/signIn")
+                .flashAttr("credentials", new AccountCredentials("1")))
                 .andExpect(view().name("index"))
+                .andExpect(model().hasNoErrors())
                 .andExpect(status().isOk());
     }
 
+    @Test
+    void testSignIn_InvalidInput_ShouldRedirectToIndexPage() throws Exception {
+        this.mockMvc.perform(post("/signIn")
+                .flashAttr("credentials", new AccountCredentials("")))
+                .andExpect(view().name("index"))
+                .andExpect(model().attributeHasErrors("credentials"))
+                .andExpect(status().isOk());
+    }
 
     @Test
     void testRegisterUser_Successful_ShouldRedirectToIndexPage() throws Exception {

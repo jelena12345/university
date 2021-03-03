@@ -33,7 +33,7 @@ class ProfileControllerTest {
     }
 
     @Test
-    void testProfilePage_UserLoggedIn_ShouldShowProfilePage() throws Exception {
+    void testProfilePage_UserSignedIn_ShouldShowProfilePage() throws Exception {
         when(userService.findByPersonalId(anyString())).thenReturn(new UserDto());
         HttpSession session = this.mockMvc.perform(get("/profile")
                 .sessionAttr("user", new UserDto("", "", "", "", "")))
@@ -48,24 +48,34 @@ class ProfileControllerTest {
     }
 
     @Test
-    void testProfilePage_UserNotLoggedIn_ShouldRedirectToIndexPage() throws Exception {
+    void testProfilePage_UserNotSignedIn_ShouldRedirectToIndexPage() throws Exception {
         this.mockMvc.perform(get("/profile"))
                 .andExpect(redirectedUrl("/"))
                 .andExpect(status().isFound());
     }
 
     @Test
-    void testSaveUser_ShouldRedirectToProfilePage() throws Exception {
+    void testSaveUser_ValidInput_ShouldRedirectToProfilePage() throws Exception {
         UserDto user = new UserDto("1", "student", "name", "surname", "a");
         this.mockMvc.perform(post("/profile/save")
                 .flashAttr("user", user))
                 .andExpect(redirectedUrl("/profile"))
+                .andExpect(model().hasNoErrors())
                 .andExpect(status().isFound());
         verify(userService, times(1)).update(user);
     }
 
     @Test
-    void testDeleteUser_ShouldRedirectToProfilePage() throws Exception {
+    void testSaveUser_InvalidInput_ShouldReturnProfilePage() throws Exception {
+        this.mockMvc.perform(post("/profile/save")
+                .flashAttr("user", new UserDto()))
+                .andExpect(view().name("user/profile"))
+                .andExpect(model().attributeHasErrors("user"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testDeleteUser_ValidInput_ShouldRedirectToProfilePage() throws Exception {
         UserDto user = new UserDto("1", "student", "name", "surname", "a");
         HttpSession session = this.mockMvc.perform(post("/profile/delete")
                 .flashAttr("user", user)
@@ -78,6 +88,15 @@ class ProfileControllerTest {
         assertNotNull(session);
         assertNull(session.getAttribute("user"));
         verify(userService, times(1)).deleteByPersonalId(user.getPersonalId());
+    }
+
+    @Test
+    void testDeleteUser_InvalidInput_ShouldReturnProfilePage() throws Exception {
+        this.mockMvc.perform(post("/profile/delete")
+                .flashAttr("user", new UserDto()))
+                .andExpect(view().name("user/profile"))
+                .andExpect(model().attributeHasErrors("user"))
+                .andExpect(status().isOk());
     }
 
 }

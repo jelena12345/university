@@ -22,6 +22,7 @@ public class ProfileController {
     private static final String USER = "user";
     private static final String REDIRECT_PROFILE = "redirect:/profile";
     private static final String REDIRECT_INDEX = "redirect:/";
+    private static final String PROFILE_VIEW = "user/profile";
 
     @Autowired
     ProfileController(UserService service) {
@@ -37,21 +38,23 @@ public class ProfileController {
         UserDto user = service.findByPersonalId(((UserDto)session.getAttribute(USER)).getPersonalId());
         model.addAttribute(USER, user);
         session.setAttribute(USER, user);
-        return "user/profile";
+        return PROFILE_VIEW;
     }
 
     @PostMapping("/save")
     public String saveUser(@Valid @ModelAttribute(USER) UserDto user,
                            BindingResult bindingResult,
-                           RedirectAttributes redirectAttributes) {
+                           Model model) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute(MESSAGE,
+            model.addAttribute(MESSAGE,
                     bindingResult.getAllErrors().get(0).getDefaultMessage());
+            return PROFILE_VIEW;
         } else {
             try {
                 service.update(user);
             } catch (EntityNotFoundException e) {
-                redirectAttributes.addFlashAttribute(MESSAGE, "User not found");
+                model.addAttribute(MESSAGE, "User not found");
+                return PROFILE_VIEW;
             }
         }
         return REDIRECT_PROFILE;
@@ -61,11 +64,12 @@ public class ProfileController {
     public String deleteUser(HttpSession session,
                              @Valid @ModelAttribute(USER) UserDto user,
                              BindingResult bindingResult,
-                             RedirectAttributes redirectAttributes) {
+                             RedirectAttributes redirectAttributes,
+                             Model model) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute(MESSAGE,
+            model.addAttribute(MESSAGE,
                     bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return REDIRECT_PROFILE;
+            return PROFILE_VIEW;
         }
         try {
             service.deleteByPersonalId(user.getPersonalId());
