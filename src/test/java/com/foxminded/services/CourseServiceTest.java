@@ -62,7 +62,7 @@ class CourseServiceTest {
 
     @Test
     void testAdd_ShouldCallAddMethodForDao() {
-        service.add(new CourseDto("name", "description"));
+        service.save(new CourseDto("name", "description"));
         Course expected = new Course("name", "description");
         verify(dao, times(1)).save(expected);
     }
@@ -72,7 +72,7 @@ class CourseServiceTest {
         Course expected = new Course(1, "name", "description");
         when(dao.existsByName(anyString())).thenReturn(true);
         when(dao.findByName(anyString())).thenReturn(Optional.of(expected));
-        service.update(new CourseDto("name", "description"));
+        service.save(new CourseDto("name", "description"));
         verify(dao, times(1)).save(expected);
     }
 
@@ -94,13 +94,13 @@ class CourseServiceTest {
     void testAdd_ShouldThrowEntityAlreadyExistsException() {
         CourseDto courseDto = new CourseDto("name", "description");
         when(dao.existsByName(anyString())).thenReturn(true);
-        assertThrows(EntityAlreadyExistsException.class, () -> service.add(courseDto));
+        assertThrows(EntityAlreadyExistsException.class, () -> service.save(courseDto));
     }
 
     @Test
     void testUpdate_ShouldThrowEntityNotFoundException() {
         CourseDto courseDto = new CourseDto("name", "description");
-        assertThrows(EntityNotFoundException.class, () -> service.update(courseDto));
+        assertThrows(EntityNotFoundException.class, () -> service.save(courseDto));
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.foxminded.controllers;
 
+import com.foxminded.dto.AccountCredentials;
 import com.foxminded.dto.UserDto;
 import com.foxminded.services.UserService;
 import com.foxminded.services.exceptions.EntityAlreadyExistsException;
@@ -8,11 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 
 @Controller
 @RequestMapping("/")
@@ -21,8 +20,8 @@ public class IndexController {
     private final UserService service;
     private static final String MESSAGE = "message";
     private static final String REDIRECT_INDEX = "redirect:/";
-    private static final String REDIRECT_REGISTER = "redirect:/register";
     private static final String REDIRECT_PROFILE = "redirect:/profile";
+    private static final String INDEX_VIEW = "index";
 
     @Autowired
     IndexController(UserService service) {
@@ -30,11 +29,13 @@ public class IndexController {
     }
 
     @GetMapping()
-    public String index(HttpSession session) {
+    public String getIndexView(HttpSession session,
+                               Model model) {
         if (session.getAttribute("user") != null) {
             return REDIRECT_PROFILE;
         }
-        return "index";
+        model.addAttribute("credentials", new AccountCredentials(""));
+        return INDEX_VIEW;
     }
 
     @GetMapping("/register")
@@ -51,39 +52,37 @@ public class IndexController {
 
     @PostMapping("/signIn")
     public String signIn(HttpSession session,
-                         RedirectAttributes redirectAttributes,
-                         @ModelAttribute("personalId")
-                             @NotBlank(message = "Personal id can't be blank.")
-                                     String personalId,
+                         Model model,
+                         @Valid @ModelAttribute("credentials") AccountCredentials credentials,
                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute(MESSAGE,
+            model.addAttribute(MESSAGE,
                     bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return REDIRECT_INDEX;
-        } else if (!service.existsByPersonalId(personalId)) {
-            redirectAttributes.addFlashAttribute(MESSAGE,
-                    "User with personal id " + personalId + " not exists.");
-            return REDIRECT_INDEX;
+            return INDEX_VIEW;
+        } else if (!service.existsByPersonalId(credentials.getPersonalId())) {
+            model.addAttribute(MESSAGE,
+                    "User with personal id " + credentials.getPersonalId() + " not exists.");
+            return INDEX_VIEW;
         }
-        session.setAttribute("user", service.findByPersonalId(personalId));
+        session.setAttribute("user", service.findByPersonalId(credentials.getPersonalId()));
         return REDIRECT_PROFILE;
     }
 
     @PostMapping("/register")
-    public String registerUser(RedirectAttributes redirectAttributes,
+    public String registerUser(Model model,
                                @Valid @ModelAttribute("user") UserDto user,
                                BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute(MESSAGE,
+            model.addAttribute(MESSAGE,
                     bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return REDIRECT_REGISTER;
+            return "/user/registration";
         }
         try {
             service.add(user);
         } catch (EntityAlreadyExistsException e) {
-            redirectAttributes.addFlashAttribute(MESSAGE,
-                    "User with personal id " + user.getPersonalId() + " not exists.");
-            return REDIRECT_REGISTER;
+            model.addAttribute(MESSAGE,
+                    "User with personal id " + user.getPersonalId() + " already exists.");
+            return "/user/registration";
         }
         return REDIRECT_INDEX;
     }

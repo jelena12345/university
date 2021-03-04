@@ -3,7 +3,6 @@ package com.foxminded.services;
 import com.foxminded.dao.CourseDao;
 import com.foxminded.dto.CourseDto;
 import com.foxminded.entities.Course;
-import com.foxminded.services.exceptions.EntityAlreadyExistsException;
 import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -57,24 +56,10 @@ public class CourseService {
                     "Not found Course with name: " + name)), CourseDto.class);
     }
 
-    public void add(CourseDto course) {
+    public void save(CourseDto course) {
         logger.debug("Adding CourseDto");
         logger.trace("Adding CourseDto: {}", course);
-        if (dao.existsByName(course.getName())) {
-            logger.warn("Course by name {} already exists.", course.getName());
-            throw new EntityAlreadyExistsException("Course by name " + course.getName() + " already exists.");
-        }
-        dao.save(mapper.map(course, Course.class));
-    }
-
-    public void update(CourseDto courseDto) {
-        logger.debug("Updating CourseDto");
-        logger.trace("Updating CourseDto: {}", courseDto);
-        if (!dao.existsByName(courseDto.getName())) {
-            logger.warn("Not found Course with name: {}", courseDto.getName());
-            throw new EntityNotFoundException("Not found Course by name: " + courseDto.getName());
-        }
-        dao.save(enrich(mapper.map(courseDto, Course.class)));
+        dao.save(enrich(mapper.map(course, Course.class)));
     }
 
     public void deleteById(int id) {
@@ -98,10 +83,7 @@ public class CourseService {
     }
 
     private Course enrich(Course course) {
-        Course storedCourse = dao.findByName(course.getName())
-                .orElseThrow(() -> new EntityNotFoundException(
-                    "Not found Course with name: " + course.getName()));
-        course.setId(storedCourse.getId());
+        dao.findByName(course.getName()).ifPresent(c -> course.setId(c.getId()));
         return course;
     }
 
