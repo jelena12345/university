@@ -97,9 +97,7 @@ class IndexControllerTest {
     void testSignIn_InvalidInput_ShouldRedirectToIndexPage() throws Exception {
         this.mockMvc.perform(post("/signIn")
                 .flashAttr("credentials", new AccountCredentials("")))
-                .andExpect(view().name("index"))
-                .andExpect(model().attributeHasErrors("credentials"))
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -118,7 +116,7 @@ class IndexControllerTest {
         doThrow(new EntityAlreadyExistsException("")).when(userService).add(user);
         this.mockMvc.perform(post("/register")
                 .flashAttr("user", user))
-                .andExpect(view().name("/user/registration"))
+                .andExpect(view().name("user/registration"))
                 .andExpect(model().hasNoErrors())
                 .andExpect(status().isOk());
     }
@@ -127,8 +125,6 @@ class IndexControllerTest {
     void testRegisterUser_UnsuccessfulWithInvalidData_ShouldReturnRegistrationPage() throws Exception {
         this.mockMvc.perform(post("/register")
                 .flashAttr("user", new UserDto()))
-                .andExpect(view().name("/user/registration"))
-                .andExpect(model().attributeHasErrors("user"))
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
     }
 }

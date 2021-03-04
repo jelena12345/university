@@ -9,6 +9,8 @@ import com.foxminded.services.UserCourseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -97,9 +99,7 @@ class TimetableControllerTest {
         EventDto eventDto = new EventDto();
         this.mockMvc.perform(post("/timetable/new")
                 .flashAttr("event", eventDto))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeHasErrors("event"))
-                .andExpect(view().name("timetable/newEvent"));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -138,9 +138,7 @@ class TimetableControllerTest {
         EventDto eventDto = new EventDto();
         this.mockMvc.perform(post("/timetable/update")
                 .flashAttr("event", eventDto))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeHasErrors("event"))
-                .andExpect(view().name("timetable/updateEvent"));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -163,8 +161,6 @@ class TimetableControllerTest {
         EventDto eventDto = new EventDto();
         this.mockMvc.perform(post("/timetable/delete")
                 .flashAttr("event", eventDto))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeHasErrors("event"))
-                .andExpect(view().name("timetable/timetable"));
+                .andExpect(status().isBadRequest());
     }
 }
