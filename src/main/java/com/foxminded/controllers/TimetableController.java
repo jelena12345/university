@@ -6,6 +6,7 @@ import com.foxminded.dto.UserDto;
 import com.foxminded.services.EventService;
 import com.foxminded.services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -37,24 +38,28 @@ public class TimetableController {
 
     @GetMapping()
     public String timetable(Model model,
-                            HttpSession session,
-                            @ModelAttribute("filter_from") String fromStr,
-                            @ModelAttribute("filter_to") String toStr) {
-        LocalDate from;
-        LocalDate to;
-        if (fromStr.isEmpty()) {
-            from = LocalDate.now();
-            to = LocalDate.now().plusMonths(1);
-        } else {
-            from = LocalDate.parse(fromStr);
-            to = LocalDate.parse(toStr);
-        }
+                            HttpSession session) {
+        LocalDate from = LocalDate.now();
+        LocalDate to = LocalDate.now().plusMonths(1);
         List<EventDto> events = eventService.findEventsForUserFromTo(
                 (UserDto)session.getAttribute("user"),
                 from.atStartOfDay(),
                 to.atTime(LocalTime.MAX));
         model.addAttribute("filter_from", from);
         model.addAttribute("filter_to", to);
+        model.addAttribute("events", events);
+        return TIMETABLE_VIEW;
+    }
+
+    @PostMapping("/filter")
+    public String filterEvents(Model model,
+                            HttpSession session,
+                            @ModelAttribute("filter_from") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+                            @ModelAttribute("filter_to") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
+        List<EventDto> events = eventService.findEventsForUserFromTo(
+                (UserDto)session.getAttribute("user"),
+                from.atStartOfDay(),
+                to.atTime(LocalTime.MAX));
         model.addAttribute("events", events);
         return TIMETABLE_VIEW;
     }
