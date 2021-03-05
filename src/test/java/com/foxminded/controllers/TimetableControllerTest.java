@@ -38,7 +38,7 @@ class TimetableControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(
-                new TimetableController(eventService, courseService, userCourseService)).build();
+                new TimetableController(eventService, courseService)).build();
     }
 
     @Test

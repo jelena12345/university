@@ -60,17 +60,18 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    public List<EventDto> findEventsForCourseFromTo(CourseDto courseDto, LocalDateTime from, LocalDateTime to) {
+    public List<EventDto> findEventsForUserFromTo(UserDto userDto, LocalDateTime from, LocalDateTime to) {
         logger.debug("Searching for EventDto records");
-        logger.trace("Searching for EventDto records for CourseDto:{} from: {} to: {}", courseDto, from, to);
-        Course course = courseDao.findByName(courseDto.getName())
+        logger.trace("Searching for EventDto records for UserDto:{} from: {} to: {}", userDto, from, to);
+        User user = userDao.findByPersonalId(userDto.getPersonalId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Not found Course  with name: " + courseDto.getName()));
-        return course.getEvents().stream()
+                        "Not found User  with personal id: " + userDto.getPersonalId()));
+        return user.getCoursesForUser()
+                .stream()
+                .flatMap(c -> c.getEvents().stream())
                 .filter(event -> event.getFrom().isAfter(from)
                         && event.getTo().isBefore(to))
                 .map(event -> mapper.map(event, EventDto.class))
-                .sorted(Comparator.comparing(EventDto::getFrom))
                 .collect(Collectors.toList());
     }
 
