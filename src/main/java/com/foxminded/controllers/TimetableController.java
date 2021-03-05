@@ -65,7 +65,7 @@ public class TimetableController {
     }
 
     @GetMapping("/new")
-    public String creationPage(Model model,
+    public String getCreateView(Model model,
                                HttpSession session) {
         model.addAttribute("courses", courseService.findAll());
         model.addAttribute("event", new EventDto((UserDto)session.getAttribute("user"),
@@ -76,7 +76,7 @@ public class TimetableController {
     }
 
     @GetMapping("/update")
-    public String updatePage(Model model,
+    public String getUpdateView(Model model,
                              @ModelAttribute("updateId") int id) {
         model.addAttribute("event", eventService.findById(id));
         return UPDATE_VIEW;
