@@ -32,7 +32,7 @@ class CourseRestControllerTest {
     private CourseService courseService;
     @Mock
     private UserCourseService userCourseService;
-    ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setup() {
@@ -42,14 +42,14 @@ class CourseRestControllerTest {
 
     @Test
     void testGetCourses_ShouldReturnCourses() throws Exception {
-        List<CourseDto> courses = Collections.singletonList(
-                new CourseDto("a", "b"));
+        CourseDto course = new CourseDto("a", "b");
+        List<CourseDto> courses = Collections.singletonList(course);
         when(courseService.findAll()).thenReturn(courses);
         this.mockMvc.perform(get("/rest/courses")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("a"))
-                .andExpect(jsonPath("$[0].description").value("b"));
+                .andExpect(jsonPath("$[0].name").value(course.getName()))
+                .andExpect(jsonPath("$[0].description").value(course.getDescription()));
     }
 
     @Test
@@ -59,23 +59,23 @@ class CourseRestControllerTest {
         this.mockMvc.perform(get("/rest/courses/a/details")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("a"))
-                .andExpect(jsonPath("$.description").value("b"));
+                .andExpect(jsonPath("$.name").value(course.getName()))
+                .andExpect(jsonPath("$.description").value(course.getDescription()));
     }
 
     @Test
     void testGetStudentsForCourse_ShouldReturnStudentsForCourse() throws Exception {
-        List<UserDto> students = Collections.singletonList(
-                new UserDto("1", "student", "n", "s", "a"));
+        UserDto user = new UserDto("1", "student", "n", "s", "a");
+        List<UserDto> students = Collections.singletonList(user);
         when(userCourseService.findStudentsForCourse(any())).thenReturn(students);
         this.mockMvc.perform(get("/rest/courses/n/students")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].personalId").value("1"))
-                .andExpect(jsonPath("$[0].role").value("student"))
-                .andExpect(jsonPath("$[0].name").value("n"))
-                .andExpect(jsonPath("$[0].surname").value("s"))
-                .andExpect(jsonPath("$[0].about").value("a"));
+                .andExpect(jsonPath("$[0].personalId").value(user.getPersonalId()))
+                .andExpect(jsonPath("$[0].role").value(user.getRole()))
+                .andExpect(jsonPath("$[0].name").value(user.getName()))
+                .andExpect(jsonPath("$[0].surname").value(user.getSurname()))
+                .andExpect(jsonPath("$[0].about").value(user.getAbout()));
     }
 
     @Test
