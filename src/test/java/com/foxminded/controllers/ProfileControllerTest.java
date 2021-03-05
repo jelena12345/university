@@ -62,7 +62,7 @@ class ProfileControllerTest {
                 .andExpect(redirectedUrl("/profile"))
                 .andExpect(model().hasNoErrors())
                 .andExpect(status().isFound());
-        verify(userService, times(1)).update(user);
+        verify(userService, times(1)).save(user);
     }
 
     @Test

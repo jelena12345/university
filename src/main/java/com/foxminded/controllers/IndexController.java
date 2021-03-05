@@ -3,7 +3,6 @@ package com.foxminded.controllers;
 import com.foxminded.dto.AccountCredentials;
 import com.foxminded.dto.UserDto;
 import com.foxminded.services.UserService;
-import com.foxminded.services.exceptions.EntityAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -63,14 +62,8 @@ public class IndexController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@Valid @ModelAttribute("user") UserDto user,
-                               Model model) {
-        try {
-            service.add(user);
-        } catch (EntityAlreadyExistsException e) {
-            model.addAttribute(MESSAGE, e.getMessage());
-            return "user/registration";
-        }
+    public String registerUser(@Valid @ModelAttribute("user") UserDto user) {
+        service.save(user);
         return REDIRECT_INDEX;
     }
 
