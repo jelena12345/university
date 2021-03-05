@@ -1,15 +1,12 @@
 package com.foxminded.controllers;
 
 import com.foxminded.dto.CourseDto;
-import com.foxminded.dto.EventDto;
 import com.foxminded.dto.UserDto;
 import com.foxminded.services.CourseService;
 import com.foxminded.services.UserCourseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;

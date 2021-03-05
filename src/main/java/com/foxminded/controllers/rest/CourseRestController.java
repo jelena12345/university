@@ -1,6 +1,7 @@
 package com.foxminded.controllers.rest;
 
 import com.foxminded.dto.CourseDto;
+import com.foxminded.dto.UserCourseDto;
 import com.foxminded.dto.UserDto;
 import com.foxminded.services.CourseService;
 import com.foxminded.services.UserCourseService;
@@ -44,14 +45,14 @@ public class CourseRestController {
     }
 
     @PostMapping("/add")
-    public void addUserForCourse(@Valid @RequestBody UserDto user,
-                                 @Valid @RequestBody CourseDto course) {
-        userCourseService.saveUserForCourse(user, course);
+    public void addUserForCourse(@RequestBody @Valid UserCourseDto userCourse) {
+        userCourseService.saveUserForCourse(userCourse.getUserDto(),
+                userCourse.getCourseDto());
     }
 
     @PostMapping("/remove")
-    public void deleteUserForCourse(@Valid @RequestBody UserDto user,
-                                    @Valid @RequestBody CourseDto course) {
-        userCourseService.deleteUserForCourse(user, course);
+    public void deleteUserForCourse(@RequestBody @Valid UserCourseDto userCourse) {
+        userCourseService.deleteUserForCourse(userCourse.getUserDto(),
+                userCourse.getCourseDto());
     }
 }
