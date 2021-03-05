@@ -4,16 +4,10 @@ import com.foxminded.dto.CourseDto;
 import com.foxminded.dto.UserDto;
 import com.foxminded.services.CourseService;
 import com.foxminded.services.UserCourseService;
-import com.foxminded.services.exceptions.EntityAlreadyExistsException;
-import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -32,7 +26,6 @@ public class CourseController {
 
     private static final String COURSE = "course";
     private static final String USER = "user";
-    private static final String MESSAGE = "message";
 
     @Autowired
     CourseController(CourseService service, UserCourseService userCourseService) {
@@ -59,66 +52,28 @@ public class CourseController {
 
     @GetMapping("/students")
     public String getStudentsView(Model model,
-                                  @Valid @ModelAttribute("course") CourseDto course,
-                                  BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute(MESSAGE,
-                    bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return COURSES_VIEW;
-        }
+                                  @Valid @ModelAttribute("course") CourseDto course) {
         model.addAttribute("students", userCourseService.findStudentsForCourse(course));
         return STUDENTS_VIEW;
     }
 
     @PostMapping("/save")
-    public String saveCourse(@Valid @ModelAttribute(COURSE) CourseDto course,
-                             BindingResult bindingResult,
-                             Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute(MESSAGE,
-                    bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return DETAILS_VIEW;
-        }
+    public String saveCourse(@Valid @ModelAttribute(COURSE) CourseDto course) {
         service.save(course);
         return REDIRECT_COURSES;
     }
 
     @PostMapping("/add")
     public String add(@Valid @ModelAttribute(COURSE) CourseDto course,
-                      BindingResult bindingResult,
-                      HttpSession session,
-                      Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute(MESSAGE,
-                    bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return COURSES_VIEW;
-        }
-        try {
-            userCourseService.saveUserForCourse((UserDto)session.getAttribute(USER), course);
-        } catch (EntityAlreadyExistsException e) {
-            model.addAttribute(MESSAGE, "You are already on course.");
-            return COURSES_VIEW;
-        }
+                      HttpSession session) {
+        userCourseService.saveUserForCourse((UserDto)session.getAttribute(USER), course);
         return REDIRECT_COURSES;
     }
 
     @PostMapping("/remove")
     public String remove(@Valid @ModelAttribute("course") CourseDto course,
-                         BindingResult bindingResult,
-                         HttpSession session,
-                         Model model) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute(MESSAGE,
-                    bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return COURSES_VIEW;
-        } else {
-            try {
-                userCourseService.deleteUserForCourse((UserDto)session.getAttribute(USER), course);
-            } catch (EntityNotFoundException e) {
-                model.addAttribute(MESSAGE, "You are not on the course.");
-                return COURSES_VIEW;
-            }
-        }
+                         HttpSession session) {
+        userCourseService.deleteUserForCourse((UserDto)session.getAttribute(USER), course);
         return REDIRECT_COURSES;
     }
 

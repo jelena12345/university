@@ -64,18 +64,18 @@ class UserServiceTest {
     }
 
     @Test
-    void testAdd_ShouldCallAddMethodForDao() {
-        service.add(new UserDto("1", "role","name", "surname", "q"));
+    void testSave_NewUser_ShouldCallAddMethodForDao() {
+        service.save(new UserDto("1", "role","name", "surname", "q"));
         User expected = new User("1", "role","name", "surname", "q");
         verify(dao, times(1)).save(expected);
     }
 
     @Test
-    void testUpdate_ShouldCallUpdateMethodForDao() {
+    void testSave_ExistingUser_ShouldCallUpdateMethodForDao() {
         User expected = new User(1, "1", "role","name", "surname", "q");
         when(dao.existsByPersonalId(anyString())).thenReturn(true);
         when(dao.findByPersonalId(anyString())).thenReturn(Optional.of(expected));
-        service.update(new UserDto("1", "role","name", "surname", "q"));
+        service.save(new UserDto("1", "role","name", "surname", "q"));
         verify(dao, times(1)).save(expected);
     }
 
@@ -94,16 +94,16 @@ class UserServiceTest {
     }
 
     @Test
-    void testAdd_ShouldThrowEntityAlreadyExistsException() {
+    void testSave_NewUser_ShouldThrowEntityAlreadyExistsException() {
         UserDto userDto = new UserDto("1", "role","name", "surname", "q");
         when(dao.existsByPersonalId(anyString())).thenReturn(true);
-        assertThrows(EntityAlreadyExistsException.class, () -> service.add(userDto));
+        assertThrows(EntityAlreadyExistsException.class, () -> service.save(userDto));
     }
 
     @Test
-    void testUpdate_ShouldThrowEntityNotFoundException() {
+    void testSave_ExistingUser_ShouldThrowEntityNotFoundException() {
         UserDto userDto = new UserDto("1", "role","name", "surname", "q");
-        assertThrows(EntityNotFoundException.class, () -> service.update(userDto));
+        assertThrows(EntityNotFoundException.class, () -> service.save(userDto));
     }
 
     @Test

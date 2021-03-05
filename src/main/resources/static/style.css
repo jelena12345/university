@@ -14,7 +14,8 @@
     transition: all 0.4s;
 }
 .form-signin,
-.form-register {
+.form-register,
+.error-template {
     max-width: 330px;
     margin: auto;
 }

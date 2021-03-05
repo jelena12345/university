@@ -3,11 +3,9 @@ package com.foxminded.controllers;
 import com.foxminded.dto.AccountCredentials;
 import com.foxminded.dto.UserDto;
 import com.foxminded.services.UserService;
-import com.foxminded.services.exceptions.EntityAlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -53,13 +51,8 @@ public class IndexController {
     @PostMapping("/signIn")
     public String signIn(HttpSession session,
                          Model model,
-                         @Valid @ModelAttribute("credentials") AccountCredentials credentials,
-                         BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute(MESSAGE,
-                    bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return INDEX_VIEW;
-        } else if (!service.existsByPersonalId(credentials.getPersonalId())) {
+                         @Valid @ModelAttribute("credentials") AccountCredentials credentials) {
+        if (!service.existsByPersonalId(credentials.getPersonalId())) {
             model.addAttribute(MESSAGE,
                     "User with personal id " + credentials.getPersonalId() + " not exists.");
             return INDEX_VIEW;
@@ -69,21 +62,8 @@ public class IndexController {
     }
 
     @PostMapping("/register")
-    public String registerUser(Model model,
-                               @Valid @ModelAttribute("user") UserDto user,
-                               BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            model.addAttribute(MESSAGE,
-                    bindingResult.getAllErrors().get(0).getDefaultMessage());
-            return "/user/registration";
-        }
-        try {
-            service.add(user);
-        } catch (EntityAlreadyExistsException e) {
-            model.addAttribute(MESSAGE,
-                    "User with personal id " + user.getPersonalId() + " already exists.");
-            return "/user/registration";
-        }
+    public String registerUser(@Valid @ModelAttribute("user") UserDto user) {
+        service.save(user);
         return REDIRECT_INDEX;
     }
 

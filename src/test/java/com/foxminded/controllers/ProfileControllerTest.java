@@ -62,16 +62,14 @@ class ProfileControllerTest {
                 .andExpect(redirectedUrl("/profile"))
                 .andExpect(model().hasNoErrors())
                 .andExpect(status().isFound());
-        verify(userService, times(1)).update(user);
+        verify(userService, times(1)).save(user);
     }
 
     @Test
     void testSaveUser_InvalidInput_ShouldReturnProfilePage() throws Exception {
         this.mockMvc.perform(post("/profile/save")
                 .flashAttr("user", new UserDto()))
-                .andExpect(view().name("user/profile"))
-                .andExpect(model().attributeHasErrors("user"))
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -94,9 +92,7 @@ class ProfileControllerTest {
     void testDeleteUser_InvalidInput_ShouldReturnProfilePage() throws Exception {
         this.mockMvc.perform(post("/profile/delete")
                 .flashAttr("user", new UserDto()))
-                .andExpect(view().name("user/profile"))
-                .andExpect(model().attributeHasErrors("user"))
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
     }
 
 }

@@ -1,12 +1,15 @@
 package com.foxminded.controllers;
 
 import com.foxminded.dto.CourseDto;
+import com.foxminded.dto.EventDto;
 import com.foxminded.dto.UserDto;
 import com.foxminded.services.CourseService;
 import com.foxminded.services.UserCourseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -79,9 +82,7 @@ class CourseControllerTest {
         CourseDto course = new CourseDto("", "??");
         this.mockMvc.perform(get("/courses/students")
                 .flashAttr(COURSE, course))
-                .andExpect(status().isOk())
-                .andExpect(view().name("courses/courses"))
-                .andExpect(model().attributeHasFieldErrors(COURSE, "name", "description"));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -100,9 +101,7 @@ class CourseControllerTest {
         CourseDto course = new CourseDto("", "??");
         this.mockMvc.perform(post("/courses/save")
                 .flashAttr(COURSE, course))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeHasFieldErrors(COURSE, "name", "description"))
-                .andExpect(view().name("courses/courseDetails"));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -120,14 +119,10 @@ class CourseControllerTest {
 
     @Test
     void testAdd_InvalidInput_ShouldRedirectToCoursesPage() throws Exception {
-        UserDto user = new UserDto(PERSONAL_ID, ROLE, USER_NAME, SURNAME, ABOUT);
         CourseDto course = new CourseDto("", "??");
         this.mockMvc.perform(post("/courses/add")
-                .sessionAttr(USER, user)
                 .flashAttr(COURSE, course))
-                .andExpect(model().attributeHasFieldErrors(COURSE, "name", "description"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("courses/courses"));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -144,14 +139,10 @@ class CourseControllerTest {
 
     @Test
     void testRemove_InvalidInput_ShouldRedirectToCoursesPage() throws Exception {
-        UserDto user = new UserDto(PERSONAL_ID, ROLE, USER_NAME, SURNAME, ABOUT);
         CourseDto course = new CourseDto("", "??");
         this.mockMvc.perform(post("/courses/remove")
-                .sessionAttr(USER, user)
                 .flashAttr(COURSE, course))
-                .andExpect(model().attributeHasFieldErrors(COURSE, "name", "description"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("courses/courses"));
+                .andExpect(status().isBadRequest());
     }
 
 }
