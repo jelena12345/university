@@ -107,13 +107,13 @@ class IndexControllerTest {
                 .flashAttr("user", user))
                 .andExpect(redirectedUrl("/"))
                 .andExpect(status().isFound());
-        verify(userService, times(1)).add(user);
+        verify(userService, times(1)).save(user);
     }
 
     @Test
     void testRegisterUser_UnsuccessfulWithValidData_ShouldReturnRegistrationPage() throws Exception {
         UserDto user = new UserDto("1", "student", "name", "surname", "a");
-        doThrow(new EntityAlreadyExistsException("")).when(userService).add(user);
+        doThrow(new EntityAlreadyExistsException("")).when(userService).save(user);
         this.mockMvc.perform(post("/register")
                 .flashAttr("user", user))
                 .andExpect(view().name("user/registration"))
