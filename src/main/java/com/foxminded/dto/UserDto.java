@@ -99,7 +99,7 @@ public class UserDto implements Serializable {
 
     @Override
     public String toString() {
-        return "ProfessorDto{" +
+        return "UserDto{" +
                 "personalId='" + personalId + '\'' +
                 ", role='" + role + '\'' +
                 ", name='" + name + '\'' +

@@ -2,9 +2,10 @@ package com.foxminded.dto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class CourseDto {
+public class CourseDto implements Serializable {
 
     @NotBlank(message = "Course name can't be blank.")
     @Pattern(regexp="^[A-Za-z0-9 ]*$", message = "Course name should be in latin alphabet.")

@@ -32,7 +32,7 @@ class CourseRestControllerTest {
     private CourseService courseService;
     @Mock
     private UserCourseService userCourseService;
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setup() {

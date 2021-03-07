@@ -5,10 +5,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class EventDto {
+public class EventDto implements Serializable {
 
     @PositiveOrZero(message = "Id should be positive or zero.")
     private Integer id = 0;
