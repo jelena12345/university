@@ -64,4 +64,5 @@ public class TimetableRestController {
     public void deleteEvent(@PathVariable("id") Integer id) {
         service.deleteById(id);
     }
+
 }

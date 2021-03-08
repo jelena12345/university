@@ -1,5 +1,6 @@
 package com.foxminded.controllers.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foxminded.dto.CourseDto;
 import com.foxminded.dto.EventDto;
 import com.foxminded.dto.UserDto;
@@ -14,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import static org.mockito.ArgumentMatchers.*;
 
 import java.time.LocalDateTime;
@@ -29,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 class TimetableRestControllerTest {
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private MockMvc mockMvc;
     @Mock
     private EventService service;
@@ -40,7 +43,8 @@ class TimetableRestControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(
-                new TimetableRestController(service, courseService, userService)).build();
+                new TimetableRestController(service, courseService, userService))
+                .build();
     }
 
     @Test
@@ -95,61 +99,69 @@ class TimetableRestControllerTest {
     }
 
     @Test
-    void testAddEvent_ShouldAddEvent() throws Exception {
+    void testAddEvent_ValidData_ShouldAddEvent() throws Exception {
+        UserDto user = new UserDto("1", "student", "n", "s", "a");
+        CourseDto course = new CourseDto("a", "b");
+        EventDto event = new EventDto(1,
+                user,
+                course,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMonths(1));
         this.mockMvc.perform(post("/rest/timetable/add")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{ \"course\": " +
-                        "{ \"description\": \"string\", " +
-                        "\"name\": \"string\" }, " +
-                        "\"from\": \"2022-03-07T17:37:34.353Z\", " +
-                        "\"id\": 0, " +
-                        "\"to\": \"2022-03-07T17:37:34.353Z\", " +
-                        "\"user\": { " +
-                        "\"about\": \"string\", " +
-                        "\"name\": \"string\", " +
-                        "\"personalId\": \"string\", " +
-                        "\"role\": \"student\", " +
-                        "\"surname\": \"string\" }}")
+                .content(objectMapper.writeValueAsString(event))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void testUpdateEvent_ShouldUpdateEvent() throws Exception {
+    void testAddEvent_InvalidData_ShouldAddEvent() throws Exception {
+        EventDto event = new EventDto();
         this.mockMvc.perform(post("/rest/timetable/add")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{ \"course\": " +
-                        "{ \"description\": \"string\", " +
-                        "\"name\": \"string\" }, " +
-                        "\"from\": \"2022-03-07T17:37:34.353Z\", " +
-                        "\"id\": 0, " +
-                        "\"to\": \"2022-03-07T17:37:34.353Z\", " +
-                        "\"user\": { " +
-                        "\"about\": \"string\", " +
-                        "\"name\": \"string\", " +
-                        "\"personalId\": \"string\", " +
-                        "\"role\": \"student\", " +
-                        "\"surname\": \"string\" }}")
+                .content(objectMapper.writeValueAsString(event))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testUpdateEvent_ValidData_ShouldUpdateEvent() throws Exception {
+        UserDto user = new UserDto("1", "student", "n", "s", "a");
+        CourseDto course = new CourseDto("a", "b");
+        EventDto event = new EventDto(1,
+                user,
+                course,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMonths(1));
+        this.mockMvc.perform(post("/rest/timetable/update")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(event))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void testUpdateEvent_InvalidData_ShouldUpdateEvent() throws Exception {
+        EventDto event = new EventDto();
+        this.mockMvc.perform(post("/rest/timetable/update")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(event))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     void testDeleteEvent_ShouldDeleteEvent() throws Exception {
-        this.mockMvc.perform(post("/rest/timetable/add")
+        UserDto user = new UserDto("1", "student", "n", "s", "a");
+        CourseDto course = new CourseDto("a", "b");
+        EventDto event = new EventDto(1,
+                user,
+                course,
+                LocalDateTime.now(),
+                LocalDateTime.now());
+        this.mockMvc.perform(post("/rest/timetable/1/delete")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{ \"course\": " +
-                        "{ \"description\": \"string\", " +
-                        "\"name\": \"string\" }, " +
-                        "\"from\": \"2022-03-07T17:37:34.353Z\", " +
-                        "\"id\": 0, " +
-                        "\"to\": \"2022-03-07T17:37:34.353Z\", " +
-                        "\"user\": { " +
-                        "\"about\": \"string\", " +
-                        "\"name\": \"string\", " +
-                        "\"personalId\": \"string\", " +
-                        "\"role\": \"student\", " +
-                        "\"surname\": \"string\" }}")
+                .content(objectMapper.writeValueAsString(event))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
