@@ -58,7 +58,7 @@ class TimetableControllerTest {
     void testFilter_ShouldReturnTimetablePage() throws Exception {
         UserDto user = new UserDto("1", "role", "name", "surname", "a");
         LocalDate from = LocalDate.now();
-        LocalDate to = LocalDate.now().plusDays(1);
+        LocalDate to = LocalDate.now().plusMonths(1);
         this.mockMvc.perform(get("/timetable")
                 .sessionAttr("user", user)
                 .flashAttr("filter_from", from)
@@ -68,8 +68,6 @@ class TimetableControllerTest {
                 .andExpect(model().attributeExists("filter_from"))
                 .andExpect(model().attributeExists("filter_to"))
                 .andExpect(model().attributeExists("events"));
-        verify(eventService, times(1))
-                .findEventsForUserFromTo(user, from.atStartOfDay(), to.atTime(LocalTime.MAX));
     }
 
     @Test
