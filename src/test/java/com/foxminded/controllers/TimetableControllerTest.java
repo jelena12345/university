@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -42,7 +43,7 @@ class TimetableControllerTest {
     }
 
     @Test
-    void testTimetablePage_WithoutFilter_ShouldReturnTimetablePage() throws Exception {
+    void testTimetablePage_ShouldReturnTimetablePage() throws Exception {
         UserDto user = new UserDto("1", "role", "name", "surname", "a");
         this.mockMvc.perform(get("/timetable")
                 .sessionAttr("user", user))
@@ -51,22 +52,24 @@ class TimetableControllerTest {
                 .andExpect(model().attributeExists("filter_from"))
                 .andExpect(model().attributeExists("filter_to"))
                 .andExpect(model().attributeExists("events"));
-        verify(userCourseService, times(1)).findCoursesForUser(user);
     }
 
     @Test
-    void testTimetablePage_WithFilter_ShouldReturnTimetablePage() throws Exception {
+    void testFilter_ShouldReturnTimetablePage() throws Exception {
         UserDto user = new UserDto("1", "role", "name", "surname", "a");
+        LocalDate from = LocalDate.now();
+        LocalDate to = LocalDate.now().plusDays(1);
         this.mockMvc.perform(get("/timetable")
                 .sessionAttr("user", user)
-                .flashAttr("filter_from", LocalDate.now().toString())
-                .flashAttr("filter_to", LocalDate.now().plusDays(1).toString()))
+                .flashAttr("filter_from", from)
+                .flashAttr("filter_to", to))
                 .andExpect(status().isOk())
                 .andExpect(view().name("timetable/timetable"))
                 .andExpect(model().attributeExists("filter_from"))
                 .andExpect(model().attributeExists("filter_to"))
                 .andExpect(model().attributeExists("events"));
-        verify(userCourseService, times(1)).findCoursesForUser(user);
+        verify(eventService, times(1))
+                .findEventsForUserFromTo(user, from.atStartOfDay(), to.atTime(LocalTime.MAX));
     }
 
     @Test

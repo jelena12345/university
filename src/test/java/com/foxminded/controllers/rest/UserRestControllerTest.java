@@ -82,9 +82,19 @@ class UserRestControllerTest {
     }
 
     @Test
-    void testSaveUser_ShouldSaveUser() throws Exception {
+    void testRegisterUser_ShouldRegisterUser() throws Exception {
         UserDto user = new UserDto("1", "student", "n", "s", "a");
-        this.mockMvc.perform(post("/rest/users/save")
+        this.mockMvc.perform(post("/rest/users/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(user))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testUpdateUser_ShouldUpdateUser() throws Exception {
+        UserDto user = new UserDto("1", "student", "n", "s", "a");
+        this.mockMvc.perform(post("/rest/users/update")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user))
                 .accept(MediaType.APPLICATION_JSON))

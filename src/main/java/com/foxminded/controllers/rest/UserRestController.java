@@ -38,9 +38,14 @@ public class UserRestController {
         return userCourseService.findAvailableCoursesForUser(service.findByPersonalId(personalId));
     }
 
-    @PostMapping("/save")
+    @PostMapping("/register")
     public void saveUser(@Valid @RequestBody UserDto user) {
-        service.save(user);
+        service.add(user);
+    }
+
+    @PostMapping("/update")
+    public void updateUser(@Valid @RequestBody UserDto user) {
+        service.update(user);
     }
 
     @PostMapping("/{personalId}/delete")
