@@ -3,6 +3,7 @@ package com.foxminded.services;
 import com.foxminded.dao.UserDao;
 import com.foxminded.dto.UserDto;
 import com.foxminded.entities.User;
+import com.foxminded.services.exceptions.EntityAlreadyExistsException;
 import com.foxminded.services.exceptions.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -57,9 +58,23 @@ public class UserService {
                         UserDto.class);
     }
 
-    public void save(UserDto user) {
-        logger.debug("Saving UserDto");
-        logger.trace("Saving UserDto: {} ", user);
+    public void add(UserDto user) {
+        logger.debug("Adding UserDto");
+        logger.trace("Adding UserDto: {}", user);
+        if (dao.existsByPersonalId(user.getPersonalId())) {
+            logger.warn("User with personalId {} already exists.", user.getPersonalId());
+            throw new EntityAlreadyExistsException("User with personalId " + user.getPersonalId() + " already exists.");
+        }
+        dao.save(mapper.map(user, User.class));
+    }
+
+    public void update(UserDto user) {
+        logger.debug("Updating UserDto");
+        logger.trace("Updating UserDto: {} ", user);
+        if (!dao.existsByPersonalId(user.getPersonalId())) {
+            logger.warn("Not found User with personal id: {}", user.getPersonalId());
+            throw new EntityNotFoundException("Not found User with personal id: " + user.getPersonalId());
+        }
         dao.save(enrich(mapper.map(user, User.class)));
     }
 
@@ -90,11 +105,22 @@ public class UserService {
     }
 
     private User enrich(User user) {
-        dao.findByPersonalId(user.getPersonalId()).ifPresent(u -> {
-            user.setId(u.getId());
-            user.setCoursesForUser(u.getCoursesForUser());
-            user.setEvents(u.getEvents());
-        });
+        User storedUser = dao.findByPersonalId(user.getPersonalId()).orElseThrow(EntityNotFoundException::new);
+        user.setId(storedUser.getId());
+        user.setCoursesForUser(storedUser.getCoursesForUser());
+        user.setEvents(storedUser.getEvents());
+        if (user.getRole() == null) {
+            user.setRole(storedUser.getRole());
+        }
+        if (user.getName() == null) {
+            user.setName(storedUser.getName());
+        }
+        if (user.getSurname() == null) {
+            user.setSurname(storedUser.getSurname());
+        }
+        if (user.getAbout() == null) {
+            user.setAbout(storedUser.getAbout());
+        }
         return user;
     }
 }
