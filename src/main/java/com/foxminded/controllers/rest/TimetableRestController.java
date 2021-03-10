@@ -1,12 +1,11 @@
 package com.foxminded.controllers.rest;
 
 import com.foxminded.dto.EventDto;
-import com.foxminded.dto.UserDto;
 import com.foxminded.services.CourseService;
 import com.foxminded.services.EventService;
 import com.foxminded.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -14,7 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/rest/timetable")
 public class TimetableRestController {
 
@@ -29,23 +28,21 @@ public class TimetableRestController {
         this.userService = userService;
     }
 
-    @GetMapping("/timetable")
-    public List<EventDto> getTimetableForUser(@Valid @RequestBody UserDto userDto) {
-        return service.findEventsForUserFromTo(userDto,
-                LocalDate.now().atStartOfDay(),
-                LocalDate.now().plusMonths(1).atTime(LocalTime.MAX));
+    @GetMapping("/all")
+    public List<EventDto> getAllEvents() {
+        return service.findAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/events/{id}")
     public EventDto getEventById(@PathVariable("id") Integer id) {
         return service.findById(id);
     }
 
-    @PostMapping("/timetable/filter")
-    public List<EventDto> filterEvents(@Valid @RequestBody UserDto userDto,
-                                       @RequestBody LocalDate from,
-                                       @RequestBody LocalDate to) {
-        return service.findEventsForUserFromTo(userDto,
+    @GetMapping("{personalId}/filter/{from}_{to}")
+    public List<EventDto> getFilteredEvents(@PathVariable("personalId") String personalId,
+                                            @PathVariable("from") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+                                            @PathVariable("to") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
+        return service.findEventsForUserFromTo(userService.findByPersonalId(personalId),
                 from.atStartOfDay(),
                 to.atTime(LocalTime.MAX));
     }
@@ -67,4 +64,5 @@ public class TimetableRestController {
     public void deleteEvent(@PathVariable("id") Integer id) {
         service.deleteById(id);
     }
+
 }

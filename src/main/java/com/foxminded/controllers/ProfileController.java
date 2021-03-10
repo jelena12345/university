@@ -36,7 +36,7 @@ public class ProfileController {
 
     @PostMapping("/save")
     public String saveUser(@Valid @ModelAttribute(USER) UserDto user) {
-        service.save(user);
+        service.update(user);
         return "redirect:/profile";
     }
 

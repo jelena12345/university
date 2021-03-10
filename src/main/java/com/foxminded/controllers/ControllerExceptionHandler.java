@@ -2,7 +2,9 @@ package com.foxminded.controllers;
 
 import com.foxminded.services.exceptions.EntityAlreadyExistsException;
 import com.foxminded.services.exceptions.EntityNotFoundException;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,8 +14,9 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 
 
-@ControllerAdvice
-public class ErrorHandlingControllerAdvice {
+@ControllerAdvice(annotations = Controller.class)
+@Order(2)
+public class ControllerExceptionHandler {
 
     private static final String MESSAGE = "message";
     private static final String ERROR_VIEW = "error";
@@ -50,4 +53,5 @@ public class ErrorHandlingControllerAdvice {
         mav.setViewName(ERROR_VIEW);
         return mav;
     }
+
 }
