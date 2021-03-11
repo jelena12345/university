@@ -78,6 +78,26 @@ class EventServiceTest {
     }
 
     @Test
+    void testFindEventsForUserFromTo_ShouldReturnCorrectRecords() {
+        User user = new User(1, "1", "role", "name", "surname", "about");
+        Course course = new Course(1, "name", "description");
+        UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
+        CourseDto courseDto = new CourseDto("name", "description");
+        LocalDateTime from = LocalDateTime.now();
+        LocalDateTime to = LocalDateTime.now().plusHours(1);
+        course.setEvents(Arrays.asList(
+                new Event(1, user, course, from.plusMinutes(1), to.minusMinutes(1)),
+                new Event(2, user, course, from.plusMinutes(1), to.minusMinutes(1))));
+        user.getCoursesForUser().add(course);
+        List<EventDto> expected = Arrays.asList(
+                new EventDto(1, userDto, courseDto, from.plusMinutes(1), to.minusMinutes(1)),
+                new EventDto(2, userDto, courseDto, from.plusMinutes(1), to.minusMinutes(1)));
+        when(userDao.findByPersonalId(anyString())).thenReturn(Optional.of(user));
+        List<EventDto> actual = service.findEventsForUserFromTo(userDto, from, to);
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void testAdd_ShouldCallAddMethodForDao() {
         User user = new User(1, "1", "role", "name", "surname", "about");
         Course course = new Course(1, "name", "description");
@@ -116,6 +136,16 @@ class EventServiceTest {
     }
 
     @Test
+    void testAdd_ShouldThrowEntityNotFoundException() {
+        UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
+        CourseDto courseDto = new CourseDto("name", "description");
+        LocalDateTime from = LocalDateTime.now();
+        LocalDateTime to = LocalDateTime.now().plusHours(1);
+        EventDto eventDto = new EventDto(1, userDto, courseDto, from, to);
+        assertThrows(EntityNotFoundException.class, () -> service.add(eventDto));
+    }
+
+    @Test
     void testUpdate_ShouldThrowEntityNotFoundException() {
         UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
         CourseDto courseDto = new CourseDto("name", "description");
@@ -128,4 +158,11 @@ class EventServiceTest {
         assertThrows(EntityNotFoundException.class, () -> service.deleteById(1));
     }
 
+    @Test
+    void testFindEventsForUserFromTo_ShouldThrowEntityNotFoundException() {
+        UserDto userDto = new UserDto("1", "role", "name", "surname", "about");
+        LocalDateTime from = LocalDateTime.now();
+        LocalDateTime to = LocalDateTime.now().plusHours(1);
+        assertThrows(EntityNotFoundException.class, () -> service.findEventsForUserFromTo(userDto, from, to));
+    }
 }
